@@ -23,7 +23,6 @@
 		const { data: photos } = await supabaseClient.storage
 			.from('photos-for-training')
 			.list($page.data.session?.user.id);
-		console.log(photos);
 
 		await supabaseClient.functions.invoke('train');
 	}

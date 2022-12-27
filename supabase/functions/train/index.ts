@@ -5,7 +5,10 @@
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.2.2';
 // TODO replace with https://deno.land/x/amqp/mod.ts when pull request fix is merged
-import { connect } from 'https://raw.githubusercontent.com/epavanello/deno-amqp/patch-1/mod.ts';
+import {
+	AmqpConnection,
+	connect
+} from 'https://raw.githubusercontent.com/epavanello/deno-amqp/patch-1/mod.ts';
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -18,6 +21,8 @@ serve(async (req) => {
 	if (req.method === 'OPTIONS') {
 		return new Response('ok', { headers: corsHeaders });
 	}
+
+	let connection: AmqpConnection | undefined;
 
 	try {
 		const supabaseClient = createClient(
@@ -37,9 +42,7 @@ serve(async (req) => {
 			throw new Error('Unauthorized');
 		}
 
-		console.log('Connect to', Deno.env.get('RABBITMQ_HOST'));
-
-		const connection = await connect({
+		connection = await connect({
 			hostname: `${Deno.env.get('RABBITMQ_HOST')}`,
 			port: parseInt(Deno.env.get('RABBITMQ_PORT') ?? ''),
 			username: Deno.env.get('RABBITMQ_USERNAME') ?? '',
@@ -102,6 +105,10 @@ serve(async (req) => {
 			headers: { ...corsHeaders, 'Content-Type': 'application/json' },
 			status: 500
 		});
+	} finally {
+		if (connection) {
+			await connection.close();
+		}
 	}
 });
 
