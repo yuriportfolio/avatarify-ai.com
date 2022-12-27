@@ -1,0 +1,49 @@
+<script lang="ts">
+	import type IconTypes from '$lib/icon-types';
+	import cn from 'classnames';
+	import Icon from './Icon.svelte';
+
+	export let startIcon: IconTypes | undefined = undefined;
+	export let endIcon: IconTypes | undefined = undefined;
+	export let size: 'tiny' | 'small' | 'normal' | 'large' = 'normal';
+	export let primary = false;
+	export let ghost = false;
+	export let block = false;
+	export let circle = false;
+	export let outline = false;
+	let classes: string | undefined = undefined;
+	export { classes as class };
+	export let link: string | undefined = undefined;
+</script>
+
+<svelte:element
+	this={link ? 'a' : 'button'}
+	href={link}
+	on:click
+	class={cn(
+		'btn gap-2',
+		{
+			'btn-xs': size == 'tiny',
+			'btn-sm': size == 'small',
+			'btn-lg': size == 'large'
+		},
+		{
+			'btn-primary': primary,
+			'btn-ghost': ghost,
+			'btn-block': block,
+			'btn-circle': circle,
+			'btn-outline': outline
+		},
+		classes
+	)}
+	type="button"
+	{...$$restProps}
+>
+	{#if startIcon}
+		<Icon name={startIcon} {size} />
+	{/if}
+	<slot />
+	{#if endIcon}
+		<Icon name={endIcon} {size} />
+	{/if}
+</svelte:element>

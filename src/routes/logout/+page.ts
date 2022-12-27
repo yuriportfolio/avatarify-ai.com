@@ -1,0 +1,13 @@
+import type { PageLoad } from './$types';
+import { getSupabase } from '@supabase/auth-helpers-sveltekit';
+import { redirect } from '@sveltejs/kit';
+
+export const load: PageLoad = async (event) => {
+	const { session, supabaseClient } = await getSupabase(event);
+	console.warn('Called logout');
+	debugger;
+	if (session) {
+		await supabaseClient.auth.signOut();
+		throw redirect(303, '/');
+	}
+};

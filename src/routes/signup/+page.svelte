@@ -9,8 +9,8 @@
 	let password: string = '';
 
 	let error: AuthError | null;
-	async function login() {
-		({ error } = await supabaseClient.auth.signInWithPassword({
+	async function signup() {
+		({ error } = await supabaseClient.auth.signUp({
 			email,
 			password
 		}));
@@ -22,13 +22,13 @@
 
 <h1 class="font-bold text-center text-2xl mb-5">BetterAvatar</h1>
 <div class="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
-	<form class="px-5 py-7 flex flex-col gap-4" on:submit={login}>
+	<form class="px-5 py-7 flex flex-col gap-4" on:submit={signup}>
 		<Input bind:value={email} id="email" label="E-mail" />
 		<Input bind:value={password} type="password" id="password" label="Password" />
 		{#if error}
 			<Alert type="error" on:close={() => (error = null)}>{error.message}</Alert>
 		{/if}
-		<Button endIcon="arrow_forward" block type="submit">Login</Button>
+		<Button endIcon="arrow_forward" block type="submit" on:click={() => signup()}>Signup</Button>
 	</form>
 	<div class="p-5">
 		<div class="grid grid-cols-3 gap-1">
@@ -39,7 +39,7 @@
 	</div>
 	<div class="py-5">
 		<div class="text-center sm:text-left whitespace-nowrap px-4">
-			<Button startIcon="lock" ghost size="tiny">Forgot Password</Button>
+			<Button startIcon="login" ghost size="tiny" link="/login">Already registered?</Button>
 			<Button startIcon="contact_support" class="float-right" ghost size="tiny">Help</Button>
 		</div>
 	</div>
