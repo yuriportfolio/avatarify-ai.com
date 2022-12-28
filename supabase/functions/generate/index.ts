@@ -52,45 +52,13 @@ serve(async (req) => {
 		});
 		const channel = await connection.openChannel();
 
-		const { data: photos, error } = await supabaseClient.storage
-			.from('photos-for-training')
-			.list(user.id);
-
-		if (error) {
-			console.error("Can't list photos");
-			throw error;
-		}
-
-		const listToSend: { base64: string; filename: string }[] = [];
-
-		for (const image of photos) {
-			const { data: photo, error } = await supabaseClient.storage
-				.from('photos-for-training')
-				.download(user.id + '/' + image.name, {
-					/* transform: {
-						height: 512,
-						width: 512,
-						resize: 'contain'
-					} */
-				});
-			if (error) {
-				console.error("Can't download photo");
-				throw error;
-			}
-			if (photo) {
-				listToSend.push({
-					base64: base64.fromArrayBuffer(await photo.arrayBuffer()),
-					filename: image.name
-				});
-			}
-		}
 		channel.publish(
-			{ routingKey: 'train_photos' },
+			{ routingKey: 'generate_photos' },
 			{ contentType: 'application/json', headers: { session: user.id } },
-			new TextEncoder().encode(JSON.stringify(listToSend))
+			new Uint8Array()
 		);
 
-		return new Response(JSON.stringify({ message: 'Ready for training' }), {
+		return new Response(JSON.stringify({ message: 'Generation launched' }), {
 			headers: { ...corsHeaders, 'Content-Type': 'application/json' },
 			status: 200
 		});
