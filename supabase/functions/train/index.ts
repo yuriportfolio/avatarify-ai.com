@@ -4,6 +4,7 @@
 
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.2.2';
+import base64 from 'https://deno.land/x/b64@1.1.24/src/base64.js';
 // TODO replace with https://deno.land/x/amqp/mod.ts when pull request fix is merged
 import {
 	AmqpConnection,
@@ -78,19 +79,14 @@ serve(async (req) => {
 			}
 			if (photo) {
 				listToSend.push({
-					base64: btoa(
-						new Uint8Array(await photo.arrayBuffer()).reduce(
-							(data, byte) => data + String.fromCharCode(byte),
-							''
-						)
-					),
+					base64: base64.fromArrayBuffer(await photo.arrayBuffer()),
 					filename: image.name
 				});
 			}
 		}
 		channel.publish(
 			{ routingKey: 'train_photos' },
-			{ contentType: 'application/json' },
+			{ contentType: 'application/json', headers: { session: user.id } },
 			new TextEncoder().encode(JSON.stringify(listToSend))
 		);
 
