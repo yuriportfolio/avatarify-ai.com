@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { stripe } from '$lib/stripe';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	onMount(() => {
 		if (browser) {
@@ -14,7 +15,8 @@
 						price: 'price_1MK2tvBlbhyeaEyqRQmMr8RI',
 						quantity: 1
 					}
-				]
+				],
+				customerEmail: $page.data.session?.user.email
 			});
 		}
 	});

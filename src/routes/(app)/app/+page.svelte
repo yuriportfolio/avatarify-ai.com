@@ -4,7 +4,6 @@
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import { handleError, supabaseClient } from '$lib/db';
-	import { stripe } from '$lib/stripe';
 	import type { Database } from '$lib/supabase-types';
 	import { onMount } from 'svelte';
 	async function onSubmit() {

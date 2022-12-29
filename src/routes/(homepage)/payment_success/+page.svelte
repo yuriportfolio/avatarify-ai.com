@@ -1,4 +1,4 @@
-<article class="prose px-2 lg:prose-xl container max-w-3xl">
+<article class="prose px-2 lg:prose-xl container max-w-3xl mx-auto my-16">
 	<h2>Payment Confirmation</h2>
 	<p>Thank you for your payment! Your transaction has been completed successfully.</p>
 	<p>
