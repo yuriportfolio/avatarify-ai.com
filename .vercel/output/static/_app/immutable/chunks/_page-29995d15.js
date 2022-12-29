@@ -1,0 +1,1 @@
+import{g as a}from"./getSupabase-480383dd.js";import"./index-93733f44.js";import{r}from"./index-35a671a5.js";const s=async o=>{const{session:e,supabaseClient:t}=await a(o);debugger;if(console.log("Logout"),e)throw await t.auth.signOut(),r(303,"/")},l=Object.freeze(Object.defineProperty({__proto__:null,load:s},Symbol.toStringTag,{value:"Module"}));export{l as _,s as l};

@@ -1,4 +1,3 @@
-import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 import vercel from '@sveltejs/adapter-vercel';
 
@@ -13,7 +12,7 @@ const config = {
 			// if true, will deploy the app using edge functions
 			// (https://vercel.com/docs/concepts/functions/edge-functions)
 			// rather than serverless functions
-			edge: true,
+			edge: false,
 
 			// an array of dependencies that esbuild should treat
 			// as external when bundling functions
