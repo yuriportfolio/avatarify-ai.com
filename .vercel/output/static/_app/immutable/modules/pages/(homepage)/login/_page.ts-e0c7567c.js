@@ -1,1 +1,0 @@
-import"../../../../chunks/getSupabase-480383dd.js";import"../../../../chunks/index-93733f44.js";import"../../../../chunks/index-35a671a5.js";import{l as i}from"../../../../chunks/_page-1d604f62.js";export{i as load};

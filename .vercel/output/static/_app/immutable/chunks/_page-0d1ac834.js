@@ -1,1 +1,0 @@
-import{g as t}from"./getSupabase-480383dd.js";import"./index-93733f44.js";import{r}from"./index-35a671a5.js";const a=async o=>{const{session:e}=await t(o);if(!e)throw r(303,"/")},p=Object.freeze(Object.defineProperty({__proto__:null,load:a},Symbol.toStringTag,{value:"Module"}));export{p as _,a as l};
