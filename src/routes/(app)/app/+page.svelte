@@ -16,7 +16,6 @@
 						await inputFiles.files[i].arrayBuffer()
 					);
 			}
-			await supabaseClient.functions.invoke('train');
 		}
 	}
 	let inputFiles: HTMLInputElement;
@@ -28,22 +27,34 @@
 		await supabaseClient.functions.invoke('generate');
 	}
 
-	let images: { url: string; name: string }[] = [];
+	let imagesForTrain: { url: string; name: string }[] = [];
+	let imagesGenerated: { url: string; name: string }[] = [];
 
-	async function getSignedUrl(filename: string) {
+	async function getSignedUrl(bucket: string, filename: string) {
 		return handleError(
 			await supabaseClient.storage
-				.from('photos-generated')
+				.from(bucket)
 				.createSignedUrl($page.data.session?.user.id + '/' + filename, 60)
 		).signedUrl;
 	}
 
 	onMount(async () => {
 		if (browser) {
-			images = await Promise.all(
+			imagesForTrain = await Promise.all(
+				handleError(
+					await supabaseClient.storage.from('photos-for-training').list($page.data.session?.user.id)
+				).map(async (file) => ({
+					url: await getSignedUrl('photos-for-training', file.name),
+					name: file.name
+				}))
+			);
+			imagesGenerated = await Promise.all(
 				handleError(
 					await supabaseClient.storage.from('photos-generated').list($page.data.session?.user.id)
-				).map(async (file) => ({ url: await getSignedUrl(file.name), name: file.name }))
+				).map(async (file) => ({
+					url: await getSignedUrl('photos-generated', file.name),
+					name: file.name
+				}))
 			);
 
 			const subscription = supabaseClient
@@ -53,9 +64,12 @@
 					{ event: 'INSERT', schema: 'public', table: 'photos' },
 					async (payload) => {
 						if ('uid' in payload.new) {
-							images = [
-								...images,
-								{ url: await getSignedUrl(payload.new.name), name: payload.new.name }
+							imagesGenerated = [
+								...imagesGenerated,
+								{
+									url: await getSignedUrl('photos-generated', payload.new.name),
+									name: payload.new.name
+								}
 							];
 						}
 					}
@@ -69,13 +83,38 @@
 	});
 </script>
 
-<form on:submit={onSubmit} class="flex flex-col gap-2 items-start">
-	<Input bind:input={inputFiles} type="file" label="Photos" id="photos" multiple />
-	<Button size="small" type="submit">Invia</Button>
-	<Button size="small" type="button" on:click={() => train()}>Addestra</Button>
-	<Button size="small" type="button" on:click={() => generate()}>Genera</Button>
-</form>
-
-{#each images as image}
-	<img src={image.url} alt={image.name} />
-{/each}
+<div class="w-full max-w-sm mx-auto my-16 px-2 flex flex-col gap-4">
+	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200">
+		<form on:submit={onSubmit} class="px-5 py-7 flex flex-col items-center gap-4">
+			<Input bind:input={inputFiles} type="file" label="Photos" id="photos" multiple />
+			<Button size="small" type="submit">Invia</Button>
+			<Button size="small" type="button" on:click={() => train()} disabled>Addestra</Button>
+			<Button size="small" type="button" on:click={() => generate()} disabled>Genera</Button>
+		</form>
+	</div>
+	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200 p-6">
+		<article class="prose">
+			<h1>Photos for training</h1>
+		</article>
+		<div class="carousel carousel-center p-4 space-x-4 bg-neutral">
+			{#each imagesForTrain as image, i}
+				<div class="carousel-item">
+					<img
+						src={image.url}
+						loading="eager"
+						alt={image.name}
+						class="rounded-box aspect-square h-[30vh]"
+					/>
+				</div>
+			{/each}
+		</div>
+	</div>
+	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200 p-6">
+		<article class="prose">
+			<h1>Photos generated</h1>
+		</article>
+		{#each imagesGenerated as image}
+			<img src={image.url} alt={image.name} />
+		{/each}
+	</div>
+</div>

@@ -16,7 +16,8 @@
 						quantity: 1
 					}
 				],
-				customerEmail: $page.data.session?.user.email
+				customerEmail: $page.data.session?.user.email,
+				clientReferenceId: $page.data.session?.user.id
 			});
 		}
 	});

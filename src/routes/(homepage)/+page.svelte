@@ -4,8 +4,6 @@
 
 	const first = avatars.slice(0, 10);
 	const second = avatars.slice(10);
-
-	console.log(first);
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">

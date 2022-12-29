@@ -3,9 +3,10 @@
 // This enables autocomplete, go to definition, etc.
 
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
-//*
+import { User } from 'https://esm.sh/v100/@supabase/supabase-js@2.2.2/dist/module/index';
+/*
 import Stripe from 'https://esm.sh/stripe@11.5.0?target=deno&no-check';
-/*/
+//*/
 import { Stripe } from 'npm:stripe';
 //*/
 import { getSupabaseClientAdmin } from '../_shared/supabase.ts';
@@ -32,30 +33,44 @@ serve(async (req) => {
 		switch (event.type) {
 			case 'checkout.session.completed': {
 				const session = event.data.object as Stripe.Checkout.Session;
+				const client_reference_id = session.client_reference_id;
+				const email = session.customer_email;
 				console.log('session: ', session);
-				if (session.customer_details?.email) {
-					const supabaseClientAdmin = getSupabaseClientAdmin();
-					const { data, error } = await supabaseClientAdmin.auth.admin.inviteUserByEmail(
-						session.customer_details.email
-					);
-					if (error) {
-						throw error;
+				const supabaseClientAdmin = getSupabaseClientAdmin();
+				if (client_reference_id || email) {
+					let user: User;
+
+					if (client_reference_id) {
+						const { data, error } = await supabaseClientAdmin.auth.admin.getUserById(
+							client_reference_id
+						);
+						if (error) {
+							throw error;
+						}
+						user = data.user;
+					} else if (email) {
+						const { data, error } = await supabaseClientAdmin.auth.admin.inviteUserByEmail(email);
+						if (error) {
+							throw error;
+						}
+						user = data.user;
 					}
-					if (data.user) {
+
+					if (user) {
 						const { error: errorUpsert } = await supabaseClientAdmin
 							.from('user_info')
-							.upsert({ id: data.user?.id, paid: true });
+							.upsert({ id: user.id, paid: true });
+
 						if (errorUpsert) {
 							throw errorUpsert;
 						}
+					} else {
+						throw new Error(`User not found: ref_id ${client_reference_id}, email:${email}`);
 					}
-					/* 
-					const { error } = await supabaseClientAdmin.auth.signInWithOtp({
-						email: session.customer_details.email
-					}); */
 				} else {
-					throw new Error('Missing email');
+					throw new Error('Missing reference id and email');
 				}
+
 				// Then define and call a function to handle the event checkout.session.completed
 				break;
 			}

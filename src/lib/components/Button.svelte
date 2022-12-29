@@ -22,6 +22,7 @@
 <svelte:element
 	this={link ? 'a' : 'button'}
 	href={link}
+	data-sveltekit-preload-data="off"
 	on:click
 	class={cn(
 		'btn gap-1',

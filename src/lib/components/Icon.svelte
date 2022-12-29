@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type IconTypes from '$lib/icon-types';
+	import { Icons, type IconTypes } from '$lib/icon-types';
 	import cn from 'classnames';
 
 	export let name: IconTypes;
@@ -7,11 +7,11 @@
 </script>
 
 <span
-	class={cn('material-symbols-outlined', {
+	class={cn('material-icons material-symbols-outlined', {
 		'text-xs': size == 'tiny',
 		'text-sm': size == 'small',
 		'text-lg': size == 'large'
 	})}
 >
-	{name}
+{@html `&#x${Icons[name]};`}
 </span>

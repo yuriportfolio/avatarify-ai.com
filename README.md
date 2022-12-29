@@ -15,6 +15,7 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Buy domain
 - [ ] Help page
 - [x] Contact page
+- [ ] Messages after login, checkout, checkout cancel, logout
 - [ ] Email tuning
 - [ ] Meta data and social images
 - [ ] Localization

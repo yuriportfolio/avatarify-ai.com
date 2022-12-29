@@ -2,13 +2,18 @@
 import type { LayoutServerLoad } from './$types';
 import { getServerSession } from '@supabase/auth-helpers-sveltekit';
 import { supabaseClient } from '$lib/db';
-import { redirect } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async (event) => {
-	if ((await supabaseClient.from('user_info').select('').eq('paid', true)).count != 1) {
-		throw redirect(303, '/checkout');
+	const session = await getServerSession(event);
+	if (session) {
+		const { data } = await supabaseClient.auth.setSession({
+			access_token: session.access_token,
+			refresh_token: session.refresh_token
+		});
 	}
+	// TODO set session 
+	console.log('1', await supabaseClient.auth.getSession());
 	return {
-		session: await getServerSession(event)
+		session
 	};
 };
