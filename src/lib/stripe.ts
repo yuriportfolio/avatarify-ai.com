@@ -1,4 +1,4 @@
 import { loadStripe } from '@stripe/stripe-js';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
 
-export const getGtripe = async () => await loadStripe(env.PUBLIC_STRIPE_PUBLISHABLE_KEY);
+export const getGtripe = async () => await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
