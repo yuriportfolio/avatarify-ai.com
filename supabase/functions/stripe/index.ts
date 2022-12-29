@@ -8,7 +8,7 @@ import Stripe from 'https://esm.sh/stripe@11.5.0?target=deno&no-check';
 /*/
 import { Stripe } from 'npm:stripe';
 //*/
-import { handleError, getSupabaseClientAdmin } from '../_shared/supabase.ts';
+import { getSupabaseClientAdmin } from '../_shared/supabase.ts';
 
 const stripe = new Stripe.Stripe(Deno.env.get('STRIPE_API_KEY')!, { apiVersion: '2022-11-15' });
 

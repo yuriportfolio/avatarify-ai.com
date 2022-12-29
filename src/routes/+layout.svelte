@@ -25,10 +25,7 @@
 		<div class="navbar-start">
 			<div class="dropdown">
 				<Button circle icon="menu" tabindex="0" size="normal" ghost />
-				<ul
-					tabindex="0"
-					class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-				>
+				<ul class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
 					{#if $page.data.session}
 						<li>
 							<a href="/app">Launch</a>
