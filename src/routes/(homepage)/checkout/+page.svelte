@@ -6,9 +6,10 @@
 
 	onMount(async () => {
 		if (browser) {
+			const baseUrl = window.location.protocol + '//' + window.location.host + '/';
 			(await getGtripe())?.redirectToCheckout({
-				successUrl: 'http://127.0.0.1:5173/payment_success?session_id={CHECKOUT_SESSION_ID}',
-				cancelUrl: 'http://127.0.0.1:5173/',
+				successUrl: `${baseUrl}payment_success?session_id={CHECKOUT_SESSION_ID}`,
+				cancelUrl: baseUrl,
 				mode: 'payment',
 				lineItems: [
 					{
