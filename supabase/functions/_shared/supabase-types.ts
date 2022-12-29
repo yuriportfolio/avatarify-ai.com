@@ -29,6 +29,23 @@ export interface Database {
           name?: string
         }
       }
+      user_info: {
+        Row: {
+          id: string
+          created_at: string | null
+          paid: boolean
+        }
+        Insert: {
+          id: string
+          created_at?: string | null
+          paid?: boolean
+        }
+        Update: {
+          id?: string
+          created_at?: string | null
+          paid?: boolean
+        }
+      }
     }
     Views: {
       [_ in never]: never

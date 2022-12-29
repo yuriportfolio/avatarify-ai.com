@@ -3,13 +3,12 @@
 // This enables autocomplete, go to definition, etc.
 
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.2.2';
-import base64 from 'https://deno.land/x/b64@1.1.24/src/base64.js';
 // TODO replace with https://deno.land/x/amqp/mod.ts when pull request fix is merged
 import {
 	AmqpConnection,
 	connect
 } from 'https://raw.githubusercontent.com/epavanello/deno-amqp/patch-1/mod.ts';
+import { getSupabaseClient } from '../_shared/supabase.ts';
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -26,21 +25,18 @@ serve(async (req) => {
 	let connection: AmqpConnection | undefined;
 
 	try {
-		const supabaseClient = createClient(
-			Deno.env.get('SUPABASE_URL') ?? '',
-			Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-			// Create client with Auth context of the user that called the function.
-			// This way your row-level-security (RLS) policies are applied.
-			{ global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-		);
+		const supabaseClient = getSupabaseClient(req.headers.get('Authorization')!);
 
 		// Now we can get the session or user object
 		const {
-			data: { user }
+			data: { user },
+			error
 		} = await supabaseClient.auth.getUser();
 		if (!user) {
-			console.error('Missing user');
 			throw new Error('Unauthorized');
+		}
+		if (error) {
+			throw error;
 		}
 
 		connection = await connect({

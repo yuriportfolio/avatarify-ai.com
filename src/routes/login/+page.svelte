@@ -6,13 +6,11 @@
 	import { supabaseClient } from '$lib/db';
 	import type { AuthError } from '@supabase/supabase-js';
 	let email: string = '';
-	let password: string = '';
 
 	let error: AuthError | null;
 	async function login() {
-		({ error } = await supabaseClient.auth.signInWithPassword({
-			email,
-			password
+		({ error } = await supabaseClient.auth.signInWithOtp({
+			email
 		}));
 		if (!error) {
 			goto('/');
@@ -20,15 +18,13 @@
 	}
 </script>
 
-<h1 class="font-bold text-center text-2xl mb-5">BetterAvatar</h1>
 <div class="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
 	<form class="px-5 py-7 flex flex-col gap-4" on:submit={login}>
 		<Input bind:value={email} id="email" label="E-mail" />
-		<Input bind:value={password} type="password" id="password" label="Password" />
 		{#if error}
 			<Alert type="error" on:close={() => (error = null)}>{error.message}</Alert>
 		{/if}
-		<Button endIcon="arrow_forward" block type="submit">Login</Button>
+		<Button endIcon="arrow_forward" block type="submit">Login with magic link</Button>
 	</form>
 	<div class="p-5">
 		<div class="grid grid-cols-3 gap-1">
@@ -39,16 +35,8 @@
 	</div>
 	<div class="py-5">
 		<div class="text-center sm:text-left whitespace-nowrap px-4">
-			<Button startIcon="lock" ghost size="tiny">Forgot Password</Button>
-			<Button startIcon="contact_support" class="float-right" ghost size="tiny">Help</Button>
+			<Button startIcon="arrow_back" ghost size="tiny" link="/">Back to betteravatar.app</Button>
+			<Button startIcon="contact_support" class="float-right" ghost size="tiny" link="/help">Help</Button>
 		</div>
-	</div>
-</div>
-<div class="py-5">
-	<div class="text-center sm:text-left whitespace-nowrap">
-		<button class="btn btn-ghost btn-sm gap-2 text-xs" type="button">
-			<span class="material-symbols-outlined text-sm"> arrow_back </span>
-			Back to betteravatar.app
-		</button>
 	</div>
 </div>

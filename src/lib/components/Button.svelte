@@ -3,6 +3,7 @@
 	import cn from 'classnames';
 	import Icon from './Icon.svelte';
 
+	export let icon: IconTypes | undefined = undefined;
 	export let startIcon: IconTypes | undefined = undefined;
 	export let endIcon: IconTypes | undefined = undefined;
 	export let size: 'tiny' | 'small' | 'normal' | 'large' = 'normal';
@@ -42,7 +43,11 @@
 	{#if startIcon}
 		<Icon name={startIcon} {size} />
 	{/if}
-	<slot />
+	{#if icon}
+		<Icon name={icon} {size} />
+	{:else}
+		<slot />
+	{/if}
 	{#if endIcon}
 		<Icon name={endIcon} {size} />
 	{/if}
