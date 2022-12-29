@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
-	const avatars = Array.from({length: 19}, (_, index) => `avatars/me_${index + 1}.jpg`);
+	const avatars = Array.from({ length: 19 }, (_, index) => `avatars/me_${index + 1}.jpg`);
 
 	const first = avatars.slice(0, 10);
 	const second = avatars.slice(10);
 
-	console.log(first)
+	console.log(first);
 </script>
 
-<div class="prose text-center py-16 min-w-full">
-	<h1>Some generated avatars</h1>
+<div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
+	<h2>Some generated avatars</h2>
 	<p>
 		Tag us on social media and use our hashtag to share your AI-generated images and get noticed
 	</p>
@@ -42,8 +42,8 @@
 		{/each}
 	</div>
 </div>
-<div class="prose text-center pt-16 min-w-full">
-	<h1>How it works</h1>
+<div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
+	<h2>How it works</h2>
 	<ol class="max-w-xl mx-auto text-left">
 		<li>💸 Make a payment with Stripe</li>
 		<li>🔓 Activate your account using the confirmation link sent to your email</li>
@@ -53,8 +53,8 @@
 	</ol>
 </div>
 
-<div class="prose text-center pt-16 min-w-full">
-	<h1>Who is behind this project?</h1>
+<div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
+	<h2>Who is behind this project?</h2>
 	<p class="max-w-2xl mx-auto">
 		I am the sole creator of this service. As an independent Developer, I own and operate all of my
 		sites. Your data is safe with me as I have no outside influence or agendas. Trust in the quality
@@ -62,15 +62,17 @@
 	</p>
 </div>
 
-<div class="prose text-center py-16 min-w-full">
-	<h1 class="max-w-2xl mx-auto">Build a unique and personalized Avatar with the help of AI</h1>
+<div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
+	<h2 class="max-w-2xl mx-auto">
+		Build a unique and personalized <span class="text-gradient">Avatar</span> with the help of AI
+	</h2>
 	<div class="gap-4">
 		<Button type="button" link="/checkout" gradient endIcon="arrow_right">Start now</Button>
 		<Button type="button" link="/login" ghost>Login</Button>
 	</div>
 </div>
 
-<style global>
+<style>
 	:root {
 		--color-text: navy;
 		--color-bg: papayawhip;

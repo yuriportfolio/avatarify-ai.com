@@ -1,4 +1,4 @@
-<article class="prose container max-w-3xl mx-auto py-16">
+<article class="prose px-2 container max-w-3xl mx-auto py-16">
 	<h1>Help</h1>
 	<p>
 		Our application allows you to learn and improve your skills using artificial intelligence and

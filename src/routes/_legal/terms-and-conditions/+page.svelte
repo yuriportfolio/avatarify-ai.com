@@ -1,4 +1,4 @@
-<article class="prose container mx-auto">
+<article class="prose px-2 lg:prose-xl container mx-auto">
 	<div>
 		<div>
 			<div><a /><strong>TERMS OF USE</strong></div>

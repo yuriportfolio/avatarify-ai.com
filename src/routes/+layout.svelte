@@ -1,12 +1,10 @@
 <script lang="ts">
+	import '../app.css';
 	import { supabaseClient } from '$lib/db';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import '../app.css';
-	import Icon from '$lib/components/Icon.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import Input from '$lib/components/Input.svelte';
 
 	onMount(() => {
 		const {
@@ -19,61 +17,27 @@
 			subscription.unsubscribe();
 		};
 	});
-
-	const themes = [
-		'light',
-		'dark',
-		'cupcake',
-		'bumblebee',
-		'emerald',
-		'corporate',
-		'synthwave',
-		'retro',
-		'cyberpunk',
-		'valentine',
-		'halloween',
-		'garden',
-		'forest',
-		'aqua',
-		'lofi',
-		'pastel',
-		'fantasy',
-		'wireframe',
-		'black',
-		'luxury',
-		'dracula',
-		'cmyk',
-		'autumn',
-		'business',
-		'acid',
-		'lemonade',
-		'night',
-		'coffee',
-		'winter'
-	];
-	let theme = 'light';
 </script>
 
-<div class="min-h-screen bg-gray-100 flex flex-col" data-theme={theme}>
-	<!-- 	<select on:change={(e) => (theme = e.currentTarget.value)}>
-		{#each themes as t}
-			<option value={t}>{t}</option>
-		{/each}
-	</select> -->
+<div class="min-h-screen bg-gray-100 flex flex-col">
 	<div class="w-full flex-1">
-		<div class="navbar bg-base-100 drop-shadow-xl rounded-xl mx-auto container max-w-6xl mt-4">
-			<div class="navbar-start">
-				<Button ghost link="/" class="text-xl" normalCase>Better Avatar</Button>
-			</div>
-			<div class="navbar-end gap-2">
-				<Button link="/login" href="/login" ghost>Login</Button>
-				<Button type="button" link="/checkout" endIcon="arrow_right">Start now</Button>
-				<!-- <Button circle icon="search" ghost />
-				<Button circle icon="notification_important" ghost /> -->
+		<div class="sm:px-4 w-full">
+			<div
+				class="navbar bg-base-100 drop-shadow-xl sm:rounded-xl mx-auto container max-w-6xl sm:mt-4 w-full"
+			>
+				<div class="navbar-start">
+					<Button ghost link="/" class="text-xl text-gradient" normalCase>Better Avatar</Button>
+				</div>
+				<div class="navbar-end gap-2">
+					<Button link="/login" href="/login" ghost>Login</Button>
+					<Button type="button" link="/checkout" endIcon="arrow_right">Start now</Button>
+					<!-- <Button circle icon="search" ghost />
+					<Button circle icon="notification_important" ghost /> -->
+				</div>
 			</div>
 		</div>
 
-		<div class="h-full w-full flex flex-col justify-center py-4">
+		<div class="h-full w-full flex flex-col justify-center sm:pt-4 pb-4">
 			<div
 				class="hero h-[40vh] w-full"
 				style="background-image: url(/avatars/me_1.jpg); background-position: center 50%;"
@@ -82,7 +46,7 @@
 				<div class="hero-content text-center text-neutral-content">
 					<div class="max-w-md flex flex-col gap-4 items-center">
 						<!-- <h1 class="mb-5 text-3xl font-bold">AI-generated profile picture.</h1> -->
-						<h1 class="mb-5 text-3xl font-bold">AI-generated avatars.</h1>
+						<h1 class="mb-5 text-3xl font-bold">AI-generated <span class="">avatars</span>.</h1>
 						<p class="mb-5">
 							Elevate your visual content with our AI-powered image generation service.
 							<!-- Create unique and

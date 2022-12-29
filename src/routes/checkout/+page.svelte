@@ -20,8 +20,8 @@
 	});
 </script>
 
-<article class="prose container max-w-3xl mx-auto text-center my-16">
-	<h1>Start the payment process</h1>
+<article class="prose px-2 lg:prose-xl container max-w-3xl mx-auto text-center my-16">
+	<h2>Start the payment process</h2>
 	<p>Please wait while we redirect you to Stripe for payment...</p>
 	<progress class="progress" />
 </article>
