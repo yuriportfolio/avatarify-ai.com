@@ -1,5 +1,5 @@
-<article class="prose">
-	<h1>Welcome to the Help Page</h1>
+<article class="prose container max-w-3xl mx-auto py-16">
+	<h1>Help</h1>
 	<p>
 		Our application allows you to learn and improve your skills using artificial intelligence and
 		images that you upload. You can then use these skills to generate realistic images based on

@@ -10,14 +10,18 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] Supabase integration
 - [x] Stripe integration
 - [x] User payment, signup and login
-- [ ] Landing page
+- [x] Landing page
 - [ ] App shell UI
 - [ ] Buy domain
 - [ ] Help page
-- [ ] Contact page
+- [x] Contact page
 - [ ] Email tuning
+- [ ] Meta data and social images
 - [ ] Localization
+- [ ] Social links
 - [ ] Connect analytics
 - [ ] Discord server
 - [ ] Launch
 - [ ] Dark mode
+- [ ] Newsletter
+- [ ] Terms and conditions / Privacy / cookies - app.termly.io

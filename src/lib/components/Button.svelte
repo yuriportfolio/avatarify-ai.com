@@ -12,6 +12,8 @@
 	export let block = false;
 	export let circle = false;
 	export let outline = false;
+	export let normalCase = false;
+	export let gradient = false;
 	let classes: string | undefined = undefined;
 	export { classes as class };
 	export let link: string | undefined = undefined;
@@ -22,7 +24,7 @@
 	href={link}
 	on:click
 	class={cn(
-		'btn gap-2',
+		'btn gap-1',
 		{
 			'btn-xs': size == 'tiny',
 			'btn-sm': size == 'small',
@@ -34,6 +36,10 @@
 			'btn-block': block,
 			'btn-circle': circle,
 			'btn-outline': outline
+		},
+		{
+			'normal-case': normalCase,
+			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-1 border-pink-100 hover:border-pink-100': gradient
 		},
 		classes
 	)}
