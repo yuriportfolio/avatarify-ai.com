@@ -10,7 +10,7 @@
 		if (browser) {
 			const baseUrl = getBaseUrl();
 			(await getGtripe())?.redirectToCheckout({
-				successUrl: `${baseUrl}payment_success?session_id={CHECKOUT_SESSION_ID}`,
+				successUrl: `${baseUrl}/payment_success?session_id={CHECKOUT_SESSION_ID}`,
 				cancelUrl: baseUrl,
 				mode: 'payment',
 				lineItems: [

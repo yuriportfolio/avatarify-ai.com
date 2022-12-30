@@ -83,8 +83,8 @@
 	});
 </script>
 
-<div class="w-full max-w-sm mx-auto my-16 px-2 flex flex-col gap-4">
-	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200">
+<div class="w-full max-w-xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
+	<div class="w-full max-w-sm bg-white shadow rounded-lg divide-y divide-gray-200">
 		<form on:submit={onSubmit} class="px-5 py-7 flex flex-col items-center gap-4">
 			<Input bind:input={inputFiles} type="file" label="Photos" id="photos" multiple />
 			<Button size="small" type="submit">Invia</Button>
@@ -103,7 +103,7 @@
 						src={image.url}
 						loading="eager"
 						alt={image.name}
-						class="rounded-box aspect-square h-[30vh]"
+						class="rounded-box aspect-square h-10"
 					/>
 				</div>
 			{/each}
