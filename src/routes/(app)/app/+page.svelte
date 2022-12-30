@@ -5,7 +5,7 @@
 	import Input from '$lib/components/Input.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
-	import { handleError, supabaseClient, checkUserPaid } from '$lib/db';
+	import { handleError, supabaseClient, checkUserPaid, checkUserTrained } from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
@@ -16,14 +16,19 @@
 		return paymentIsOk;
 	});
 
+	let userTrained: boolean | null = null;
+	checkUserTrained().then((value) => {
+		userTrained = value;
+	});
+
 	let uploadLoading = false;
 	let inputFiles: HTMLInputElement;
 
-	// TODO add spinners
 	let trainingPhotosLoading = false;
 	let generatedPhotosLoading = false;
-	let imagesForTrain: { url: string; name: string }[] = [];
-	let imagesGenerated: { url: string; name: string }[] = [];
+	let inTraining = false;
+	let photosForTrain: { url: string; name: string }[] = [];
+	let photosGenerated: { url: string; name: string }[] = [];
 
 	async function onUploadSubmit() {
 		uploadLoading = true;
@@ -38,24 +43,39 @@
 								$page.data.session?.user.id + '/' + inputFiles.files[i].name,
 								await inputFiles.files[i].arrayBuffer()
 							)
-							.then(({ error }) => {
-								throw error;
+							.then((result) => {
+								if (result.error) {
+									throw result.error;
+								}
+								return result;
 							})
 					);
 				}
 				await Promise.all(requests);
 				inputFiles.value = '';
-				loadPhotosForTraining();
 			}
 		} catch (error) {
 			showError(error);
 		} finally {
 			uploadLoading = false;
+			loadPhotosForTraining();
 		}
 	}
 
 	async function train() {
-		await supabaseClient.functions.invoke('train');
+		try {
+			inTraining = true;
+			await fetch('/api/train', {
+				method: 'POST',
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+			userTrained = true;
+		} catch (error) {
+		} finally {
+			inTraining = false;
+		}
 	}
 	async function generate() {
 		await supabaseClient.functions.invoke('generate');
@@ -78,7 +98,7 @@
 	async function loadPhotosForTraining() {
 		trainingPhotosLoading = true;
 		try {
-			imagesForTrain = await Promise.all(
+			photosForTrain = await Promise.all(
 				handleError(
 					await supabaseClient.storage
 						.from('photos-for-training')
@@ -114,7 +134,7 @@
 	async function loadPhotoGenerated() {
 		generatedPhotosLoading = true;
 		try {
-			imagesGenerated = await Promise.all(
+			photosGenerated = await Promise.all(
 				handleError(
 					await supabaseClient.storage.from('photos-generated').list($page.data.session?.user.id, {
 						sortBy: {
@@ -147,8 +167,8 @@
 					{ event: 'INSERT', schema: 'public', table: 'photos' },
 					async (payload) => {
 						if ('uid' in payload.new) {
-							imagesGenerated = [
-								...imagesGenerated,
+							photosGenerated = [
+								...photosGenerated,
 								{
 									url: await getSignedUrl('photos-generated', payload.new.name),
 									name: payload.new.name
@@ -168,9 +188,11 @@
 
 <div class="w-full max-w-xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
 	<ul class="steps">
-		<li class="step step-primary">Payment</li>
-		<li class="step">Upload your photos</li>
-		<li class="step">Train the AI</li>
+		<li class="step" class:step-primary={paymentIsOk}>Payment</li>
+		<li class="step" class:step-primary={paymentIsOk && photosForTrain.length > 0}>
+			Upload your photos
+		</li>
+		<li class="step" class:step-primary={paymentIsOk && userTrained}>Train the AI</li>
 		<li class="step">Generate your avatars</li>
 	</ul>
 
@@ -178,7 +200,7 @@
 		<Title class="mb-4">Pay with Stripe</Title>
 		<div class="flex flex-row justify-center w-full">
 			{#await userPaid}
-				<progress class="progress w-56" />
+				<progress class="progress" />
 			{:then isOk}
 				{#if isOk}
 					<Button size="small" disabled>Paid</Button>
@@ -200,42 +222,97 @@
 	</form>
 	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
 		<Title>Photos for training</Title>
-		<div class="flex flex-col items-center">
-			<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
-				{#each imagesForTrain as image}
-					<div class="relative group">
-						<Tooltip message={image.name}>
-							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-						</Tooltip>
+		{#if trainingPhotosLoading}
+			<progress class="progress" />
+		{:else}
+			<div class="flex flex-col items-center">
+				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
+					{#each photosForTrain as image}
+						<div class="relative group">
+							<Tooltip message={image.name}>
+								<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
+							</Tooltip>
 
-						<Button
-							class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
-							icon="close"
-							size="small"
-							circle
-							on:click={() => deletePhotoForTraining(image.name)}
-						/>
-					</div>
-				{/each}
+							<Button
+								class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+								icon="close"
+								size="small"
+								circle
+								on:click={() => deletePhotoForTraining(image.name)}
+							/>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
+		{/if}
 
-		<Tooltip message="Can't upload other photos if start AI training">
+		<Tooltip
+			message={userTrained
+				? ''
+				: 'Caution: If you continue, you will not be able to upload any more photos.'}
+		>
 			<Button
 				size="small"
 				type="button"
 				on:click={() => train()}
-				disabled={!paymentIsOk || imagesForTrain.length == 0}>Start training</Button
+				disabled={!paymentIsOk ||
+					photosForTrain.length == 0 ||
+					userTrained == null ||
+					userTrained ||
+					inTraining}
+				loading={inTraining}>Start training</Button
 			>
 		</Tooltip>
 	</div>
-	<div class="w-full bg-white shadow rounded-lg p-6">
-		<Title>Photos generated</Title>
-		<Button size="small" type="button" on:click={() => generate()} disabled>Genera</Button>
-		<div class="flex flex-row justify-center gap-4 flex-wrap w-full mt-4">
-			{#each imagesGenerated as image}
-				<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-			{/each}
+	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
+		<Title>Generate photos</Title>
+		<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
+			{#if generatedPhotosLoading}
+				<progress class="progress" />
+			{:else}
+				<div class="flex flex-col items-center">
+					<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
+						{#each photosGenerated as image}
+							<div class="relative group">
+								<Tooltip message={image.name}>
+									<img
+										src={image.url}
+										loading="eager"
+										alt={image.name}
+										class="aspect-square h-24"
+									/>
+								</Tooltip>
+
+								<Button
+									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+									icon="close"
+									size="small"
+									circle
+								/>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		</div>
+		<!-- Move to component -->
+		<div class="form-control w-full max-w-xs">
+			<label class="label" for="theme">
+				<span class="label-text">Choose the style</span>
+			</label>
+			<select class="select select-bordered" id="theme">
+				<option disabled selected />
+				<option>Cyberpunk</option>
+				<option>Tinder</option>
+				<option>Lord of the Rings</option>
+				<option>Star Trek</option>
+			</select>
+		</div>
+		<Button
+			size="small"
+			type="button"
+			on:click={() => generate()}
+			disabled={!paymentIsOk || !userTrained}>Generate</Button
+		>
 	</div>
 </div>

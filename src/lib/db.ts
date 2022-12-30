@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/auth-helpers-sveltekit';
 // or use the static env
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY } from '$env/static/public';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { TypedSupabaseClient } from '@supabase/auth-helpers-sveltekit/dist/types';
 
-export const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY, {});
+export const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY);
 
 export function handleError<TData, TError extends { message: string }>({
 	data,
@@ -23,6 +25,18 @@ export function handleError<TData, TError extends { message: string }>({
 	}
 }
 
-export const checkUserPaid = async () =>
-	(await supabaseClient.from('user_info').select('*', { count: 'exact' }).eq('paid', true)).count ==
-	1;
+export const checkUserPaid = async (customClient?: TypedSupabaseClient) =>
+	(
+		await (customClient ? customClient : supabaseClient)
+			.from('user_info')
+			.select('*', { count: 'exact' })
+			.eq('paid', true)
+	).count == 1;
+
+export const checkUserTrained = async (customClient?: TypedSupabaseClient) =>
+	(
+		await (customClient ? customClient : supabaseClient)
+			.from('user_info')
+			.select('*', { count: 'exact' })
+			.eq('trained', true)
+	).count == 1;

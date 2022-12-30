@@ -2,6 +2,10 @@
 	export let message: string;
 </script>
 
-<div class="tooltip" data-tip={message}>
+{#if message}
+	<div class="tooltip" data-tip={message}>
+		<slot />
+	</div>
+{:else}
 	<slot />
-</div>
+{/if}
