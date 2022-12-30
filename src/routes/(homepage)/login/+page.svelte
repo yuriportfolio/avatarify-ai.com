@@ -4,13 +4,17 @@
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import { supabaseClient } from '$lib/db';
+	import { getBaseUrl } from '$lib/utilities';
 	import type { AuthError } from '@supabase/supabase-js';
 	let email: string = '';
 
 	let error: AuthError | null;
 	async function login() {
 		({ error } = await supabaseClient.auth.signInWithOtp({
-			email
+			email,
+			options: {
+				emailRedirectTo: getBaseUrl()
+			}
 		}));
 		if (!error) {
 			goto('/');
@@ -39,12 +43,8 @@
 				<Button startIcon="arrow_back" ghost size="tiny" link="/" normalCase
 					>Back to betteravatar.app</Button
 				>
-				<Button
-					startIcon="contact_support"
-					ghost
-					size="tiny"
-					link="/contacts"
-					normalCase>Help</Button
+				<Button startIcon="contact_support" ghost size="tiny" link="/contacts" normalCase
+					>Help</Button
 				>
 			</div>
 		</div>

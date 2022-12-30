@@ -3,17 +3,19 @@
 	import { getGtripe } from '$lib/stripe';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { PUBLIC_STRIPE_PRICE_ID } from '$env/static/public';
+	import { getBaseUrl } from '$lib/utilities';
 
 	onMount(async () => {
 		if (browser) {
-			const baseUrl = window.location.protocol + '//' + window.location.host + '/';
+			const baseUrl = getBaseUrl();
 			(await getGtripe())?.redirectToCheckout({
 				successUrl: `${baseUrl}payment_success?session_id={CHECKOUT_SESSION_ID}`,
 				cancelUrl: baseUrl,
 				mode: 'payment',
 				lineItems: [
 					{
-						price: 'price_1MK2tvBlbhyeaEyqRQmMr8RI',
+						price: PUBLIC_STRIPE_PRICE_ID,
 						quantity: 1
 					}
 				],
