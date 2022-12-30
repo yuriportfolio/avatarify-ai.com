@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type IconTypes from '$lib/icon-types';
+	import type { IconTypes } from '$lib/icon-types';
 	import cn from 'classnames';
 	import Icon from './Icon.svelte';
 
@@ -14,6 +14,9 @@
 	export let outline = false;
 	export let normalCase = false;
 	export let gradient = false;
+	export let loading = false;
+	export let noAnimation = false;
+	export let disabled = false;
 	let classes: string | undefined = undefined;
 	export { classes as class };
 	export let link: string | undefined = undefined;
@@ -22,6 +25,7 @@
 <svelte:element
 	this={link ? 'a' : 'button'}
 	href={link}
+	disabled={link ? undefined : disabled}
 	data-sveltekit-preload-data="off"
 	on:click
 	class={cn(
@@ -36,11 +40,16 @@
 			'btn-ghost': ghost,
 			'btn-block': block,
 			'btn-circle': circle,
-			'btn-outline': outline
+			'btn-outline': outline,
+			'btn-disabled': disabled
 		},
 		{
 			'normal-case': normalCase,
-			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-1 border-pink-100 hover:border-pink-100': gradient
+			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-1 border-pink-100 hover:border-pink-100':
+				gradient,
+			loading: loading,
+			'no-animation': noAnimation || disabled,
+			'cursor-not-allowed': disabled
 		},
 		classes
 	)}

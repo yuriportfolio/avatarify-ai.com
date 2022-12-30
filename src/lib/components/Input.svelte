@@ -2,8 +2,9 @@
 	import cn from 'classnames';
 	import Button from './Button.svelte';
 
-	export let id: string;
-	export let label: string;
+	export let id: string | undefined = undefined;
+	export let name: string | undefined = undefined;
+	export let label: string | undefined = undefined;
 	export let input: HTMLInputElement | undefined = undefined;
 	export let value: string | undefined = undefined;
 	export let type: 'text' | 'password' | 'file' = 'text';
@@ -24,19 +25,22 @@
 	}
 </script>
 
-<div class={cn('form-control w-full', containerClass)}>
-	<label class="label" for={id}>
-		<span class="label-text text-inherit">{label}</span>
-	</label>
+<div class={cn('form-control', containerClass)}>
+	{#if label}
+		<label class="label" for={id}>
+			<span class="label-text text-inherit">{label}</span>
+		</label>
+	{/if}
 
 	<div class="relative">
 		<input
 			bind:this={input}
 			{id}
 			{type}
+			{name}
 			on:input={handleInput}
 			class={cn(
-				' w-full',
+				'w-full',
 				{
 					'file-input file-input-bordered': type == 'file',
 					'input input-bordered': type != 'file',

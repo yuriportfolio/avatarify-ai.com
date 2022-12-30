@@ -22,3 +22,7 @@ export function handleError<TData, TError extends { message: string }>({
 		throw error?.message || '';
 	}
 }
+
+export const checkUserPaid = async () =>
+	(await supabaseClient.from('user_info').select('*', { count: 'exact' }).eq('paid', true)).count ==
+	1;

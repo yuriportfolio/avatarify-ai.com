@@ -4,8 +4,6 @@ import { redirect } from '@sveltejs/kit';
 
 export const load: PageLoad = async (event) => {
 	const { session, supabaseClient } = await getSupabase(event);
-	debugger;
-	console.log('Logout');
 	if (session) {
 		await supabaseClient.auth.signOut();
 		throw redirect(303, '/');
