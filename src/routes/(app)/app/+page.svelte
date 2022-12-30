@@ -4,6 +4,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { handleError, supabaseClient, checkUserPaid } from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
 	import { showError } from '$lib/utilities';
@@ -197,15 +198,15 @@
 		<Button size="small" type="submit" loading={uploadLoading} disabled={!paymentIsOk}>Invia</Button
 		>
 	</form>
-	<div class="w-full bg-white shadow rounded-lg p-6">
+	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
 		<Title>Photos for training</Title>
 		<div class="flex flex-col items-center">
 			<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
 				{#each imagesForTrain as image}
 					<div class="relative group">
-						<div class="tooltip" data-tip={image.name}>
+						<Tooltip message={image.name}>
 							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-						</div>
+						</Tooltip>
 
 						<Button
 							class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
@@ -218,7 +219,15 @@
 				{/each}
 			</div>
 		</div>
-		<Button size="small" type="button" on:click={() => train()} disabled>Addestra</Button>
+
+		<Tooltip message="Can't upload other photos if start AI training">
+			<Button
+				size="small"
+				type="button"
+				on:click={() => train()}
+				disabled={!paymentIsOk || imagesForTrain.length == 0}>Start training</Button
+			>
+		</Tooltip>
 	</div>
 	<div class="w-full bg-white shadow rounded-lg p-6">
 		<Title>Photos generated</Title>
