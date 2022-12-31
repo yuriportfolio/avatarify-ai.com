@@ -30,6 +30,8 @@
 	let photosForTrain: { url: string; name: string }[] = [];
 	let photosGenerated: { url: string; name: string }[] = [];
 
+	let theme = '';
+
 	async function onUploadSubmit() {
 		uploadLoading = true;
 		try {
@@ -78,7 +80,24 @@
 		}
 	}
 	async function generate() {
-		await supabaseClient.functions.invoke('generate');
+		if (!theme) {
+			showError('Theme not selected');
+		} else {
+			try {
+				inTraining = true;
+				await fetch('/api/generate', {
+					body: JSON.stringify({ theme }),
+					method: 'POST',
+					headers: {
+						'content-type': 'application/json'
+					}
+				});
+				userTrained = true;
+			} catch (error) {
+			} finally {
+				inTraining = false;
+			}
+		}
 	}
 
 	async function getSignedUrl(bucket: string, filename: string) {
@@ -304,12 +323,12 @@
 			<label class="label" for="theme">
 				<span class="label-text">Choose the style</span>
 			</label>
-			<select class="select select-bordered" id="theme">
+			<select class="select select-bordered" id="theme" bind:value={theme}>
 				<option disabled selected />
-				<option>Cyberpunk</option>
-				<option>Tinder</option>
-				<option>Lord of the Rings</option>
-				<option>Star Trek</option>
+				<option value="cyberpunk">Cyberpunk</option>
+				<option value="tinder">Tinder</option>
+				<option value="lord_of_the_rings">Lord of the Rings</option>
+				<option value="star_trek">Star Trek</option>
 			</select>
 		</div>
 		<Button
