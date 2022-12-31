@@ -12,6 +12,7 @@ import {
 } from '$env/static/private';
 import { getSupabaseClient } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
+import { getPrompt } from '$lib/prompts.server';
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -47,7 +48,8 @@ export const POST: RequestHandler = async (event) => {
 		const ch = await conn.channel();
 		const q = await ch.queue('generate_photos');
 
-		await q.publish(JSON.stringify({ theme }), {
+		const [prompt, seed] = getPrompt(theme);
+		await q.publish(JSON.stringify({ theme, prompt: prompt, seed }), {
 			contentType: 'application/json',
 			headers: { session: user.id }
 		});

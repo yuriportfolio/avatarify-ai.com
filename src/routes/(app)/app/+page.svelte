@@ -7,6 +7,7 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { handleError, supabaseClient, checkUserPaid, checkUserTrained } from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
+	import { themesMap } from '$lib/themes';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
 
@@ -27,6 +28,7 @@
 	let trainingPhotosLoading = false;
 	let generatedPhotosLoading = false;
 	let inTraining = false;
+	let generating = false;
 	let photosForTrain: { url: string; name: string }[] = [];
 	let photosGenerated: { url: string; name: string }[] = [];
 
@@ -84,7 +86,7 @@
 			showError('Theme not selected');
 		} else {
 			try {
-				inTraining = true;
+				generating = true;
 				await fetch('/api/generate', {
 					body: JSON.stringify({ theme }),
 					method: 'POST',
@@ -95,22 +97,26 @@
 				userTrained = true;
 			} catch (error) {
 			} finally {
-				inTraining = false;
+				generating = false;
 			}
 		}
 	}
 
-	async function getSignedUrl(bucket: string, filename: string) {
+	async function getSignedUrl(bucket: string, filename: string, thumbnail = true) {
 		return handleError(
-			await supabaseClient.storage
-				.from(bucket)
-				.createSignedUrl($page.data.session?.user.id + '/' + filename, 60, {
-					transform: {
-						height: 96,
-						width: 96,
-						resize: 'cover'
-					}
-				})
+			await supabaseClient.storage.from(bucket).createSignedUrl(
+				$page.data.session?.user.id + '/' + filename,
+				60,
+				thumbnail
+					? {
+							transform: {
+								height: 96,
+								width: 96,
+								resize: 'cover'
+							}
+					  }
+					: {}
+			)
 		).signedUrl;
 	}
 
@@ -139,12 +145,25 @@
 		}
 	}
 
-	async function deletePhotoForTraining(name: string) {
+	async function deletePhotoForTraining(index: number) {
+		const photoToDelete = photosForTrain[index];
+		photosForTrain = photosForTrain.filter((photo) => photo !== photoToDelete);
 		try {
 			await supabaseClient.storage
 				.from('photos-for-training')
-				.remove([$page.data.session?.user.id + '/' + name]);
-			await loadPhotosForTraining();
+				.remove([$page.data.session?.user.id + '/' + photoToDelete.name]);
+		} catch (error) {
+			showError(error);
+		}
+	}
+
+	async function deletePhotoGenerated(index: number) {
+		const photoToDelete = photosGenerated[index];
+		photosGenerated = photosGenerated.filter((photo) => photo !== photoToDelete);
+		try {
+			await supabaseClient.storage
+				.from('photos-generated')
+				.remove([$page.data.session?.user.id + '/' + photoToDelete.name]);
 		} catch (error) {
 			showError(error);
 		}
@@ -189,7 +208,7 @@
 							photosGenerated = [
 								...photosGenerated,
 								{
-									url: await getSignedUrl('photos-generated', payload.new.name),
+									url: await getSignedUrl('photos-generated', payload.new.name, false),
 									name: payload.new.name
 								}
 							];
@@ -205,14 +224,16 @@
 	});
 </script>
 
-<div class="w-full max-w-xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
+<div class="w-full max-w-2xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
 	<ul class="steps">
 		<li class="step" class:step-primary={paymentIsOk}>Payment</li>
 		<li class="step" class:step-primary={paymentIsOk && photosForTrain.length > 0}>
 			Upload your photos
 		</li>
 		<li class="step" class:step-primary={paymentIsOk && userTrained}>Train the AI</li>
-		<li class="step">Generate your avatars</li>
+		<li class="step" class:step-primary={paymentIsOk && photosGenerated.length > 0}>
+			Generate your avatars
+		</li>
 	</ul>
 
 	<div class="w-full bg-white shadow rounded-lg p-6">
@@ -246,7 +267,7 @@
 		{:else if photosForTrain.length > 0}
 			<div class="flex flex-col items-center">
 				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
-					{#each photosForTrain as image}
+					{#each photosForTrain as image, index}
 						<div class="relative group">
 							<Tooltip message={image.name}>
 								<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
@@ -257,7 +278,7 @@
 								icon="close"
 								size="small"
 								circle
-								on:click={() => deletePhotoForTraining(image.name)}
+								on:click={() => deletePhotoForTraining(index)}
 							/>
 						</div>
 					{/each}
@@ -291,28 +312,33 @@
 			{#if generatedPhotosLoading}
 				<progress class="progress" />
 			{:else if photosGenerated.length > 0}
-				<div class="flex flex-col items-center">
-					<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
-						{#each photosGenerated as image}
-							<div class="relative group">
-								<Tooltip message={image.name}>
-									<img
-										src={image.url}
-										loading="eager"
-										alt={image.name}
-										class="aspect-square h-24"
-									/>
-								</Tooltip>
-
-								<Button
-									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
-									icon="close"
-									size="small"
-									circle
+				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
+					{#each photosGenerated as image, index}
+						<div class="carousel-item relative group" id={`photo_${index}`}>
+							<Tooltip message={image.name}>
+								<img
+									src={image.url}
+									loading="eager"
+									alt={image.name}
+									class="aspect-square rounded-box"
 								/>
-							</div>
-						{/each}
-					</div>
+							</Tooltip>
+
+							<Button
+								class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+								icon="close"
+								size="small"
+								circle
+								on:click={() => deletePhotoGenerated(index)}
+							/>
+						</div>
+					{/each}
+				</div>
+
+				<div class="flex justify-center w-full py-2 gap-2">
+					{#each photosGenerated as _, index}
+						<a href={`#photo_${index}`} class="btn btn-xs">{index + 1}</a>
+					{/each}
 				</div>
 			{:else}
 				<p class="italic">There are not yet any images present.</p>
@@ -325,17 +351,16 @@
 			</label>
 			<select class="select select-bordered" id="theme" bind:value={theme}>
 				<option disabled selected />
-				<option value="cyberpunk">Cyberpunk</option>
-				<option value="tinder">Tinder</option>
-				<option value="lord_of_the_rings">Lord of the Rings</option>
-				<option value="star_trek">Star Trek</option>
+				{#each themesMap() as [theme, label]}
+					<option value={theme}>{label}</option>
+				{/each}
 			</select>
 		</div>
 		<Button
 			size="small"
 			type="button"
 			on:click={() => generate()}
-			disabled={!paymentIsOk || !userTrained}>Generate</Button
+			disabled={!paymentIsOk || !userTrained || generating}>Generate</Button
 		>
 	</div>
 </div>

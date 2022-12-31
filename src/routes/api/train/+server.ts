@@ -65,7 +65,7 @@ export const POST: RequestHandler = async (event) => {
 			}
 			if (photo) {
 				listToSend.push({
-					base64: Buffer.from(await photo.text()).toString('base64'),
+					base64: Buffer.from(await photo.arrayBuffer()).toString('base64'),
 					filename: image.name
 				});
 			}
