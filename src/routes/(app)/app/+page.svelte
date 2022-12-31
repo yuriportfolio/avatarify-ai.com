@@ -320,7 +320,7 @@
 									src={image.url}
 									loading="eager"
 									alt={image.name}
-									class="aspect-square rounded-box"
+									class="aspect-square rounded-box max-w-[60vw]"
 								/>
 							</Tooltip>
 
