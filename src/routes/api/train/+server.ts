@@ -36,7 +36,6 @@ export const POST: RequestHandler = async (event) => {
 		)}:${encodeURIComponent(
 			PRIVATE_RABBITMQ_PASSWORD
 		)}@${PRIVATE_RABBITMQ_HOST}:${PRIVATE_RABBITMQ_PORT}/`;
-		console.log(url);
 
 		const amqp = new AMQPClient(url);
 		const conn = await amqp.connect();

@@ -224,7 +224,7 @@
 		<Title>Photos for training</Title>
 		{#if trainingPhotosLoading}
 			<progress class="progress" />
-		{:else}
+		{:else if photosForTrain.length > 0}
 			<div class="flex flex-col items-center">
 				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
 					{#each photosForTrain as image}
@@ -244,6 +244,8 @@
 					{/each}
 				</div>
 			</div>
+		{:else}
+			<p class="italic">There are not yet any images present.</p>
 		{/if}
 
 		<Tooltip
@@ -269,7 +271,7 @@
 		<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
 			{#if generatedPhotosLoading}
 				<progress class="progress" />
-			{:else}
+			{:else if photosGenerated.length > 0}
 				<div class="flex flex-col items-center">
 					<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
 						{#each photosGenerated as image}
@@ -293,6 +295,8 @@
 						{/each}
 					</div>
 				</div>
+			{:else}
+				<p class="italic">There are not yet any images present.</p>
 			{/if}
 		</div>
 		<!-- Move to component -->
