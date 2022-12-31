@@ -25,6 +25,11 @@ export function getPrompt(theme: keyof typeof Themes): [string, number | null] {
 				'photo of ejxojo in office, half body shot, realistic, sharp focus, 8 k high definition, insanely detailed',
 				null
 			];
+		case 'superhero':
+			return [
+				'ejxojo as a superhero, super galactic background with neon gradient background and shooting stars, muscular, strong',
+				null
+			];
 		default:
 			return ['ejxjo', null];
 	}
