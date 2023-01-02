@@ -5,7 +5,13 @@
 	import Input from '$lib/components/Input.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
-	import { handleError, supabaseClient, checkUserPaid, checkUserTrained } from '$lib/db';
+	import {
+		handleError,
+		supabaseClient,
+		checkUserPaid,
+		checkUserTrained,
+		checkUserInTraining
+	} from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
 	import { themesMap } from '$lib/themes';
 	import { showError } from '$lib/utilities';
@@ -22,17 +28,28 @@
 		userTrained = value;
 	});
 
+	let userInTraining: boolean | null = null;
+	function updateUserInTraining() {
+		checkUserInTraining().then((value) => {
+			userInTraining = value;
+		});
+	}
+
+	updateUserInTraining();
+
 	let uploadLoading = false;
 	let inputFiles: HTMLInputElement;
 
 	let trainingPhotosLoading = false;
 	let generatedPhotosLoading = false;
-	let inTraining = false;
 	let generating = false;
 	let photosForTrain: { url: string; name: string }[] = [];
 	let photosGenerated: { url: string; name: string }[] = [];
 
 	let theme = '';
+	let gender = '';
+	let prompt = '';
+	let seed = '';
 
 	async function onUploadSubmit() {
 		uploadLoading = true;
@@ -68,33 +85,37 @@
 
 	async function train() {
 		try {
-			inTraining = true;
-			await fetch('/api/train', {
+			userInTraining = true;
+			const response = await fetch('/api/train', {
 				method: 'POST',
+				body: JSON.stringify({ gender }),
 				headers: {
 					'content-type': 'application/json'
 				}
 			});
-			userTrained = true;
+			if (!response.ok) {
+				showError((await response.json()).message);
+				userInTraining = false;
+			}
 		} catch (error) {
-		} finally {
-			inTraining = false;
+			userInTraining = false;
+			showError(error);
 		}
 	}
 	async function generate() {
-		if (!theme) {
+		if (!theme && !prompt) {
 			showError('Theme not selected');
 		} else {
 			try {
 				generating = true;
 				await fetch('/api/generate', {
-					body: JSON.stringify({ theme }),
+					body: JSON.stringify({ theme, prompt, seed }),
 					method: 'POST',
 					headers: {
 						'content-type': 'application/json'
 					}
 				});
-				userTrained = true;
+				generating = false;
 			} catch (error) {
 			} finally {
 				generating = false;
@@ -217,6 +238,12 @@
 				)
 				.subscribe();
 
+			const subscription2 = supabaseClient
+				.channel('public:user_info')
+				.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_info' }, () => {
+					updateUserInTraining();
+				});
+
 			return () => {
 				subscription.unsubscribe();
 			};
@@ -288,6 +315,19 @@
 			<p class="italic">There are not yet any images present.</p>
 		{/if}
 
+		{#if userTrained != null && !userTrained}
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="theme">
+					<span class="label-text">Select a gender</span>
+				</label>
+				<select class="select select-bordered" id="gender" bind:value={gender}>
+					<option disabled selected />
+					<option value="man">Man</option>
+					<option value="woman">Woman</option>
+				</select>
+			</div>
+		{/if}
+
 		<Tooltip
 			message={userTrained
 				? ''
@@ -301,8 +341,9 @@
 					photosForTrain.length == 0 ||
 					userTrained == null ||
 					userTrained ||
-					inTraining}
-				loading={inTraining}>Start training</Button
+					userInTraining == null ||
+					userInTraining}
+				loading={userInTraining == null || userInTraining}>Start training</Button
 			>
 		</Tooltip>
 	</div>
@@ -334,11 +375,30 @@
 						</div>
 					{/each}
 				</div>
-
-				<div class="flex justify-center w-full py-2 gap-2">
-					{#each photosGenerated as _, index}
-						<a href={`#photo_${index}`} class="btn btn-xs">{index + 1}</a>
-					{/each}
+				<div class="flex flex-col items-center">
+					<div class="flex flex-row justify-center gap-4 flex-wrap mt-4 max-h-[40vh] overflow-y-auto overflow-x-hidden">
+						{#each photosGenerated as image, index}
+							<div class="relative group">
+								<Tooltip message={image.name}>
+									<a href={`#photo_${index}`}>
+										<img
+											src={image.url}
+											loading="eager"
+											alt={image.name}
+											class="aspect-square h-24"
+										/>
+									</a>
+								</Tooltip>
+								<Button
+									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+									icon="close"
+									size="small"
+									circle
+									on:click={() => deletePhotoGenerated(index)}
+								/>
+							</div>
+						{/each}
+					</div>
 				</div>
 			{:else}
 				<p class="italic">There are not yet any images present.</p>
@@ -356,11 +416,17 @@
 				{/each}
 			</select>
 		</div>
+		<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
+		<Input name="seed" bind:value={seed} placeholder="Seed" />
 		<Button
 			size="small"
 			type="button"
 			on:click={() => generate()}
-			disabled={!paymentIsOk || !userTrained || generating}>Generate</Button
+			disabled={!paymentIsOk ||
+				!userTrained ||
+				generating ||
+				userInTraining == null ||
+				userInTraining}>Generate</Button
 		>
 	</div>
 </div>

@@ -5,6 +5,7 @@ export enum Themes {
 	'anime' = 'Anime',
 	'office' = 'Office',
 	'superhero' = 'Superhero',
+	'art' = 'Art',
 	'debug' = 'Debug'
 }
 

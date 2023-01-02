@@ -33,6 +33,14 @@ export const checkUserPaid = async (customClient?: TypedSupabaseClient) =>
 			.eq('paid', true)
 	).count == 1;
 
+export const checkUserInTraining = async (customClient?: TypedSupabaseClient) =>
+	(
+		await (customClient ? customClient : supabaseClient)
+			.from('user_info')
+			.select('*', { count: 'exact' })
+			.eq('in_training', true)
+	).count == 1;
+
 export const checkUserTrained = async (customClient?: TypedSupabaseClient) =>
 	(
 		await (customClient ? customClient : supabaseClient)

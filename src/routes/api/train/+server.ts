@@ -15,6 +15,11 @@ import { checkUserPaid } from '$lib/db';
 
 export const POST: RequestHandler = async (event) => {
 	try {
+		const body = await event.request.json();
+		const gender = body.gender;
+		if (!gender) {
+			throw new Error('Gender not selected');
+		}
 		const session = await getServerSession(event as any);
 
 		if (!session) {
@@ -70,7 +75,7 @@ export const POST: RequestHandler = async (event) => {
 				});
 			}
 		}
-		await q.publish(JSON.stringify(listToSend), {
+		await q.publish(JSON.stringify({ gender, images: listToSend }), {
 			contentType: 'application/json',
 			headers: { session: user.id }
 		});
@@ -79,7 +84,7 @@ export const POST: RequestHandler = async (event) => {
 		const { count, error: updateError } = await supabaseClientAdmin
 			.from('user_info')
 			.update({
-				trained: true
+				in_training: true
 			})
 			.eq('id', user.id);
 		if (updateError) {
@@ -89,7 +94,7 @@ export const POST: RequestHandler = async (event) => {
 			throw new Error("Can't find user info");
 		}
 
-		return json({ done: true });
+		return json({ message: '' });
 	} catch (error) {
 		console.error(error);
 		if (error instanceof Error) {

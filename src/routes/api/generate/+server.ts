@@ -18,7 +18,9 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		const body = await event.request.json();
 		const theme = body.theme;
-		if (!theme) {
+		let prompt = body.prompt;
+		let seed = body.seed;
+		if (!theme && !prompt) {
 			throw new Error('Theme not selected');
 		}
 		const session = await getServerSession(event as any);
@@ -48,8 +50,11 @@ export const POST: RequestHandler = async (event) => {
 		const ch = await conn.channel();
 		const q = await ch.queue('generate_photos');
 
-		const [prompt, seed] = getPrompt(theme);
-		await q.publish(JSON.stringify({ theme, prompt: prompt, seed }), {
+		if (!prompt) {
+			prompt = getPrompt(theme);
+		}
+		console.log(prompt, seed);
+		await q.publish(JSON.stringify({ theme, prompt: prompt, seed: parseInt(seed) || null }), {
 			contentType: 'application/json',
 			headers: { session: user.id }
 		});

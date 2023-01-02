@@ -17,6 +17,7 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] Contact page
 - [ ] Messages after login, checkout, checkout cancel, logout
 - [ ] Email tuning
+- [ ] Resize before upload (see tweet bookmark)
 - [ ] Meta data and social images
 - [ ] Localization
 - [ ] Social links
@@ -27,4 +28,3 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Newsletter
 - [ ] Terms and conditions / Privacy / cookies - app.termly.io
 - [ ] Connect logtail https://vercel.com/integrations/logtail
-- [ ] 
