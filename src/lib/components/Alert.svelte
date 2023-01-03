@@ -6,7 +6,13 @@
 	const dispatch = createEventDispatcher<{ close: void }>();
 </script>
 
-<div class="alert shadow-lg" class:alert-error={type == 'error'} transition:fade>
+<div
+	class="alert shadow-lg"
+	class:alert-error={type == 'error'}
+	transition:fade
+	on:mouseenter
+	on:mouseleave
+>
 	<div>
 		{#if type == 'error'}
 			<span class="material-symbols-outlined text-lg"> error </span>

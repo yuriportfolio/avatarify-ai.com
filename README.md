@@ -12,11 +12,11 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] User payment, signup and login
 - [x] Landing page
 - [ ] App shell UI
-- [ ] Buy domain
+- [x] Buy domain (https://avatarify-ai.com)
 - [ ] Help page
 - [x] Contact page
-- [ ] Messages after login, checkout, checkout cancel, logout
-- [ ] Email tuning
+- [x] Messages after login, checkout
+- [x] Email tuning
 - [ ] Resize before upload (see tweet bookmark)
 - [ ] Meta data, social images, favicon, titles
 - [ ] Localization
@@ -28,3 +28,6 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Newsletter
 - [ ] Terms and conditions / Privacy / cookies - app.termly.io
 - [ ] Connect logtail https://vercel.com/integrations/logtail
+- [ ] show error toast
+- [ ] add show notification
+- [ ] toasts queues

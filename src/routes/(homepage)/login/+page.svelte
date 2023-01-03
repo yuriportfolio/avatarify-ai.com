@@ -3,20 +3,30 @@
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import { supabaseClient } from '$lib/db';
-	import { getBaseUrl, showError } from '$lib/utilities';
+	import { getBaseUrl, showError, showInfo } from '$lib/utilities';
+
 	let email: string = '';
+	let loadingSubmit = false;
 
 	async function login() {
-		const { error } = await supabaseClient.auth.signInWithOtp({
-			email,
-			options: {
-				emailRedirectTo: getBaseUrl() + '/app'
+		loadingSubmit = true;
+		try {
+			const { error } = await supabaseClient.auth.signInWithOtp({
+				email,
+				options: {
+					emailRedirectTo: getBaseUrl() + '/app'
+				}
+			});
+			if (error) {
+				throw error.message;
 			}
-		});
-		if (error) {
-			showError(error.message);
-		} else {
-			goto('/app');
+			showInfo('Please access the link we just sent you via email.');
+		} catch (error) {
+			if (error) {
+				showError(error);
+			}
+		} finally {
+			loadingSubmit = false;
 		}
 	}
 
@@ -37,9 +47,11 @@
 
 <div class="w-full max-w-sm mx-auto my-16 px-2">
 	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200">
-		<form class="px-5 py-7 flex flex-col gap-4" on:submit={login}>
+		<form class="px-5 py-7 flex flex-col gap-4" on:submit|preventDefault={login}>
 			<Input bind:value={email} id="email" label="E-mail" name="email" block />
-			<Button endIcon="arrow_forward" block type="submit">Login with magic link</Button>
+			<Button endIcon="arrow_forward" block type="submit" loading={loadingSubmit}
+				>Login with magic link</Button
+			>
 
 			<p class="text-center">or</p>
 			<Button outline type="button" normalCase on:click={loginWithGoogle} block>

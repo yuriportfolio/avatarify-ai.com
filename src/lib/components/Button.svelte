@@ -45,7 +45,7 @@
 		},
 		{
 			'normal-case': normalCase,
-			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-1 border-pink-100 hover:border-pink-100':
+			'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-1 border-pink-100 hover:border-pink-100 text-white':
 				gradient,
 			loading: loading,
 			'no-animation': noAnimation || disabled,
