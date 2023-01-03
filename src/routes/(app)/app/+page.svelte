@@ -377,7 +377,7 @@
 				</div>
 				<div class="flex flex-col items-center">
 					<div
-						class="flex flex-row justify-center gap-4 flex-wrap mt-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
+						class="flex flex-row justify-center bg-gray-100 gap-4 flex-wrap py-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
 					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
