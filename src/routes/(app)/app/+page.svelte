@@ -298,7 +298,7 @@
 		{:else if photosForTrain.length > 0}
 			<div class="flex flex-col items-center">
 				<div
-					class="flex flex-row justify-center bg-neutral gap-4 flex-wrap p-4 max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
+					class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
 				>
 					{#each photosForTrain as image, index}
 						<div class="relative group">
@@ -396,7 +396,7 @@
 				</div>
 				<div class="flex flex-col items-center">
 					<div
-						class="flex flex-row justify-center bg-neutral gap-4 flex-wrap p-4 max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
+						class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
 					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
@@ -409,7 +409,7 @@
 									/>
 								</a>
 								<Button
-									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100 z-10"
 									icon="close"
 									size="small"
 									circle
