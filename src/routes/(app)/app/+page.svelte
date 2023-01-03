@@ -17,16 +17,21 @@
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
 
-	let paymentIsOk = false;
-	let userPaid = checkUserPaid().then((value) => {
-		paymentIsOk = value;
-		return paymentIsOk;
-	});
+	let userPaid: boolean | null = null;
+	function updateUserPaid() {
+		checkUserPaid().then((value) => {
+			userPaid = value;
+		});
+	}
+	updateUserPaid();
 
 	let userTrained: boolean | null = null;
-	checkUserTrained().then((value) => {
-		userTrained = value;
-	});
+	function updateUserTrained() {
+		checkUserTrained().then((value) => {
+			userTrained = value;
+		});
+	}
+	updateUserTrained();
 
 	let userInTraining: boolean | null = null;
 	function updateUserInTraining() {
@@ -34,7 +39,6 @@
 			userInTraining = value;
 		});
 	}
-
 	updateUserInTraining();
 
 	let uploadLoading = false;
@@ -219,7 +223,7 @@
 			loadPhotoGenerated();
 
 			// Subscribe for new generated photos and update the list
-			const subscription = supabaseClient
+			const subscriptionPhotosChange = supabaseClient
 				.channel('public:photos')
 				.on<Database['public']['Tables']['photos']['Row']>(
 					'postgres_changes',
@@ -238,14 +242,15 @@
 				)
 				.subscribe();
 
-			const subscription2 = supabaseClient
+			const subscriptionInfoChange = supabaseClient
 				.channel('public:user_info')
 				.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_info' }, () => {
 					updateUserInTraining();
 				});
 
 			return () => {
-				subscription.unsubscribe();
+				subscriptionPhotosChange.unsubscribe();
+				subscriptionInfoChange.unsubscribe();
 			};
 		}
 	});
@@ -253,12 +258,12 @@
 
 <div class="w-full max-w-2xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
 	<ul class="steps">
-		<li class="step" class:step-primary={paymentIsOk}>Payment</li>
-		<li class="step" class:step-primary={paymentIsOk && photosForTrain.length > 0}>
+		<li class="step" class:step-primary={!!userPaid}>Payment</li>
+		<li class="step" class:step-primary={!!userPaid && photosForTrain.length > 0}>
 			Upload your photos
 		</li>
-		<li class="step" class:step-primary={paymentIsOk && userTrained}>Train the AI</li>
-		<li class="step" class:step-primary={paymentIsOk && photosGenerated.length > 0}>
+		<li class="step" class:step-primary={!!userPaid && userTrained}>Train the AI</li>
+		<li class="step" class:step-primary={!!userPaid && photosGenerated.length > 0}>
 			Generate your avatars
 		</li>
 	</ul>
@@ -266,15 +271,13 @@
 	<div class="w-full bg-white shadow rounded-lg p-6">
 		<Title class="mb-4">Pay with Stripe</Title>
 		<div class="flex flex-row justify-center w-full">
-			{#await userPaid}
+			{#if userPaid == null}
 				<progress class="progress" />
-			{:then isOk}
-				{#if isOk}
-					<Button size="small" disabled>Paid</Button>
-				{:else}
-					<Button size="small" link="/checkout" gradient>Pay now</Button>
-				{/if}
-			{/await}
+			{:else if userPaid}
+				<Button size="small" disabled>Paid</Button>
+			{:else}
+				<Button size="small" link="/checkout" gradient>Pay now</Button>
+			{/if}
 		</div>
 	</div>
 
@@ -283,22 +286,19 @@
 		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
 	>
 		<Title>Upload your photos</Title>
-		<Input bind:input={inputFiles} type="file" name="photos" multiple disabled={!paymentIsOk} />
-		<Button size="small" type="submit" loading={uploadLoading} disabled={!paymentIsOk}>Invia</Button
-		>
+		<Input bind:input={inputFiles} type="file" name="photos" multiple disabled={!userPaid} />
+		<Button size="small" type="submit" loading={uploadLoading} disabled={!userPaid}>Invia</Button>
 	</form>
-	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
+	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden">
 		<Title>Photos for training</Title>
 		{#if trainingPhotosLoading}
 			<progress class="progress" />
 		{:else if photosForTrain.length > 0}
-			<div class="flex flex-col items-center overflow-hidden">
+			<div class="flex flex-col items-center">
 				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
 					{#each photosForTrain as image, index}
 						<div class="relative group">
-							<Tooltip message={image.name}>
-								<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-							</Tooltip>
+							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
 
 							<Button
 								class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
@@ -337,7 +337,7 @@
 				size="small"
 				type="button"
 				on:click={() => train()}
-				disabled={!paymentIsOk ||
+				disabled={!userPaid ||
 					photosForTrain.length == 0 ||
 					userTrained == null ||
 					userTrained ||
@@ -347,7 +347,7 @@
 			>
 		</Tooltip>
 	</div>
-	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
+	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden">
 		<Title>Generate photos</Title>
 		<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
 			{#if generatedPhotosLoading}
@@ -375,7 +375,7 @@
 						</div>
 					{/each}
 				</div>
-				<div class="flex flex-col items-center overflow-hidden">
+				<div class="flex flex-col items-center">
 					<div
 						class="flex flex-row justify-center gap-4 flex-wrap mt-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
 					>
@@ -422,11 +422,8 @@
 			size="small"
 			type="button"
 			on:click={() => generate()}
-			disabled={!paymentIsOk ||
-				!userTrained ||
-				generating ||
-				userInTraining == null ||
-				userInTraining}>Generate</Button
+			disabled={!userPaid || !userTrained || generating || userInTraining == null || userInTraining}
+			>Generate</Button
 		>
 	</div>
 </div>
