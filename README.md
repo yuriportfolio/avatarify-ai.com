@@ -1,4 +1,4 @@
-# Better Avatar
+# Avatarify AI
 
 Elevate your visual content with our AI-powered image generation service. Create unique and high-quality graphics with ease and stand out in the online market.
 

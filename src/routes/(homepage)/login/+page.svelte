@@ -49,7 +49,7 @@
 		<div class="py-5">
 			<div class="flex flex-row justify-between px-4">
 				<Button startIcon="arrow_back" ghost size="tiny" link="/" normalCase
-					>Back to betteravatar.app</Button
+					>Back to avatarify-ai.com</Button
 				>
 				<Button startIcon="contact_support" ghost size="tiny" link="/contacts" normalCase
 					>Help</Button

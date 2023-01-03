@@ -20,7 +20,7 @@
 	}
 </script>
 
-<h1 class="font-bold text-center text-2xl mb-5">BetterAvatar</h1>
+<h1 class="font-bold text-center text-2xl mb-5">Avatarify AI</h1>
 <div class="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
 	<form class="px-5 py-7 flex flex-col gap-4" on:submit={signup}>
 		<Input bind:value={email} id="email" label="E-mail" />
@@ -48,7 +48,7 @@
 	<div class="text-center sm:text-left whitespace-nowrap">
 		<button class="btn btn-ghost btn-sm gap-2 text-xs" type="button">
 			<span class="material-symbols-outlined text-sm"> arrow_back </span>
-			Back to betteravatar.app
+			Back to avatarify-ai.com
 		</button>
 	</div>
 </div>
