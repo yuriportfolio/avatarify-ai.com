@@ -353,7 +353,7 @@
 			{#if generatedPhotosLoading}
 				<progress class="progress" />
 			{:else if photosGenerated.length > 0}
-				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
+				<div class="carousel carousel-center w-full p-8 space-x-4 bg-gray-500 rounded-box">
 					{#each photosGenerated as image, index}
 						<div class="carousel-item relative group" id={`photo_${index}`}>
 							<Tooltip message={image.name}>
@@ -377,7 +377,7 @@
 				</div>
 				<div class="flex flex-col items-center">
 					<div
-						class="flex flex-row justify-center bg-gray-100 gap-4 flex-wrap py-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
+						class="flex flex-row justify-center bg-gray-500 gap-4 flex-wrap py-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
 					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
