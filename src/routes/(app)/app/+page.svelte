@@ -292,7 +292,7 @@
 		{#if trainingPhotosLoading}
 			<progress class="progress" />
 		{:else if photosForTrain.length > 0}
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center overflow-hidden">
 				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
 					{#each photosForTrain as image, index}
 						<div class="relative group">
@@ -375,8 +375,10 @@
 						</div>
 					{/each}
 				</div>
-				<div class="flex flex-col items-center">
-					<div class="flex flex-row justify-center gap-4 flex-wrap mt-4 max-h-[40vh] overflow-y-auto overflow-x-hidden">
+				<div class="flex flex-col items-center overflow-hidden">
+					<div
+						class="flex flex-row justify-center gap-4 flex-wrap mt-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
+					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
 								<Tooltip message={image.name}>

@@ -18,7 +18,7 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Messages after login, checkout, checkout cancel, logout
 - [ ] Email tuning
 - [ ] Resize before upload (see tweet bookmark)
-- [ ] Meta data and social images
+- [ ] Meta data, social images, favicon, titles
 - [ ] Localization
 - [ ] Social links
 - [ ] Connect analytics
