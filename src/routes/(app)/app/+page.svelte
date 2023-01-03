@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
+	import Compressor from 'compressorjs';
+
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Title from '$lib/components/Title.svelte';
@@ -62,21 +64,33 @@
 				const requests = [];
 				for (let i = 0; i < inputFiles.files.length; i++) {
 					requests.push(
-						supabaseClient.storage
-							.from('photos-for-training')
-							.upload(
-								$page.data.session?.user.id + '/' + inputFiles.files[i].name,
-								await inputFiles.files[i].arrayBuffer()
-							)
-							.then((result) => {
-								if (result.error) {
-									throw result.error;
+						new Promise((resolve, reject) => {
+							new Compressor(inputFiles.files![i], {
+								width: 512,
+								height: 512,
+								resize: 'cover',
+								quality: 1,
+								error(error) {
+									showError(error);
+									reject();
+								},
+								async success(file) {
+									supabaseClient.storage
+										.from('photos-for-training')
+										.upload($page.data.session?.user.id + '/' + file.name, await file.arrayBuffer())
+										.then((result) => {
+											if (result.error) {
+												showError(result.error);
+												reject();
+											}
+											resolve(result);
+										});
 								}
-								return result;
-							})
+							});
+						})
 					);
 				}
-				await Promise.all(requests);
+				await Promise.allSettled(requests);
 				inputFiles.value = '';
 			}
 		} catch (error) {
@@ -282,7 +296,7 @@
 	</div>
 
 	<form
-		on:submit={onUploadSubmit}
+		on:submit|preventDefault={onUploadSubmit}
 		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
 	>
 		<Title>Upload your photos</Title>
@@ -305,7 +319,7 @@
 							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
 
 							<Button
-								class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+								class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
 								icon="close"
 								size="small"
 								circle
@@ -409,7 +423,7 @@
 									/>
 								</a>
 								<Button
-									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100 z-10"
+									class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
 									icon="close"
 									size="small"
 									circle

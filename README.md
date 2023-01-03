@@ -17,7 +17,7 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] Contact page
 - [x] Messages after login, checkout
 - [x] Email tuning
-- [ ] Resize before upload (see tweet bookmark)
+- [x] Resize before upload (see tweet bookmark)
 - [ ] Meta data, social images, favicon, titles
 - [ ] Localization
 - [ ] Social links
