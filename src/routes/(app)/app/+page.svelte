@@ -289,13 +289,17 @@
 		<Input bind:input={inputFiles} type="file" name="photos" multiple disabled={!userPaid} />
 		<Button size="small" type="submit" loading={uploadLoading} disabled={!userPaid}>Invia</Button>
 	</form>
-	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden">
+	<div
+		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
+	>
 		<Title>Photos for training</Title>
 		{#if trainingPhotosLoading}
 			<progress class="progress" />
 		{:else if photosForTrain.length > 0}
 			<div class="flex flex-col items-center">
-				<div class="flex flex-row justify-center gap-4 flex-wrap mt-4">
+				<div
+					class="flex flex-row justify-center bg-neutral gap-4 flex-wrap p-4 max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
+				>
 					{#each photosForTrain as image, index}
 						<div class="relative group">
 							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
@@ -305,6 +309,7 @@
 								icon="close"
 								size="small"
 								circle
+								primary
 								on:click={() => deletePhotoForTraining(index)}
 							/>
 						</div>
@@ -347,13 +352,15 @@
 			>
 		</Tooltip>
 	</div>
-	<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden">
+	<div
+		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
+	>
 		<Title>Generate photos</Title>
 		<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
 			{#if generatedPhotosLoading}
 				<progress class="progress" />
 			{:else if photosGenerated.length > 0}
-				<div class="carousel carousel-center w-full p-8 space-x-4 bg-gray-500 rounded-box">
+				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
 					{#each photosGenerated as image, index}
 						<div class="carousel-item relative group" id={`photo_${index}`}>
 							<Tooltip message={image.name}>
@@ -366,18 +373,30 @@
 							</Tooltip>
 
 							<Button
-								class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
+								class="absolute right-3 top-3 text-white opacity-0 group-hover:opacity-100"
 								icon="close"
 								size="small"
 								circle
+								primary
 								on:click={() => deletePhotoGenerated(index)}
+							/>
+
+							<Button
+								class="absolute right-3 bottom-3 text-white opacity-0 group-hover:opacity-100"
+								icon="download"
+								size="small"
+								circle
+								primary
+								link={image.url}
+								download
+								target="_blank"
 							/>
 						</div>
 					{/each}
 				</div>
 				<div class="flex flex-col items-center">
 					<div
-						class="flex flex-row justify-center bg-gray-500 gap-4 flex-wrap py-4 max-h-[40vh] overflow-y-auto overflow-x-hidden"
+						class="flex flex-row justify-center bg-neutral gap-4 flex-wrap p-4 max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
 					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
@@ -394,6 +413,7 @@
 									icon="close"
 									size="small"
 									circle
+									primary
 									on:click={() => deletePhotoGenerated(index)}
 								/>
 							</div>
