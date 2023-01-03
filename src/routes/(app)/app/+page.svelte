@@ -381,16 +381,14 @@
 					>
 						{#each photosGenerated as image, index}
 							<div class="relative group">
-								<Tooltip message={image.name}>
-									<a href={`#photo_${index}`}>
-										<img
-											src={image.url}
-											loading="eager"
-											alt={image.name}
-											class="aspect-square h-24"
-										/>
-									</a>
-								</Tooltip>
+								<a href={`#photo_${index}`}>
+									<img
+										src={image.url}
+										loading="eager"
+										alt={image.name}
+										class="aspect-square h-24"
+									/>
+								</a>
 								<Button
 									class="absolute -right-3 -top-3 text-white opacity-0 group-hover:opacity-100"
 									icon="close"
