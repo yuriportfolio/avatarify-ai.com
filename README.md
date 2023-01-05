@@ -28,6 +28,6 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Newsletter
 - [ ] Terms and conditions / Privacy / cookies - app.termly.io
 - [ ] Connect logtail https://vercel.com/integrations/logtail
-- [ ] show error toast
+- [x] show error toast
 - [ ] add show notification
 - [ ] toasts queues

@@ -1,7 +1,6 @@
 import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
-
-import { getServerSession } from '@supabase/auth-helpers-sveltekit';
+import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AMQPClient } from '@cloudamqp/amqp-client';
 import {
 	PRIVATE_RABBITMQ_HOST,
@@ -20,7 +19,7 @@ export const POST: RequestHandler = async (event) => {
 		if (!gender) {
 			throw new Error('Gender not selected');
 		}
-		const session = await getServerSession(event as any);
+		const { session } = await getSupabase(event);
 
 		if (!session) {
 			throw new Error('Session not valid');
