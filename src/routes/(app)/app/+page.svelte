@@ -18,6 +18,7 @@
 	import { themesMap } from '$lib/themes';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
+	import { PUBLIC_ENV } from '$env/static/public';
 
 	let userPaid: boolean | null = null;
 	function updateUserPaid() {
@@ -453,8 +454,10 @@
 				{/each}
 			</select>
 		</div>
-		<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
-		<Input name="seed" bind:value={seed} placeholder="Seed" />
+		{#if PUBLIC_ENV == 'dev'}
+			<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
+			<Input name="seed" bind:value={seed} placeholder="Seed" />
+		{/if}
 		<Button
 			size="small"
 			type="button"

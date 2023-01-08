@@ -7,6 +7,7 @@
 
 	let email: string = '';
 	let loadingSubmit = false;
+	let loadingGoogle = false;
 
 	async function login() {
 		loadingSubmit = true;
@@ -31,16 +32,22 @@
 	}
 
 	async function loginWithGoogle() {
-		const { error } = await supabaseClient.auth.signInWithOAuth({
-			provider: 'google',
-			options: {
-				redirectTo: getBaseUrl() + '/app'
+		loadingGoogle = true;
+		try {
+			const { error } = await supabaseClient.auth.signInWithOAuth({
+				provider: 'google',
+				options: {
+					redirectTo: getBaseUrl() + '/app'
+				}
+			});
+			if (error) {
+				throw error.message;
 			}
-		});
-		if (error) {
-			showError(error.message);
-		} else {
 			goto('/app');
+		} catch (error) {
+			showError(error);
+		} finally {
+			loadingGoogle = false;
 		}
 	}
 </script>
@@ -49,12 +56,24 @@
 	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200">
 		<form class="px-5 py-7 flex flex-col gap-4" on:submit|preventDefault={login}>
 			<Input bind:value={email} id="email" label="E-mail" name="email" block />
-			<Button endIcon="arrow_forward" block type="submit" loading={loadingSubmit}
-				>Login with magic link</Button
+			<Button
+				endIcon="arrow_forward"
+				block
+				type="submit"
+				loading={loadingSubmit}
+				disabled={loadingSubmit}>Login with magic link</Button
 			>
 
 			<p class="text-center">or</p>
-			<Button outline type="button" normalCase on:click={loginWithGoogle} block>
+			<Button
+				outline
+				type="button"
+				normalCase
+				on:click={loginWithGoogle}
+				block
+				loading={loadingGoogle}
+				disabled={loadingGoogle}
+			>
 				Sign in with Google
 			</Button>
 		</form>

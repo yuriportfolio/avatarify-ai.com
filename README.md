@@ -11,7 +11,7 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] Stripe integration
 - [x] User payment, signup and login
 - [x] Landing page
-- [ ] App shell UI
+- [x] App shell UI
 - [x] Buy domain (https://avatarify-ai.com)
 - [ ] Help page
 - [x] Contact page
