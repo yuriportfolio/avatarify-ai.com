@@ -112,12 +112,12 @@
 				}
 			});
 			if (!response.ok) {
-				showError((await response.json()).message);
-				userInTraining = false;
+				throw (await response.json()).message;
 			}
 		} catch (error) {
-			userInTraining = false;
 			showError(error);
+		} finally {
+			userInTraining = false;
 		}
 	}
 	async function generate() {
@@ -126,15 +126,18 @@
 		} else {
 			try {
 				generating = true;
-				await fetch('/api/generate', {
+				const response = await fetch('/api/generate', {
 					body: JSON.stringify({ theme, prompt, seed }),
 					method: 'POST',
 					headers: {
 						'content-type': 'application/json'
 					}
 				});
-				generating = false;
+				if (!response.ok) {
+					throw (await response.json()).message;
+				}
 			} catch (error) {
+				showError(error);
 			} finally {
 				generating = false;
 			}
@@ -457,7 +460,7 @@
 			type="button"
 			on:click={() => generate()}
 			disabled={!userPaid || !userTrained || generating || userInTraining == null || userInTraining}
-			>Generate</Button
+			loading={generating}>Generate</Button
 		>
 	</div>
 </div>

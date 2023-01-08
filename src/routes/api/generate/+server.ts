@@ -12,6 +12,8 @@ import {
 import { getSupabaseClient } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
 import { getNegativePrompt, getPrompt } from '$lib/prompts.server';
+import { PUBLIC_ENV } from '$env/static/public';
+import { generatorIsAwake, startGenerator } from '$lib/aws.server';
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -35,6 +37,10 @@ export const POST: RequestHandler = async (event) => {
 
 		if (!(await checkUserPaid(supabaseClient))) {
 			throw new Error('Payment required');
+		}
+
+		if (!(await generatorIsAwake())) {
+			await startGenerator();
 		}
 
 		const user = session.user;
@@ -71,7 +77,11 @@ export const POST: RequestHandler = async (event) => {
 		);
 		await conn.close();
 
-		return json({ done: true });
+		if (PUBLIC_ENV == 'DEV') {
+			return json({ done: true, data: { theme, prompt, negativePrompt, seed } });
+		} else {
+			return json({ done: true });
+		}
 	} catch (error) {
 		console.error(error);
 		if (error instanceof Error) {

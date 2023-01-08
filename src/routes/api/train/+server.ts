@@ -11,6 +11,7 @@ import {
 } from '$env/static/private';
 import { getSupabaseClient, supabaseClientAdmin } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
+import { generatorIsAwake, startGenerator } from '$lib/aws.server';
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -24,6 +25,7 @@ export const POST: RequestHandler = async (event) => {
 		if (!session) {
 			throw new Error('Session not valid');
 		}
+
 		const supabaseClient = await getSupabaseClient({
 			access_token: session.access_token,
 			refresh_token: session.refresh_token
@@ -31,6 +33,10 @@ export const POST: RequestHandler = async (event) => {
 
 		if (!(await checkUserPaid(supabaseClient))) {
 			throw new Error('Payment required');
+		}
+
+		if (!(await generatorIsAwake())) {
+			await startGenerator();
 		}
 
 		const user = session.user;
