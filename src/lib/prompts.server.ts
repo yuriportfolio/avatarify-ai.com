@@ -4,6 +4,10 @@ export function getPrompt(theme: keyof typeof Themes) {
 	return [...subject(), getPromptTokens(theme)].join(', ');
 }
 
+export function getNegativePrompt(_theme: keyof typeof Themes) {
+	return '(disfigured), (bad art), (deformed), (poorly drawn), (extra limbs), strange colours, blurry, boring, sketch, lacklustre, repetitive, cropped, hands';
+}
+
 function subject() {
 	// ojwxwjo
 	// ejxjo

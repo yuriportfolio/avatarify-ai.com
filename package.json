@@ -1,5 +1,5 @@
 {
-	"name": "betteravatar.app",
+	"name": "avatarify-ai.com",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -40,8 +40,11 @@
 		"@supabase/supabase-js": "^2.2.2",
 		"@sveltejs/adapter-vercel": "^1.0.0",
 		"@tailwindcss/typography": "^0.5.8",
+		"aws-sdk": "^2.1290.0",
 		"classnames": "^2.3.2",
+		"compressorjs": "^1.1.1",
 		"daisyui": "^2.46.0",
-		"dotenv": "^16.0.3"
+		"dotenv": "^16.0.3",
+		"stripe": "^11.6.0"
 	}
 }

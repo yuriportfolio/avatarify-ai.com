@@ -1,7 +1,6 @@
 import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
-
-import { getServerSession } from '@supabase/auth-helpers-sveltekit';
+import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AMQPClient } from '@cloudamqp/amqp-client';
 import {
 	PRIVATE_RABBITMQ_HOST,
@@ -12,7 +11,9 @@ import {
 } from '$env/static/private';
 import { getSupabaseClient } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
-import { getPrompt } from '$lib/prompts.server';
+import { getNegativePrompt, getPrompt } from '$lib/prompts.server';
+import { PUBLIC_ENV } from '$env/static/public';
+import { generatorIsAwake, startGenerator } from '$lib/aws.server';
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -20,10 +21,11 @@ export const POST: RequestHandler = async (event) => {
 		const theme = body.theme;
 		let prompt = body.prompt;
 		let seed = body.seed;
+		let negativePrompt = body.negativePrompt;
 		if (!theme && !prompt) {
 			throw new Error('Theme not selected');
 		}
-		const session = await getServerSession(event as any);
+		const { session } = await getSupabase(event);
 
 		if (!session) {
 			throw new Error('Session not valid');
@@ -35,6 +37,10 @@ export const POST: RequestHandler = async (event) => {
 
 		if (!(await checkUserPaid(supabaseClient))) {
 			throw new Error('Payment required');
+		}
+
+		if (!(await generatorIsAwake())) {
+			await startGenerator();
 		}
 
 		const user = session.user;
@@ -53,14 +59,29 @@ export const POST: RequestHandler = async (event) => {
 		if (!prompt) {
 			prompt = getPrompt(theme);
 		}
+		if (!negativePrompt) {
+			negativePrompt = getNegativePrompt(theme);
+		}
 		console.log(prompt, seed);
-		await q.publish(JSON.stringify({ theme, prompt: prompt, seed: parseInt(seed) || null }), {
-			contentType: 'application/json',
-			headers: { session: user.id }
-		});
+		await q.publish(
+			JSON.stringify({
+				theme,
+				prompt,
+				negative_prompt: negativePrompt,
+				seed: parseInt(seed) || null
+			}),
+			{
+				contentType: 'application/json',
+				headers: { session: user.id }
+			}
+		);
 		await conn.close();
 
-		return json({ done: true });
+		if (PUBLIC_ENV == 'DEV') {
+			return json({ done: true, data: { theme, prompt, negativePrompt, seed } });
+		} else {
+			return json({ done: true });
+		}
 	} catch (error) {
 		console.error(error);
 		if (error instanceof Error) {

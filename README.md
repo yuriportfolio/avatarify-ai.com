@@ -1,4 +1,4 @@
-# Better Avatar
+# Avatarify AI
 
 Elevate your visual content with our AI-powered image generation service. Create unique and high-quality graphics with ease and stand out in the online market.
 
@@ -11,14 +11,14 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [x] Stripe integration
 - [x] User payment, signup and login
 - [x] Landing page
-- [ ] App shell UI
-- [ ] Buy domain
+- [x] App shell UI
+- [x] Buy domain (https://avatarify-ai.com)
 - [ ] Help page
 - [x] Contact page
-- [ ] Messages after login, checkout, checkout cancel, logout
-- [ ] Email tuning
-- [ ] Resize before upload (see tweet bookmark)
-- [ ] Meta data and social images
+- [x] Messages after login, checkout
+- [x] Email tuning
+- [x] Resize before upload (see tweet bookmark)
+- [ ] Meta data, social images, favicon, titles
 - [ ] Localization
 - [ ] Social links
 - [ ] Connect analytics
@@ -28,3 +28,6 @@ Elevate your visual content with our AI-powered image generation service. Create
 - [ ] Newsletter
 - [ ] Terms and conditions / Privacy / cookies - app.termly.io
 - [ ] Connect logtail https://vercel.com/integrations/logtail
+- [x] show error toast
+- [ ] add show notification
+- [ ] toasts queues

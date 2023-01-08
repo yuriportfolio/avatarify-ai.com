@@ -6,7 +6,7 @@
 	</div>
 	<div>
 		<div class="grid grid-flow-col gap-4">
-			<a href="https://twitter.com/e_pavanello" target="_blank">
+			<a href="https://twitter.com/e_pavanello" target="_blank" rel="noreferrer">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
@@ -19,7 +19,7 @@
 					/>
 				</svg>
 			</a>
-			<a href="https://github.com/epavanello?" target="_blank">
+			<a href="https://github.com/epavanello/avatarify-ai.com?" target="_blank" rel="noreferrer">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
@@ -35,29 +35,6 @@
 		</div>
 	</div>
 	<div>
-		<p>Copyright © 2022 - All right reserved</p>
+		<p>Copyright © {new Date().getFullYear()} - All right reserved</p>
 	</div>
 </footer>
-<!-- <footer class="footer p-10 bg-neutral text-neutral-content">
-    <div>
-        <span class="footer-title">Company</span>
-        <a class="link link-hover" href="/about">About us</a>
-        <a class="link link-hover" href="/contacts">Contact</a>
-        <a class="link link-hover" href="/help">Help</a>
-    </div>
-    <div>
-        <span class="footer-title">Legal</span>
-        <a class="link link-hover" href="/legal/terms-and-conditions">Terms of use</a>
-        <a class="link link-hover" href="/legal/privacy">Privacy policy</a>
-        <a class="link link-hover" href="/legal/cookies">Cookie policy</a>
-    </div>
-    <div class="w-80">
-        <span class="footer-title">Newsletter</span>
-        <Input
-            id="subscribe"
-            label="Enter your email address"
-            labelButton="Subscribe"
-            placeholder="username@site.com"
-        />
-    </div>
-</footer> -->
