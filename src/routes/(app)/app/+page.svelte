@@ -366,8 +366,14 @@
 					userTrained ||
 					userInTraining == null ||
 					userInTraining}
-				loading={userInTraining == null || userInTraining}>Start training</Button
+				loading={userInTraining == null || userInTraining}
 			>
+				{#if userInTraining}
+					In training
+				{:else}
+					Start training
+				{/if}
+			</Button>
 		</Tooltip>
 	</div>
 	<div
