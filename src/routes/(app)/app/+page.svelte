@@ -54,7 +54,6 @@
 	let photosGenerated: { url: string; name: string }[] = [];
 
 	let theme = '';
-	let gender = '';
 	let prompt = '';
 	let seed = '';
 
@@ -107,7 +106,7 @@
 			userInTraining = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
-				body: JSON.stringify({ gender }),
+				body: JSON.stringify({}),
 				headers: {
 					'content-type': 'application/json'
 				}
@@ -322,33 +321,22 @@
 						<div class="relative group">
 							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
 
-							<Button
-								class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
-								icon="close"
-								size="small"
-								circle
-								primary
-								on:click={() => deletePhotoForTraining(index)}
-							/>
+							{#if !userInTraining && !userTrained}
+								<Button
+									class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
+									icon="close"
+									size="small"
+									circle
+									primary
+									on:click={() => deletePhotoForTraining(index)}
+								/>
+							{/if}
 						</div>
 					{/each}
 				</div>
 			</div>
 		{:else}
 			<p class="italic">There are not yet any images present.</p>
-		{/if}
-
-		{#if userTrained != null && !userTrained}
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="theme">
-					<span class="label-text">Select a gender</span>
-				</label>
-				<select class="select select-bordered" id="gender" bind:value={gender}>
-					<option disabled selected />
-					<option value="man">Man</option>
-					<option value="woman">Woman</option>
-				</select>
-			</div>
 		{/if}
 
 		<Tooltip
@@ -370,6 +358,8 @@
 			>
 				{#if userInTraining}
 					In training
+				{:else if userTrained}
+					Trained
 				{:else}
 					Start training
 				{/if}
@@ -460,7 +450,7 @@
 				{/each}
 			</select>
 		</div>
-		{#if PUBLIC_ENV == 'dev'}
+		{#if PUBLIC_ENV == 'DEV'}
 			<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
 			<Input name="seed" bind:value={seed} placeholder="Seed" />
 		{/if}
