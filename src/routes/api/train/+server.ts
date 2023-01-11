@@ -12,13 +12,12 @@ import {
 import { getSupabaseClient, supabaseClientAdmin } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
 import { generatorIsAwake, startGenerator } from '$lib/aws.server';
+import { PUBLIC_ENV } from '$env/static/public';
 
 export const POST: RequestHandler = async (event) => {
 	try {
-		const body = await event.request.json();
-		const gender = body.gender;
-		if (!gender) {
-			throw new Error('Gender not selected');
+		if (PUBLIC_ENV === 'STAGING') {
+			throw new Error("Can't train in staging");
 		}
 		const { session } = await getSupabase(event);
 
@@ -80,7 +79,7 @@ export const POST: RequestHandler = async (event) => {
 				});
 			}
 		}
-		await q.publish(JSON.stringify({ gender, images: listToSend }), {
+		await q.publish(JSON.stringify({ images: listToSend }), {
 			contentType: 'application/json',
 			headers: { session: user.id }
 		});
