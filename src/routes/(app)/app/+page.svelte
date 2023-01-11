@@ -450,7 +450,7 @@
 				{/each}
 			</select>
 		</div>
-		{#if PUBLIC_ENV == 'DEV'}
+		{#if PUBLIC_ENV !== 'PRODUCTION'}
 			<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
 			<Input name="seed" bind:value={seed} placeholder="Seed" />
 		{/if}

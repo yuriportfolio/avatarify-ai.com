@@ -17,9 +17,6 @@ import { generatorIsAwake, startGenerator } from '$lib/aws.server';
 
 export const POST: RequestHandler = async (event) => {
 	try {
-		if (PUBLIC_ENV === 'STAGING') {
-			throw new Error("Can't generate in staging");
-		}
 		const body = await event.request.json();
 		const theme = body.theme;
 		let prompt = body.prompt;
