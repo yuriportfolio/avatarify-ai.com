@@ -1,3 +1,5 @@
+import { PUBLIC_ENV } from '$env/static/public';
+
 export enum Themes {
 	'cyberpunk' = 'Cyberpunk',
 	'tinder' = 'Tinder',
@@ -10,5 +12,12 @@ export enum Themes {
 }
 
 export function themesMap() {
-	return (Object.keys(Themes) as (keyof typeof Themes)[]).map((key) => [key, Themes[key]]);
+	return (Object.keys(Themes) as (keyof typeof Themes)[])
+		.filter((theme) => {
+			if (PUBLIC_ENV === 'PRODUCTION') {
+				return theme !== 'debug';
+			}
+			return true;
+		})
+		.map((key) => [key, Themes[key]]);
 }

@@ -8,10 +8,14 @@ export function getNegativePrompt(_theme: keyof typeof Themes) {
 	return '(disfigured), (bad art), (deformed), (poorly drawn), (extra limbs), strange colours, blurry, boring, sketch, lacklustre, repetitive, cropped, hands';
 }
 
+export function getSubjectName() {
+	return 'ojwxwjo';
+}
+
 function subject() {
 	// ojwxwjo
 	// ejxjo
-	return ['ojwxwjo', 'half body'];
+	return [getSubjectName(), 'half body'];
 }
 
 function realistic() {
@@ -22,7 +26,7 @@ export function getPromptTokens(theme: keyof typeof Themes): string[] {
 	switch (theme) {
 		case 'cyberpunk':
 			return [
-				'a whirlwind inside the metaverse, machine face, piercing, neurochip, cyberpunk face, by loish, d & d, fantasy, intricate, elegant, colorful, digital painting, artstation, concept art, art by artgerm and greg rutkowski and alphonse mucha'
+				'inside the metaverse, machine face, piercing, neurochip, cyberpunk face, colorful'
 			];
 		case 'tinder':
 			return [

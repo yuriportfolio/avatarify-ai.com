@@ -11,7 +11,7 @@ import {
 } from '$env/static/private';
 import { getSupabaseClient } from '$lib/db.server';
 import { checkUserPaid } from '$lib/db';
-import { getNegativePrompt, getPrompt } from '$lib/prompts.server';
+import { getNegativePrompt, getPrompt, getSubjectName } from '$lib/prompts.server';
 import { PUBLIC_ENV } from '$env/static/public';
 import { generatorIsAwake, startGenerator } from '$lib/aws.server';
 
@@ -19,7 +19,7 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		const body = await event.request.json();
 		const theme = body.theme;
-		let prompt = body.prompt;
+		let prompt: string | undefined = body.prompt;
 		let seed = body.seed;
 		let negativePrompt = body.negativePrompt;
 		if (!theme && !prompt) {
@@ -58,6 +58,10 @@ export const POST: RequestHandler = async (event) => {
 
 		if (!prompt) {
 			prompt = getPrompt(theme);
+		} else {
+			if (prompt.indexOf('SUBJECT') > -1) {
+				prompt.replaceAll('SUBJECT', getSubjectName());
+			}
 		}
 		if (!negativePrompt) {
 			negativePrompt = getNegativePrompt(theme);

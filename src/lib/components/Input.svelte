@@ -7,7 +7,7 @@
 	export let label: string | undefined = undefined;
 	export let input: HTMLInputElement | undefined = undefined;
 	export let value: string | undefined = undefined;
-	export let type: 'text' | 'password' | 'file' = 'text';
+	export let type: 'text' | 'password' | 'file' | 'textarea' = 'text';
 	export let inputClass = '';
 	export let containerClass = '';
 	export let labelButton: string | undefined = undefined;
@@ -33,23 +33,34 @@
 	{/if}
 
 	<div class="relative">
-		<input
-			bind:this={input}
-			{id}
-			{type}
-			{name}
-			on:input={handleInput}
-			class={cn(
-				'w-full',
-				{
-					'file-input file-input-bordered': type == 'file',
-					'input input-bordered': type != 'file',
-					'max-w-xs': !block
-				},
-				inputClass
-			)}
-			{...$$restProps}
-		/>
+		{#if type == 'textarea'}
+			<textarea
+				bind:value
+				{id}
+				{name}
+				class={cn('textarea textarea-bordered w-full', { 'max-w-xs': !block }, inputClass)}
+				{...$$restProps}
+			/>
+		{:else}
+			<input
+				bind:this={input}
+				{id}
+				{type}
+				{name}
+				on:input={handleInput}
+				class={cn(
+					'w-full',
+					{
+						'file-input file-input-bordered': type == 'file',
+						'input input-bordered': type != 'file',
+						'max-w-xs': !block
+					},
+					inputClass
+				)}
+				{...$$restProps}
+			/>
+		{/if}
+
 		{#if labelButton}
 			<Button class="absolute top-0 right-0 rounded-l-none" primary on:click>{labelButton}</Button>
 		{/if}
