@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/auth-helpers-sveltekit';
 // or use the static env
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY } from '$env/static/public';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TypedSupabaseClient } from '@supabase/auth-helpers-sveltekit/dist/types';
+import type { Database } from './supabase-types';
 
 export const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY);
 
@@ -25,26 +25,31 @@ export function handleError<TData, TError extends { message: string }>({
 	}
 }
 
-export const checkUserPaid = async (customClient?: TypedSupabaseClient) =>
-	(
-		await (customClient ? customClient : supabaseClient)
-			.from('user_info')
-			.select('*', { count: 'exact' })
-			.eq('paid', true)
-	).count == 1;
+export const getUserInfo = async () =>
+	(await supabaseClient.from('user_info').select('*', { count: 'exact' }).single()).data;
 
-export const checkUserInTraining = async (customClient?: TypedSupabaseClient) =>
-	(
-		await (customClient ? customClient : supabaseClient)
-			.from('user_info')
-			.select('*', { count: 'exact' })
-			.eq('in_training', true)
-	).count == 1;
+export const getAdminUserInfo = async (userID: string, client: TypedSupabaseClient) =>
+	handleError(
+		await client.from('user_info').select('*', { count: 'exact' }).eq('id', userID).single()
+	);
 
-export const checkUserTrained = async (customClient?: TypedSupabaseClient) =>
-	(
-		await (customClient ? customClient : supabaseClient)
-			.from('user_info')
-			.select('*', { count: 'exact' })
-			.eq('trained', true)
-	).count == 1;
+export const checkUserPaid = async () => !!(await getUserInfo())?.paid;
+
+export const checkUserInTraining = async () => !!(await getUserInfo())?.in_training;
+
+export const checkUserTrained = async () => !!(await getUserInfo())?.trained;
+
+export const updateAdminUserInfo = async (
+	userID: string,
+	body: Partial<Database['public']['Tables']['user_info']['Update']>,
+	client: TypedSupabaseClient
+) => {
+	const { count, error } = await client.from('user_info').update(body).eq('id', userID);
+
+	if (error) {
+		throw new Error("Can't update user state", { cause: error });
+	}
+	if (count == 0) {
+		throw new Error("Can't find user info");
+	}
+};

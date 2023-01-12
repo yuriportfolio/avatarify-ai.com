@@ -9,8 +9,8 @@ import {
 	PRIVATE_RABBITMQ_PROTOCOL,
 	PRIVATE_RABBITMQ_USERNAME
 } from '$env/static/private';
-import { getSupabaseClient } from '$lib/db.server';
-import { checkUserPaid } from '$lib/db';
+import { supabaseClientAdmin } from '$lib/db.server';
+import { getAdminUserInfo } from '$lib/db';
 import { getNegativePrompt, getPrompt, getSubjectName } from '$lib/prompts.server';
 import { PUBLIC_ENV } from '$env/static/public';
 import { generatorIsAwake, startGenerator } from '$lib/aws.server';
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async (event) => {
 		const body = await event.request.json();
 		const theme = body.theme;
 		let prompt: string | undefined = body.prompt;
-		let seed = body.seed;
+		const seed: string | undefined = body.seed;
 		let negativePrompt = body.negativePrompt;
 		if (!theme && !prompt) {
 			throw new Error('Theme not selected');
@@ -30,12 +30,10 @@ export const POST: RequestHandler = async (event) => {
 		if (!session) {
 			throw new Error('Session not valid');
 		}
-		const supabaseClient = await getSupabaseClient({
-			access_token: session.access_token,
-			refresh_token: session.refresh_token
-		});
 
-		if (!(await checkUserPaid(supabaseClient))) {
+		const user_info = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
+
+		if (!user_info.paid) {
 			throw new Error('Payment required');
 		}
 
@@ -72,7 +70,7 @@ export const POST: RequestHandler = async (event) => {
 				theme,
 				prompt,
 				negative_prompt: negativePrompt,
-				seed: parseInt(seed) || null
+				seed: parseInt(seed || '') || null
 			}),
 			{
 				contentType: 'application/json',

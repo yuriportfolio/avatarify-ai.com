@@ -1,3 +1,4 @@
+import { PUBLIC_REPLICATE_INSTANCE_TOKEN } from '$env/static/public';
 import type { Themes } from './themes';
 
 export function getPrompt(theme: keyof typeof Themes) {
@@ -9,7 +10,7 @@ export function getNegativePrompt(_theme: keyof typeof Themes) {
 }
 
 export function getSubjectName() {
-	return 'ojwxwjo';
+	return PUBLIC_REPLICATE_INSTANCE_TOKEN;
 }
 
 function subject() {
@@ -25,9 +26,7 @@ function realistic() {
 export function getPromptTokens(theme: keyof typeof Themes): string[] {
 	switch (theme) {
 		case 'cyberpunk':
-			return [
-				'inside the metaverse, machine face, piercing, neurochip, cyberpunk face, colorful'
-			];
+			return ['inside the metaverse, machine face, piercing, neurochip, cyberpunk face, colorful'];
 		case 'tinder':
 			return [
 				'in the style of stefan kostic, intricate, elegant, art by stanley lau and artgerm, extreme bokeh foliage',
