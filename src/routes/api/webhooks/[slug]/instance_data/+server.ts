@@ -1,10 +1,11 @@
-import type { RequestHandler } from '../$types';
+import type { RequestHandler } from './$types';
 import { error as svelteError } from '@sveltejs/kit';
 import { supabaseClientAdmin } from '$lib/db.server';
 import JSZip from 'jszip';
 
-export const GET: RequestHandler = async (event) => {
+export const POST: RequestHandler = async (event) => {
 	try {
+		console.log(await event.request.text());
 		const userID = event.params.slug;
 
 		if (!userID) {
