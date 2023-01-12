@@ -5,7 +5,6 @@ import JSZip from 'jszip';
 
 export const GET: RequestHandler = async (event) => {
 	try {
-		console.log(await event.request.text());
 		const userID = event.params.slug;
 
 		if (!userID) {
