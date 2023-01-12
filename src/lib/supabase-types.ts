@@ -14,18 +14,21 @@ export interface Database {
           created_at: string | null
           id: number
           name: string
+          status: string | null
           uid: string
         }
         Insert: {
           created_at?: string | null
           id?: number
           name: string
+          status?: string | null
           uid: string
         }
         Update: {
           created_at?: string | null
           id?: number
           name?: string
+          status?: string | null
           uid?: string
         }
       }
@@ -33,16 +36,19 @@ export interface Database {
         Row: {
           created_at: string | null
           id: string
+          status: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id: string
+          status?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
+          status?: string | null
           user_id?: string
         }
       }

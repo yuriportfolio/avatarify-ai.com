@@ -4,7 +4,50 @@ import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { supabaseClientAdmin } from '$lib/db.server';
 import { getAdminUserInfo, updateAdminUserInfo } from '$lib/db';
 import { PUBLIC_ENV } from '$env/static/public';
-import { train } from '$lib/replicate.server';
+import { getTrainingStatus, runTrain } from '$lib/replicate.server';
+
+// Update the train status
+export const GET: RequestHandler = async (event) => {
+	try {
+		const { session } = await getSupabase(event);
+
+		if (!session) {
+			throw new Error('Session not valid');
+		}
+		const user = session.user;
+
+		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
+
+		if (!userInfo.paid) {
+			throw new Error('Payment required');
+		}
+		if (!userInfo.trained && userInfo.in_training) {
+			const trainResult = await getTrainingStatus(user);
+			console.log('Train result', trainResult);
+			if (trainResult.status === 'succeeded') {
+				await updateAdminUserInfo(
+					user.id,
+					{
+						replicate_version_id: trainResult.version,
+						replicate_train_status: trainResult.status,
+						in_training: false,
+						trained: true
+					},
+					supabaseClientAdmin
+				);
+			}
+		}
+
+		return json({ trained: true });
+	} catch (error) {
+		console.error(error);
+		if (error instanceof Error) {
+			console.error(error.cause);
+			throw svelteError(500, { message: error.message });
+		}
+		throw svelteError(500);
+	}
+};
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -36,7 +79,7 @@ export const POST: RequestHandler = async (event) => {
 			throw new Error('Can not train multiple times');
 		}
 
-		const trainResult = await train(instanceClass, user);
+		const trainResult = await runTrain(instanceClass, user);
 		console.log('Train result', trainResult);
 
 		await updateAdminUserInfo(

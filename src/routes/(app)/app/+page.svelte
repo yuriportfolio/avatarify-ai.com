@@ -15,7 +15,7 @@
 		checkUserInTraining
 	} from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
-	import { themesMap } from '$lib/themes';
+	import { getThemes } from '$lib/themes';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
 	import { PUBLIC_ENV } from '$env/static/public';
@@ -51,7 +51,10 @@
 	let generatedPhotosLoading = false;
 	let generating = false;
 	let photosForTrain: { url: string; name: string }[] = [];
-	let photosGenerated: { url: string; name: string }[] = [];
+	let photosGenerated: ({ name: string } & (
+		| { url: string; complete: true }
+		| { complete: false }
+	))[] = [];
 
 	let instance_class = '';
 	let theme = '';
@@ -121,13 +124,13 @@
 			userInTraining = false;
 		}
 	}
-	async function generate() {
+	async function prediction() {
 		if (!theme && !prompt) {
 			showError('Theme not selected');
 		} else {
 			try {
 				generating = true;
-				const response = await fetch('/api/generate', {
+				const response = await fetch('/api/prediction', {
 					body: JSON.stringify({ theme, prompt, seed }),
 					method: 'POST',
 					headers: {
@@ -225,7 +228,8 @@
 					})
 				).map(async (file) => ({
 					url: await getSignedUrl('photos-generated', file.name),
-					name: file.name
+					name: file.name,
+					complete: true
 				}))
 			);
 		} catch (error) {
@@ -242,17 +246,28 @@
 
 			// Subscribe for new generated photos and update the list
 			const subscriptionPhotosChange = supabaseClient
-				.channel('public:photos')
-				.on<Database['public']['Tables']['photos']['Row']>(
+				.channel('public:predictions')
+				.on<Database['public']['Tables']['predictions']['Row']>(
 					'postgres_changes',
-					{ event: 'INSERT', schema: 'public', table: 'photos' },
+					{ event: '*', schema: 'public', table: 'predictions' },
 					async (payload) => {
-						if ('uid' in payload.new) {
+						if (payload.eventType == 'UPDATE') {
+							if (payload.old.status !== payload.new.status && payload.new.status === 'succeeded') {
+								photosGenerated = [
+									...photosGenerated,
+									{
+										complete: true,
+										name: `${payload.new.id}.jpg`,
+										url: await getSignedUrl('photos-generated', `${payload.new.id}.jpg`, false)
+									}
+								];
+							}
+						} else if (payload.eventType == 'INSERT' && payload.new.status !== 'succeeded') {
 							photosGenerated = [
 								...photosGenerated,
 								{
-									url: await getSignedUrl('photos-generated', payload.new.name, false),
-									name: payload.new.name
+									complete: false,
+									name: `${payload.new.id}.jpg`
 								}
 							];
 						}
@@ -394,34 +409,38 @@
 				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
 					{#each photosGenerated as image, index}
 						<div class="carousel-item relative group" id={`photo_${index}`}>
-							<Tooltip message={image.name}>
+							{#if image.complete}
 								<img
 									src={image.url}
 									loading="eager"
-									alt={image.name}
+									alt=""
 									class="aspect-square rounded-box max-w-[60vw]"
 								/>
-							</Tooltip>
 
-							<Button
-								class="absolute right-3 top-3 text-white opacity-0 group-hover:opacity-100"
-								icon="close"
-								size="small"
-								circle
-								primary
-								on:click={() => deletePhotoGenerated(index)}
-							/>
+								<Button
+									class="absolute right-3 top-3 text-white opacity-0 group-hover:opacity-100"
+									icon="close"
+									size="small"
+									circle
+									primary
+									on:click={() => deletePhotoGenerated(index)}
+								/>
 
-							<Button
-								class="absolute right-3 bottom-3 text-white opacity-0 group-hover:opacity-100"
-								icon="download"
-								size="small"
-								circle
-								primary
-								link={image.url}
-								download
-								target="_blank"
-							/>
+								<Button
+									class="absolute right-3 bottom-3 text-white opacity-0 group-hover:opacity-100"
+									icon="download"
+									size="small"
+									circle
+									primary
+									link={image.url}
+									download
+									target="_blank"
+								/>
+							{:else}
+								<div class="aspect-square max-w-[60vw]">
+									<progress class="progress w-56" />
+								</div>
+							{/if}
 						</div>
 					{/each}
 				</div>
@@ -432,12 +451,18 @@
 						{#each photosGenerated as image, index}
 							<div class="relative group">
 								<a href={`#photo_${index}`}>
-									<img
-										src={image.url}
-										loading="eager"
-										alt={image.name}
-										class="aspect-square h-24"
-									/>
+									{#if image.complete}
+										<img
+											src={image.url}
+											loading="eager"
+											alt={image.name}
+											class="aspect-square h-24"
+										/>
+									{:else}
+										<div class="aspect-square h-24">
+											<progress class="progress" />
+										</div>
+									{/if}
 								</a>
 								<Button
 									class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
@@ -462,8 +487,8 @@
 			</label>
 			<select class="select select-bordered" id="theme" bind:value={theme}>
 				<option disabled selected />
-				{#each themesMap() as [theme, label]}
-					<option value={theme}>{label}</option>
+				{#each getThemes() as theme}
+					<option value={theme} class="capitalize">{theme}</option>
 				{/each}
 			</select>
 		</div>
@@ -481,7 +506,7 @@
 		<Button
 			size="small"
 			type="button"
-			on:click={() => generate()}
+			on:click={() => prediction()}
 			disabled={!userPaid || !userTrained || generating || userInTraining == null || userInTraining}
 			loading={generating}>Generate</Button
 		>
