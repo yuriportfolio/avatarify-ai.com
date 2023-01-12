@@ -451,7 +451,14 @@
 			</select>
 		</div>
 		{#if PUBLIC_ENV !== 'PRODUCTION'}
-			<Input name="prompt" bind:value={prompt} placeholder="Prompt" />
+			<Input
+				name="prompt"
+				bind:value={prompt}
+				type="textarea"
+				placeholder="Prompt"
+				block
+				containerClass="w-full max-w-xs"
+			/>
 			<Input name="seed" bind:value={seed} placeholder="Seed" />
 		{/if}
 		<Button
