@@ -41,7 +41,11 @@ export const POST: RequestHandler = async (event) => {
 
 		await updateAdminUserInfo(
 			user.id,
-			{ in_training: true, replicate_model_id: trainResult.id },
+			{
+				in_training: true,
+				start_training: new Date().toISOString(),
+				replicate_model_id: trainResult.id
+			},
 			supabaseClientAdmin
 		);
 
