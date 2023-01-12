@@ -8,16 +8,18 @@ import { PUBLIC_REPLICATE_INSTANCE_TOKEN } from '$env/static/public';
 import type { User } from '@supabase/supabase-js';
 
 async function getClient<T extends object>(path: string, body: object) {
-	return (
-		await fetch(`https://dreambooth-api-experimental.replicate.com${path}`, {
-			body: JSON.stringify(body),
-			method: 'POST',
-			headers: {
-				Authorization: `Token ${PRIVATE_REPLICATE_API_TOKEN}`,
-				'Content-Type': 'application/json'
-			}
-		})
-	).json() as T;
+	const response = await fetch(`https://dreambooth-api-experimental.replicate.com${path}`, {
+		body: JSON.stringify(body),
+		method: 'POST',
+		headers: {
+			Authorization: `Token ${PRIVATE_REPLICATE_API_TOKEN}`,
+			'Content-Type': 'application/json'
+		}
+	});
+	if (!response.ok) {
+		throw new Error(await response.text());
+	}
+	return (await response.json()) as T;
 }
 
 export const getRefinedInstanceClass = (instanceClass: string) => {

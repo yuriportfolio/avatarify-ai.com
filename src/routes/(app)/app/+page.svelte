@@ -343,7 +343,7 @@
 		{#if userTrained != null && !userTrained}
 			<div class="form-control w-full max-w-xs">
 				<label class="label" for="instance_class">
-					<span class="label-text">Select a gender</span>
+					<span class="label-text">Specify the subject</span>
 				</label>
 				<select class="select select-bordered" id="instance_class" bind:value={instance_class}>
 					<option disabled selected />
