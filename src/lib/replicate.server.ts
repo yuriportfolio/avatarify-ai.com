@@ -7,15 +7,22 @@ import {
 import { PUBLIC_REPLICATE_INSTANCE_TOKEN } from '$env/static/public';
 import type { User } from '@supabase/supabase-js';
 
-async function getClient<T extends object>(path: string, body: object) {
-	const response = await fetch(`https://dreambooth-api-experimental.replicate.com${path}`, {
-		body: JSON.stringify(body),
-		method: 'POST',
-		headers: {
-			Authorization: `Token ${PRIVATE_REPLICATE_API_TOKEN}`,
-			'Content-Type': 'application/json'
+async function getClient<T extends object>(path: string, body: object, experimental: boolean) {
+	const response = await fetch(
+		`${
+			experimental
+				? 'https://dreambooth-api-experimental.replicate.com'
+				: 'https://api.replicate.com'
+		}${path}`,
+		{
+			body: JSON.stringify(body),
+			method: 'POST',
+			headers: {
+				Authorization: `Token ${PRIVATE_REPLICATE_API_TOKEN}`,
+				'Content-Type': 'application/json'
+			}
 		}
-	});
+	);
 	if (!response.ok) {
 		throw new Error(await response.text());
 	}
@@ -51,18 +58,22 @@ export interface ReplicateTrainPayload {
 }
 
 export async function train(instanceClass: string, user: User) {
-	return await getClient<ReplicateTrainPayload>('/v1/trainings', {
-		input: {
-			instance_prompt: `a photo of a ${PUBLIC_REPLICATE_INSTANCE_TOKEN} ${instanceClass}`,
-			class_prompt: `a photo of a ${instanceClass}`,
-			instance_data: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/instance_data`,
-			max_train_steps: Number(PRIVATE_REPLICATE_MAX_TRAIN_STEPS) || 2000,
-			num_class_images: 200,
-			learning_rate: 1e-6
+	return await getClient<ReplicateTrainPayload>(
+		'/v1/trainings',
+		{
+			input: {
+				instance_prompt: `a photo of a ${PUBLIC_REPLICATE_INSTANCE_TOKEN} ${instanceClass}`,
+				class_prompt: `a photo of a ${instanceClass}`,
+				instance_data: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/instance_data`,
+				max_train_steps: Number(PRIVATE_REPLICATE_MAX_TRAIN_STEPS) || 2000,
+				num_class_images: 200,
+				learning_rate: 1e-6
+			},
+			model: `${PRIVATE_REPLICATE_USERNAME}/${user.id}`,
+			webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/replicate_complete`
 		},
-		model: `${PRIVATE_REPLICATE_USERNAME}/${user.id}`,
-		webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/replicate_complete`
-	});
+		true
+	);
 }
 
 export interface ReplicatePredictPayload {
@@ -91,12 +102,16 @@ export async function predict(
 	negativePrompt: string,
 	seed: string | undefined
 ) {
-	return await getClient<ReplicatePredictPayload>('/v1/predictions', {
-		input: {
-			prompt,
-			negative_prompt: negativePrompt,
-			seed
+	return await getClient<ReplicatePredictPayload>(
+		'/v1/predictions',
+		{
+			input: {
+				prompt,
+				negative_prompt: negativePrompt,
+				seed
+			},
+			version
 		},
-		version
-	});
+		false
+	);
 }
