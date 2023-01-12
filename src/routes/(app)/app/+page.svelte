@@ -53,6 +53,7 @@
 	let photosForTrain: { url: string; name: string }[] = [];
 	let photosGenerated: { url: string; name: string }[] = [];
 
+	let instance_class = '';
 	let theme = '';
 	let prompt = '';
 	let seed = '';
@@ -106,7 +107,7 @@
 			userInTraining = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
-				body: JSON.stringify({}),
+				body: JSON.stringify({ instance_class }),
 				headers: {
 					'content-type': 'application/json'
 				}
@@ -337,6 +338,22 @@
 			</div>
 		{:else}
 			<p class="italic">There are not yet any images present.</p>
+		{/if}
+
+		{#if userTrained != null && !userTrained}
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="instance_class">
+					<span class="label-text">Select a gender</span>
+				</label>
+				<select class="select select-bordered" id="instance_class" bind:value={instance_class}>
+					<option disabled selected />
+					<option value="man">Man</option>
+					<option value="woman">Woman</option>
+					<option value="couple">Couple</option>
+					<option value="dog">Dog</option>
+					<option value="cat">Cat</option>
+				</select>
+			</div>
 		{/if}
 
 		<Tooltip
