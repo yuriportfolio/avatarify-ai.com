@@ -6,6 +6,25 @@ import { supabaseClientAdmin } from '$lib/db.server';
 
 export const GET: RequestHandler = async (event) => {
 	try {
+		const userID = event.params.slug;
+
+		if (!userID) {
+			throw new Error('ID not valid');
+		}
+
+		return json({});
+	} catch (error) {
+		console.error(error);
+		if (error instanceof Error) {
+			console.error(error.cause);
+			throw svelteError(500, { message: error.message });
+		}
+		throw svelteError(500);
+	}
+};
+
+export const POST: RequestHandler = async (event) => {
+	try {
 		const payload = (await event.request.json()) as ReplicateTrainPayload;
 		const userID = event.params.slug;
 
