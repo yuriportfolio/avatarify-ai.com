@@ -17,7 +17,10 @@ export const POST: RequestHandler = async (event) => {
 			userID,
 			{
 				replicate_version_id: payload.version,
-				replicate_train_status: payload.status
+				replicate_train_status: payload.status,
+				in_training: false,
+				trained: true,
+				end_training: new Date().toISOString()
 			},
 			supabaseClientAdmin
 		);
