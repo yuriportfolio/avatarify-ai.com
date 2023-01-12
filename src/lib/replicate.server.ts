@@ -64,3 +64,39 @@ export async function train(instanceClass: string, user: User) {
 		webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/replicate_complete`
 	});
 }
+
+export interface ReplicatePredictPayload {
+	id: string;
+	version: string;
+	urls: {
+		get: string;
+		cancel: string;
+	};
+	created_at?: string;
+	started_at?: string;
+	completed_at?: string;
+	status: 'starting' | 'processing' | 'succeeded' | 'failed' | 'failed';
+	input: {
+		text: string;
+	};
+	output?: string;
+	error?: string;
+	logs?: string;
+	metrics: {};
+}
+
+export async function predict(
+	version: string,
+	prompt: string,
+	negativePrompt: string,
+	seed: string | undefined
+) {
+	return await getClient<ReplicatePredictPayload>('/v1/predictions', {
+		input: {
+			prompt,
+			negative_prompt: negativePrompt,
+			seed
+		},
+		version
+	});
+}

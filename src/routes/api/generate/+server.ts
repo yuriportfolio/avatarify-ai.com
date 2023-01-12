@@ -1,28 +1,34 @@
 import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
-import { AMQPClient } from '@cloudamqp/amqp-client';
-import {
-	PRIVATE_RABBITMQ_HOST,
-	PRIVATE_RABBITMQ_PASSWORD,
-	PRIVATE_RABBITMQ_PORT,
-	PRIVATE_RABBITMQ_PROTOCOL,
-	PRIVATE_RABBITMQ_USERNAME
-} from '$env/static/private';
 import { supabaseClientAdmin } from '$lib/db.server';
-import { getAdminUserInfo } from '$lib/db';
+import { getAdminUserInfo, handleError } from '$lib/db';
 import { getNegativePrompt, getPrompt, getSubjectName } from '$lib/prompts.server';
 import { PUBLIC_ENV } from '$env/static/public';
-import { generatorIsAwake, startGenerator } from '$lib/aws.server';
+import { Themes } from '$lib/themes';
+import { predict } from '$lib/replicate.server';
+
+interface GeneratePayload {
+	theme: string | undefined;
+	prompt: string | undefined;
+	seed: string | undefined;
+}
 
 export const POST: RequestHandler = async (event) => {
 	try {
-		const body = await event.request.json();
-		const theme = body.theme;
-		let prompt: string | undefined = body.prompt;
-		const seed: string | undefined = body.seed;
-		let negativePrompt = body.negativePrompt;
-		if (!theme && !prompt) {
+		const body = (await event.request.json()) as GeneratePayload;
+		let { theme, prompt, seed } = body;
+
+		if (prompt) {
+			if (prompt.indexOf('SUBJECT') > -1) {
+				prompt = prompt.replaceAll('SUBJECT', getSubjectName());
+			}
+		} else if (theme) {
+			if (!(theme in Themes)) {
+				throw new Error('Theme not valid');
+			}
+			prompt = getPrompt(theme as keyof typeof Themes);
+		} else {
 			throw new Error('Theme not selected');
 		}
 		const { session } = await getSupabase(event);
@@ -37,50 +43,28 @@ export const POST: RequestHandler = async (event) => {
 			throw new Error('Payment required');
 		}
 
-		if (!(await generatorIsAwake())) {
-			await startGenerator();
+		if (user_info.in_training || !user_info.trained || !user_info.replicate_version_id) {
+			throw new Error('Model not trained');
 		}
 
-		const user = session.user;
+		const negativePrompt = getNegativePrompt();
+		console.log({ prompt, negativePrompt, seed });
 
-		const url = `${PRIVATE_RABBITMQ_PROTOCOL}://${encodeURIComponent(
-			PRIVATE_RABBITMQ_USERNAME
-		)}:${encodeURIComponent(
-			PRIVATE_RABBITMQ_PASSWORD
-		)}@${PRIVATE_RABBITMQ_HOST}:${PRIVATE_RABBITMQ_PORT}/`;
-
-		const amqp = new AMQPClient(url);
-		const conn = await amqp.connect();
-		const ch = await conn.channel();
-		const q = await ch.queue('generate_photos');
-
-		if (!prompt) {
-			prompt = getPrompt(theme);
-		} else {
-			if (prompt.indexOf('SUBJECT') > -1) {
-				prompt.replaceAll('SUBJECT', getSubjectName());
-			}
-		}
-		if (!negativePrompt) {
-			negativePrompt = getNegativePrompt(theme);
-		}
-		console.log(prompt, seed);
-		await q.publish(
-			JSON.stringify({
-				theme,
-				prompt,
-				negative_prompt: negativePrompt,
-				seed: parseInt(seed || '') || null
-			}),
-			{
-				contentType: 'application/json',
-				headers: { session: user.id }
-			}
+		const predictResponse = await predict(
+			user_info.replicate_version_id,
+			prompt,
+			negativePrompt,
+			seed
 		);
-		await conn.close();
+		console.log('Predict response', predictResponse);
+
+		supabaseClientAdmin.from('predictions').insert({
+			id: predictResponse.id,
+			user_id: session.user.id
+		});
 
 		if (PUBLIC_ENV == 'DEV') {
-			return json({ done: true, data: { theme, prompt, negativePrompt, seed } });
+			return json({ done: true, data: { theme, prompt, negative_prompt: negativePrompt, seed } });
 		} else {
 			return json({ done: true });
 		}

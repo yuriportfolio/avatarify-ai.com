@@ -29,6 +29,23 @@ export interface Database {
           uid?: string
         }
       }
+      predictions: {
+        Row: {
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+      }
       user_info: {
         Row: {
           created_at: string | null
