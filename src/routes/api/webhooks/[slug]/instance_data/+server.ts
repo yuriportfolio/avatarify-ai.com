@@ -3,7 +3,7 @@ import { error as svelteError } from '@sveltejs/kit';
 import { supabaseClientAdmin } from '$lib/db.server';
 import JSZip from 'jszip';
 
-export const POST: RequestHandler = async (event) => {
+export const GET: RequestHandler = async (event) => {
 	try {
 		console.log(await event.request.text());
 		const userID = event.params.slug;

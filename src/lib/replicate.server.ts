@@ -55,12 +55,12 @@ export async function train(instanceClass: string, user: User) {
 		input: {
 			instance_prompt: `a photo of a ${PUBLIC_REPLICATE_INSTANCE_TOKEN} ${instanceClass}`,
 			class_prompt: `a photo of a ${instanceClass}`,
-			instance_data: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/replicate_complete`,
+			instance_data: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/instance_data`,
 			max_train_steps: Number(PRIVATE_REPLICATE_MAX_TRAIN_STEPS) || 2000,
 			num_class_images: 200,
 			learning_rate: 1e-6
 		},
 		model: `${PRIVATE_REPLICATE_USERNAME}/${user.id}`,
-		webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/instance_data`
+		webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/replicate_complete`
 	});
 }
