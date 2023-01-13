@@ -6,7 +6,10 @@ import { handleError } from '$lib/db';
 
 export const POST: RequestHandler = async (event) => {
 	try {
+		console.log('Prediction complete');
 		const payload = (await event.request.json()) as ReplicatePredictionPayload;
+		console.log(payload);
+		
 		const userID = event.params.slug;
 
 		if (!userID) {
