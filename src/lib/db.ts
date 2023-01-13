@@ -18,10 +18,10 @@ export function handleError<TData, TError extends { message: string }>({
 			data: null;
 			error: TError;
 	  }) {
-	if (data) {
-		return data;
+	if (error) {
+		throw new Error('Db error: ' + error.message || '');
 	} else {
-		throw error?.message || '';
+		return data;
 	}
 }
 
