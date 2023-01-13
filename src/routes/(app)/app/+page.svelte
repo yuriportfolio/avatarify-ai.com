@@ -502,7 +502,7 @@
 			<label class="label" for="theme">
 				<span class="label-text">Choose the style</span>
 			</label>
-			<select class="select select-bordered" id="theme" bind:value={theme}>
+			<select class="select select-bordered capitalize" id="theme" bind:value={theme}>
 				<option disabled selected />
 				{#each getThemes() as theme}
 					<option value={theme} class="capitalize">{theme}</option>

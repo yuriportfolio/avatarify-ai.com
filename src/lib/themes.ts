@@ -103,6 +103,11 @@ export const prompts: { name: string; prompt: string }[] = [
 		name: 'witch',
 		prompt:
 			'closeup portrait of @me as a witch surrounded by magical elements, highly detailed, photorealism, digital painting, dark colors, grayscale, intricate details, art by yuumei, greg rutkowski, eddie hong, and charlie bowater, ultra realism, magical elements.'
+	},
+	{
+		name: 'black and white',
+		prompt:
+			'@me in the style of kentaro miura, 4 k, 8 k, absolute detail of even the smallest details and particles, beautiful shadows, beautiful art, black and white drawing, high rendering of the details of the environment, faces and characters'
 	}
 ];
 
