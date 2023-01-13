@@ -6,21 +6,21 @@ import { handleError } from '$lib/db';
 
 export const POST: RequestHandler = async (event) => {
 	try {
-		console.log('Prediction complete');
 		const payload = (await event.request.json()) as ReplicatePredictionPayload;
-		console.log(payload);
-		
+
 		const userID = event.params.slug;
 
 		if (!userID) {
 			throw new Error('ID not valid');
 		}
 
-		supabaseClientAdmin.from('predictions').upsert({
-			id: payload.id,
-			user_id: userID,
-			status: payload.status
-		});
+		handleError(
+			await supabaseClientAdmin.from('predictions').upsert({
+				id: payload.id,
+				user_id: userID,
+				status: payload.status
+			})
+		);
 
 		const [url] = payload.output || [];
 		if (url) {

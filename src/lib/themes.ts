@@ -108,6 +108,11 @@ export const prompts: { name: string; prompt: string }[] = [
 		name: 'black and white',
 		prompt:
 			'@me in the style of kentaro miura, 4 k, 8 k, absolute detail of even the smallest details and particles, beautiful shadows, beautiful art, black and white drawing, high rendering of the details of the environment, faces and characters'
+	},
+	{
+		name: 'pixar character',
+		prompt:
+			'@me as a character from pixar, au naturel, PS2, PS1, hyper detailed, digital art, trending in artstation, cinematic lighting, studio quality, smooth render, unreal engine 5 rendered, octane rendered, art style by klimt and nixeu and ian sprigger and wlop and krenz cushart.'
 	}
 ];
 
