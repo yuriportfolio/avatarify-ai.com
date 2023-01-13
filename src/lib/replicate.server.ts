@@ -133,9 +133,9 @@ export async function runPrediction(
 			input: {
 				prompt,
 				negative_prompt: negativePrompt,
-				...(seed && !isNaN(parseInt(seed)) ? { seed: parseInt(seed) } : {}),
-				webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/training_complete`
+				...(seed && !isNaN(parseInt(seed)) ? { seed: parseInt(seed) } : {})
 			},
+			webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/training_complete`,
 			version
 		},
 		method: 'POST'
