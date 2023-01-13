@@ -232,6 +232,19 @@
 					complete: true
 				}))
 			);
+			photosGenerated = [
+				...photosGenerated,
+				...(((
+					await supabaseClient
+						.from('predictions')
+						.select('*')
+						.eq('user_id', $page.data.session?.user.id)
+						.in('status', ['starting', 'processing'])
+				).data?.map((image) => ({
+					complete: false,
+					name: `${image.id}.jpg`
+				})) || []) as { complete: false; name: string }[])
+			];
 		} catch (error) {
 			showError(error);
 		} finally {
@@ -437,7 +450,7 @@
 									target="_blank"
 								/>
 							{:else}
-								<div class="aspect-square max-w-[60vw]">
+								<div class="aspect-square max-w-[60vw] bg-slate-300 flex items-center justify-center p-8 rounded-md">
 									<progress class="progress w-56" />
 								</div>
 							{/if}
@@ -459,7 +472,7 @@
 											class="aspect-square h-24"
 										/>
 									{:else}
-										<div class="aspect-square h-24">
+										<div class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm">
 											<progress class="progress" />
 										</div>
 									{/if}
