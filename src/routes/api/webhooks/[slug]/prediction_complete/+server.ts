@@ -8,6 +8,7 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		console.warn('Test');
 		const payload = (await event.request.json()) as ReplicatePredictionPayload;
+		console.warn('Payload', payload);
 
 		const userID = event.params.slug;
 
