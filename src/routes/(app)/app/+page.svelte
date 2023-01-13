@@ -8,11 +8,11 @@
 	import Title from '$lib/components/Title.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import {
-		handleError,
 		supabaseClient,
 		checkUserPaid,
 		checkUserTrained,
-		checkUserInTraining
+		checkUserInTraining,
+		handleErrorAndGetData
 	} from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
 	import { getThemes } from '$lib/themes';
@@ -56,7 +56,7 @@
 		| { complete: false }
 	))[] = [];
 
-	let instance_class = '';
+	let instanceClass = '';
 	let theme = '';
 	let prompt = '';
 	let seed = '';
@@ -69,28 +69,33 @@
 				for (let i = 0; i < inputFiles.files.length; i++) {
 					requests.push(
 						new Promise((resolve, reject) => {
-							new Compressor(inputFiles.files![i], {
-								width: 512,
-								height: 512,
-								resize: 'cover',
-								quality: 1,
-								error(error) {
-									showError(error);
-									reject();
-								},
-								async success(file) {
-									supabaseClient.storage
-										.from('photos-for-training')
-										.upload($page.data.session?.user.id + '/' + file.name, await file.arrayBuffer())
-										.then((result) => {
-											if (result.error) {
-												showError(result.error);
-												reject();
-											}
-											resolve(result);
-										});
-								}
-							});
+							if (inputFiles.files) {
+								new Compressor(inputFiles.files[i], {
+									width: 512,
+									height: 512,
+									resize: 'cover',
+									quality: 1,
+									error(error) {
+										showError(error);
+										reject();
+									},
+									async success(file) {
+										supabaseClient.storage
+											.from('photos-for-training')
+											.upload(
+												$page.data.session?.user.id + '/' + file.name,
+												await file.arrayBuffer()
+											)
+											.then((result) => {
+												if (result.error) {
+													showError(result.error);
+													reject();
+												}
+												resolve(result);
+											});
+									}
+								});
+							}
 						})
 					);
 				}
@@ -110,7 +115,7 @@
 			userInTraining = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
-				body: JSON.stringify({ instance_class }),
+				body: JSON.stringify({ instance_class: instanceClass }),
 				headers: {
 					'content-type': 'application/json'
 				}
@@ -149,7 +154,7 @@
 	}
 
 	async function getSignedUrl(bucket: string, filename: string, thumbnail = true) {
-		return handleError(
+		return handleErrorAndGetData(
 			await supabaseClient.storage.from(bucket).createSignedUrl(
 				$page.data.session?.user.id + '/' + filename,
 				60,
@@ -163,14 +168,14 @@
 					  }
 					: {}
 			)
-		).signedUrl;
+		)?.signedUrl;
 	}
 
 	async function loadPhotosForTraining() {
 		trainingPhotosLoading = true;
 		try {
 			photosForTrain = await Promise.all(
-				handleError(
+				handleErrorAndGetData(
 					await supabaseClient.storage
 						.from('photos-for-training')
 						.list($page.data.session?.user.id, {
@@ -219,7 +224,7 @@
 		generatedPhotosLoading = true;
 		try {
 			photosGenerated = await Promise.all(
-				handleError(
+				handleErrorAndGetData(
 					await supabaseClient.storage.from('photos-generated').list($page.data.session?.user.id, {
 						sortBy: {
 							column: 'created_at',
@@ -266,14 +271,21 @@
 					async (payload) => {
 						if (payload.eventType == 'UPDATE') {
 							if (payload.old.status !== payload.new.status && payload.new.status === 'succeeded') {
-								photosGenerated = [
-									...photosGenerated,
-									{
-										complete: true,
-										name: `${payload.new.id}.jpg`,
-										url: await getSignedUrl('photos-generated', `${payload.new.id}.jpg`, false)
-									}
-								];
+								photosGenerated = await Promise.all(
+									photosGenerated.map(async (photo) => {
+										const name = `${payload.new.id}.jpg`;
+
+										if (photo.name === name) {
+											return {
+												...photo,
+												complete: true,
+												url: await getSignedUrl('photos-generated', `${payload.new.id}.jpg`, false)
+											};
+										} else {
+											return photo;
+										}
+									})
+								);
 							}
 						} else if (payload.eventType == 'INSERT' && payload.new.status !== 'succeeded') {
 							photosGenerated = [
@@ -373,7 +385,7 @@
 				<label class="label" for="instance_class">
 					<span class="label-text">Specify the subject</span>
 				</label>
-				<select class="select select-bordered" id="instance_class" bind:value={instance_class}>
+				<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
 					<option disabled selected />
 					<option value="man">Man</option>
 					<option value="woman">Woman</option>

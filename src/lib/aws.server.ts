@@ -23,7 +23,7 @@ export function startGenerator() {
 				if (err) {
 					reject(err);
 				} else {
-					resolve(data.StartingInstances!.length > 0);
+					resolve((data.StartingInstances?.length || 0) > 0);
 				}
 			}
 		);

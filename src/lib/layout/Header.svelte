@@ -8,7 +8,8 @@
 		class="navbar bg-base-100 drop-shadow-xl sm:rounded-xl mx-auto container max-w-6xl sm:mt-4 w-full"
 	>
 		<div class="navbar-start">
-			<Button ghost link="/" class="text-xl text-gradient font-bold" normalCase>Avatarify AI</Button>
+			<Button ghost link="/" class="text-xl text-gradient font-bold" normalCase>Avatarify AI</Button
+			>
 		</div>
 		<div class="navbar-end gap-2">
 			{#if $page.data.session}

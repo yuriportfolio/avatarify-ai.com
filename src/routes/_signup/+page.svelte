@@ -5,8 +5,8 @@
 	import Input from '$lib/components/Input.svelte';
 	import { supabaseClient } from '$lib/db';
 	import type { AuthError } from '@supabase/supabase-js';
-	let email: string = '';
-	let password: string = '';
+	let email = '';
+	let password = '';
 
 	let error: AuthError | null;
 	async function signup() {

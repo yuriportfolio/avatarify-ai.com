@@ -1,13 +1,13 @@
 <article class="prose px-2 lg:prose-xl container mx-auto">
 	<div>
 		<div>
-			<div><a /><strong>TERMS OF USE</strong></div>
-			<div><a /></div>
+			<div><strong>TERMS OF USE</strong></div>
+
 			<div><strong>Last updated</strong><strong>December 29, 2022</strong></div>
 		</div>
 
 		<div>
-			<div><a /><strong>1. AGREEMENT TO TERMS</strong></div>
+			<div><strong>1. AGREEMENT TO TERMS</strong></div>
 		</div>
 		<div>
 			<div>
@@ -55,7 +55,7 @@
 			</div>
 		</div>
 		<div>
-			<div><a /><strong>2. INTELLECTUAL PROPERTY RIGHTS</strong></div>
+			<div><strong>2. INTELLECTUAL PROPERTY RIGHTS</strong></div>
 		</div>
 		<div>
 			<div>
@@ -82,7 +82,7 @@
 			</div>
 		</div>
 		<div>
-			<div><a /><strong>3. USER REPRESENTATIONS</strong></div>
+			<div><strong>3. USER REPRESENTATIONS</strong></div>
 		</div>
 		<div>
 			<div>
@@ -115,7 +115,7 @@
 					discretion, that such username is inappropriate, obscene, or otherwise objectionable.
 				</div>
 			</div>
-			<div><a /><strong>5. FEES AND PAYMENT</strong></div>
+			<div><strong>5. FEES AND PAYMENT</strong></div>
 			<div>We accept the following forms of payment:</div>
 			<div>
 				<div>
@@ -144,8 +144,7 @@
 				</div>
 			</div>
 			<div>
-				<div><a /></div>
-				<div><a /><strong>6. CANCELLATION</strong></div>
+				<div><strong>6. CANCELLATION</strong></div>
 			</div>
 			<div>
 				<div>
@@ -155,7 +154,7 @@
 			</div>
 			<div>
 				<div>If you are unsatisfied with our services, please email us at __________.</div>
-				<div><a /><strong>7. PROHIBITED ACTIVITIES</strong></div>
+				<div><strong>7. PROHIBITED ACTIVITIES</strong></div>
 			</div>
 			<div>
 				You may not access or use the Site for any purpose other than that for which we make the
@@ -254,7 +253,6 @@
 					<li>Sell or otherwise transfer your profile.</li>
 				</ul>
 			</div>
-			<div><a /></div>
 		</div>
 		<div>
 			<div><strong>8. USER GENERATED CONTRIBUTIONS</strong></div>
@@ -371,7 +369,7 @@
 		</div>
 	</div>
 	<div>
-		<div><a /><strong>10. SUBMISSIONS</strong></div>
+		<div><strong>10. SUBMISSIONS</strong></div>
 	</div>
 	<div>
 		<div>
@@ -386,7 +384,7 @@
 			infringement or misappropriation of any proprietary right in your Submissions.
 		</div>
 	</div>
-	<div><a /><strong>11. SITE MANAGEMENT</strong></div>
+	<div><strong>11. SITE MANAGEMENT</strong></div>
 	<div>
 		<div>
 			We reserve the right, but not the obligation, to: (1) monitor the Site for violations of these
@@ -400,10 +398,9 @@
 			(5) otherwise manage the Site in a manner designed to protect our rights and property and to
 			facilitate the proper functioning of the Site.
 		</div>
-		<div><a /></div>
 	</div>
 	<div>
-		<div><a /><strong>12. TERM AND TERMINATION</strong></div>
+		<div><strong>12. TERM AND TERMINATION</strong></div>
 	</div>
 	<div>
 		<div>
@@ -427,7 +424,7 @@
 		</div>
 	</div>
 	<div>
-		<div><a /><strong>13. MODIFICATIONS AND INTERRUPTIONS</strong></div>
+		<div><strong>13. MODIFICATIONS AND INTERRUPTIONS</strong></div>
 	</div>
 	<div>
 		<div>
@@ -451,7 +448,7 @@
 		</div>
 	</div>
 	<div>
-		<div><a /><strong>14. GOVERNING LAW</strong></div>
+		<div><strong>14. GOVERNING LAW</strong></div>
 		<div>
 			These Terms shall be governed by and defined following the laws of __________. __________ and
 			yourself irrevocably consent that the courts of __________ shall have exclusive jurisdiction
@@ -459,7 +456,7 @@
 		</div>
 	</div>
 	<div>
-		<div><a /><strong>15. DISPUTE RESOLUTION</strong></div>
+		<div><strong>15. DISPUTE RESOLUTION</strong></div>
 	</div>
 	<div>
 		<div><strong>Informal Negotiations</strong></div>

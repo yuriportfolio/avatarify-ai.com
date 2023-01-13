@@ -6,7 +6,22 @@ import type { Database } from './supabase-types';
 
 export const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY);
 
-export function handleError<TData, TError extends { message: string }>({
+export function handleError<TError extends { message: string }>({
+	error
+}:
+	| {
+			error: null;
+	  }
+	| {
+			error: TError;
+	  }) {
+	if (error) {
+		throw new Error(error.message, {
+			cause: error
+		});
+	}
+}
+export function handleErrorAndGetData<TData, TError extends { message: string }>({
 	data,
 	error
 }:
@@ -19,9 +34,13 @@ export function handleError<TData, TError extends { message: string }>({
 			error: TError;
 	  }) {
 	if (error) {
-		throw new Error('Db error: ' + error.message || '');
-	} else {
+		throw new Error(error.message, {
+			cause: error
+		});
+	} else if (data) {
 		return data;
+	} else {
+		throw new Error('Missig db data');
 	}
 }
 
@@ -29,7 +48,7 @@ export const getUserInfo = async () =>
 	(await supabaseClient.from('user_info').select('*', { count: 'exact' }).single()).data;
 
 export const getAdminUserInfo = async (userID: string, client: TypedSupabaseClient) =>
-	handleError(
+	handleErrorAndGetData(
 		await client.from('user_info').select('*', { count: 'exact' }).eq('id', userID).single()
 	);
 

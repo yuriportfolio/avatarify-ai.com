@@ -14,7 +14,7 @@
 </div>
 <div class="marquee w-full">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
-		{#each first as image, i}
+		{#each first as image}
 			<div class="carousel-item">
 				<img
 					src={image}

@@ -6,7 +6,10 @@ import { createClient } from '@supabase/auth-helpers-sveltekit';
 
 export const supabaseClientAdmin = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
-export const getSupabaseClient = async (session: { access_token: string; refresh_token: string }) => {
+export const getSupabaseClient = async (session: {
+	access_token: string;
+	refresh_token: string;
+}) => {
 	const client = createClientBase(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY, {
 		auth: {
 			persistSession: false
