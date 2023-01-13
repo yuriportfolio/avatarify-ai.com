@@ -450,7 +450,9 @@
 									target="_blank"
 								/>
 							{:else}
-								<div class="aspect-square max-w-[60vw] bg-slate-300 flex items-center justify-center p-8 rounded-md">
+								<div
+									class="aspect-square max-w-[60vw] bg-slate-300 flex items-center justify-center p-8 rounded-md"
+								>
 									<progress class="progress w-56" />
 								</div>
 							{/if}
@@ -472,7 +474,9 @@
 											class="aspect-square h-24"
 										/>
 									{:else}
-										<div class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm">
+										<div
+											class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm"
+										>
 											<progress class="progress" />
 										</div>
 									{/if}

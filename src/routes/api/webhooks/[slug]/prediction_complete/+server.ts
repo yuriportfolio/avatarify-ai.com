@@ -25,7 +25,7 @@ export const POST: RequestHandler = async (event) => {
 			handleError(
 				await supabaseClientAdmin.storage
 					.from('photos-generated')
-					.upload(`${payload.id}.jpg`, await image.arrayBuffer())
+					.upload(`${userID}/${payload.id}.jpg`, await image.arrayBuffer())
 			);
 		} else {
 			throw new Error('Missing url', {
