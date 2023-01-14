@@ -28,10 +28,11 @@
 	let generatedPhotosLoading = false;
 	let generating = false;
 	let photosForTrain: { url: string; name: string }[] = [];
-	let photosGenerated: ({ name: string } & (
-		| { url: string; complete: true }
+	type GeneratedPhoto = { id: string; path: string } & (
+		| { url: string; thumb: string; complete: true }
 		| { complete: false }
-	))[] = [];
+	);
+	let photosGenerated: GeneratedPhoto[] = [];
 
 	let instanceClass = '';
 	let theme = '';
@@ -187,35 +188,49 @@
 	async function deletePhotoGenerated(index: number) {
 		const photoToDelete = photosGenerated[index];
 		photosGenerated = photosGenerated.filter((photo) => photo !== photoToDelete);
-		try {
-			await supabaseClient.storage
-				.from('photos-generated')
-				.remove([$page.data.session?.user.id + '/' + photoToDelete.name]);
-		} catch (error) {
-			showError(error);
+		if (photoToDelete.complete) {
+			try {
+				await supabaseClient.storage.from('photos-generated').remove([photoToDelete.path]);
+			} catch (error) {
+				showError(error);
+			}
+		}
+	}
+
+	async function downloadPhoto(photo: GeneratedPhoto) {
+		if (photo.complete) {
+			await supabaseClient.storage.from('photos-generated').download(photo.path);
 		}
 	}
 
 	async function loadPhotoGenerated() {
 		generatedPhotosLoading = true;
 		try {
-			const { data: photos } = await supabaseClient.storage
-				.from('photos-generated')
-				.list($page.data.session?.user.id, {
+			photosGenerated = handleErrorAndGetData(
+				await supabaseClient.storage.from('photos-generated').list($page.data.session?.user.id, {
 					sortBy: {
 						column: 'created_at',
 						order: 'asc'
 					}
-				});
-			if (photos) {
-				photosGenerated = await Promise.all(
-					photos.map(async (file) => ({
-						url: await getSignedUrl('photos-generated', file.name),
-						name: file.name,
-						complete: true
-					}))
-				);
-			}
+				})
+			).map((photo) => ({
+				complete: true,
+				id: photo.name,
+				path: `${$page.data.session?.user.id}/${photo.name}`,
+				url: supabaseClient.storage
+					.from('photos-generated')
+					.getPublicUrl(`${$page.data.session?.user.id}/${photo.name}`).data.publicUrl,
+				thumb: supabaseClient.storage
+					.from('photos-generated')
+					.getPublicUrl(`${$page.data.session?.user.id}/${photo.name}`, {
+						transform: {
+							width: 96,
+							height: 96,
+							resize: 'contain'
+						}
+					}).data.publicUrl
+			}));
+
 			photosGenerated = [
 				...photosGenerated,
 				...(((
@@ -226,8 +241,9 @@
 						.in('status', ['starting', 'processing'])
 				).data?.map((image) => ({
 					complete: false,
-					name: `${image.id}.jpg`
-				})) || []) as { complete: false; name: string }[])
+					id: image.id,
+					path: `${$page.data.session?.user.id}/${image.id}`
+				})) || []) as { complete: false; id: string; path: string }[])
 			];
 		} catch (error) {
 			showError(error);
@@ -253,13 +269,15 @@
 							if (payload.old.status !== payload.new.status && payload.new.status === 'succeeded') {
 								photosGenerated = await Promise.all(
 									photosGenerated.map(async (photo) => {
-										const name = `${payload.new.id}.jpg`;
-
-										if (photo.name === name) {
+										if (photo.id === payload.new.id) {
 											return {
 												...photo,
 												complete: true,
-												url: await getSignedUrl('photos-generated', `${payload.new.id}.jpg`, false)
+												url: (
+													await supabaseClient.storage
+														.from('photos-generated')
+														.getPublicUrl(photo.path)
+												).data.publicUrl
 											};
 										} else {
 											return photo;
@@ -272,7 +290,8 @@
 								...photosGenerated,
 								{
 									complete: false,
-									name: `${payload.new.id}.jpg`
+									id: payload.new.id,
+									path: `${$page.data.session?.user.id}/${payload.new.id}`
 								}
 							];
 						}
@@ -448,8 +467,7 @@
 										size="small"
 										circle
 										primary
-										link={image.url}
-										download
+										on:click={() => downloadPhoto(image)}
 										target="_blank"
 									/>
 								{:else}
@@ -470,12 +488,7 @@
 								<div class="relative group">
 									<a href={`#photo_${index}`}>
 										{#if image.complete}
-											<img
-												src={image.url}
-												loading="eager"
-												alt={image.name}
-												class="aspect-square h-24"
-											/>
+											<img src={image.url} loading="eager" class="aspect-square h-24" />
 										{:else}
 											<div
 												class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm"
@@ -484,14 +497,16 @@
 											</div>
 										{/if}
 									</a>
-									<Button
-										class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
-										icon="close"
-										size="small"
-										circle
-										primary
-										on:click={() => deletePhotoGenerated(index)}
-									/>
+									{#if image.complete}
+										<Button
+											class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
+											icon="close"
+											size="small"
+											circle
+											primary
+											on:click={() => deletePhotoGenerated(index)}
+										/>
+									{/if}
 								</div>
 							{/each}
 						</div>
