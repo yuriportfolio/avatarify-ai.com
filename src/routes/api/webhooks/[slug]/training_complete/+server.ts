@@ -7,14 +7,15 @@ import { supabaseClientAdmin } from '$lib/db.server';
 export const POST: RequestHandler = async (event) => {
 	try {
 		const payload = (await event.request.json()) as ReplicateTrainPayload;
-		console.log('Payload', payload);
+		const { logs: _, ...rest } = payload;
+		console.log('Payload', rest);
 		const userID = event.params.slug;
 
 		if (!userID) {
 			throw new Error('ID not valid');
 		}
 
-		updateAdminUserInfo(
+		await updateAdminUserInfo(
 			userID,
 			{
 				replicate_version_id: payload.version,

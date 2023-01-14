@@ -8,6 +8,10 @@ export function getSubjectName() {
 	return PRIVATE_REPLICATE_INSTANCE_TOKEN;
 }
 
-export function getReplacedPrompt(prompt: string) {
-	return prompt.replaceAll('@me', getSubjectName());
+export const getRefinedInstanceClass = (instanceClass: string | null) => {
+	return instanceClass === 'man' || instanceClass === 'woman' ? 'person' : instanceClass;
+};
+
+export function getReplacedPrompt(prompt: string, instanceClass: string | null) {
+	return prompt.replaceAll('@me', `${getSubjectName()} ${getRefinedInstanceClass(instanceClass)}`);
 }

@@ -109,7 +109,7 @@ export const POST: RequestHandler = async (event) => {
 
 		const predictionResponse = await runPrediction(
 			userInfo.replicate_version_id,
-			getReplacedPrompt(prompt),
+			getReplacedPrompt(prompt, userInfo.instance_class),
 			negativePrompt,
 			seed,
 			user

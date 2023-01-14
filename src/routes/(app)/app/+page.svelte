@@ -7,42 +7,19 @@
 	import Input from '$lib/components/Input.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
-	import {
-		supabaseClient,
-		checkUserPaid,
-		checkUserTrained,
-		checkUserInTraining,
-		handleErrorAndGetData
-	} from '$lib/db';
+	import { supabaseClient, handleErrorAndGetData, getUserInfo } from '$lib/db';
 	import type { Database } from '$lib/supabase-types';
 	import { getThemes } from '$lib/themes';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
 	import { PUBLIC_ENV } from '$env/static/public';
 
-	let userPaid: boolean | null = null;
-	function updateUserPaid() {
-		checkUserPaid().then((value) => {
-			userPaid = value;
-		});
-	}
-	updateUserPaid();
+	let userInfo: Database['public']['Tables']['user_info']['Row'] | null = null;
 
-	let userTrained: boolean | null = null;
-	function updateUserTrained() {
-		checkUserTrained().then((value) => {
-			userTrained = value;
-		});
+	async function updateUserInfo() {
+		userInfo = await getUserInfo();
 	}
-	updateUserTrained();
-
-	let userInTraining: boolean | null = null;
-	function updateUserInTraining() {
-		checkUserInTraining().then((value) => {
-			userInTraining = value;
-		});
-	}
-	updateUserInTraining();
+	updateUserInfo();
 
 	let uploadLoading = false;
 	let inputFiles: HTMLInputElement;
@@ -112,7 +89,8 @@
 
 	async function train() {
 		try {
-			userInTraining = true;
+			if (!userInfo) return;
+			userInfo.in_training = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
 				body: JSON.stringify({ instance_class: instanceClass }),
@@ -305,7 +283,7 @@
 			const subscriptionInfoChange = supabaseClient
 				.channel('public:user_info')
 				.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_info' }, () => {
-					updateUserInTraining();
+					updateUserInfo();
 				});
 
 			return () => {
@@ -317,192 +295,73 @@
 </script>
 
 <div class="w-full max-w-2xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
-	<ul class="steps">
-		<li class="step" class:step-primary={!!userPaid}>Payment</li>
-		<li class="step" class:step-primary={!!userPaid && photosForTrain.length > 0}>
-			Upload your photos
-		</li>
-		<li class="step" class:step-primary={!!userPaid && userTrained}>Train the AI</li>
-		<li class="step" class:step-primary={!!userPaid && photosGenerated.length > 0}>
-			Generate your avatars
-		</li>
-	</ul>
-
-	<div class="w-full bg-white shadow rounded-lg p-6">
-		<Title class="mb-4">Pay with Stripe</Title>
-		<div class="flex flex-row justify-center w-full">
-			{#if userPaid == null}
-				<progress class="progress" />
-			{:else if userPaid}
-				<Button size="small" disabled>Paid</Button>
-			{:else}
-				<Button size="small" link="/checkout" gradient>Pay now</Button>
-			{/if}
-		</div>
-	</div>
-
-	<form
-		on:submit|preventDefault={onUploadSubmit}
-		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
-	>
-		<Title>Upload your photos</Title>
-		<Input bind:input={inputFiles} type="file" name="photos" multiple disabled={!userPaid} />
-		<Button size="small" type="submit" loading={uploadLoading} disabled={!userPaid}>Invia</Button>
-	</form>
-	<div
-		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
-	>
-		<Title>Photos for training</Title>
-		{#if trainingPhotosLoading}
-			<progress class="progress" />
-		{:else if photosForTrain.length > 0}
-			<div class="flex flex-col items-center">
-				<div
-					class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
-				>
-					{#each photosForTrain as image, index}
-						<div class="relative group">
-							<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-
-							{#if !userInTraining && !userTrained}
-								<Button
-									class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
-									icon="close"
-									size="small"
-									circle
-									primary
-									on:click={() => deletePhotoForTraining(index)}
-								/>
-							{/if}
-						</div>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="italic">There are not yet any images present.</p>
-		{/if}
-
-		{#if userTrained != null && !userTrained && userInTraining != null && !userInTraining}
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="instance_class">
-					<span class="label-text">Specify the subject</span>
-				</label>
-				<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
-					<option disabled selected />
-					<option value="man">Man</option>
-					<option value="woman">Woman</option>
-					<option value="couple">Couple</option>
-					<option value="dog">Dog</option>
-					<option value="cat">Cat</option>
-				</select>
-			</div>
-		{/if}
-
-		<Tooltip
-			message={userTrained
-				? ''
-				: 'Caution: If you continue, you will not be able to upload any more photos.'}
-		>
-			<Button
-				size="small"
-				type="button"
-				on:click={() => train()}
-				disabled={!userPaid ||
-					photosForTrain.length == 0 ||
-					userTrained == null ||
-					userTrained ||
-					userInTraining == null ||
-					userInTraining}
-				loading={userInTraining == null || userInTraining}
-			>
-				{#if userInTraining}
-					In training
-				{:else if userTrained}
-					Trained
+	{#if userInfo}
+		<ul class="steps">
+			<li class="step" class:step-primary={!!userInfo.paid}>Payment</li>
+			<li class="step" class:step-primary={!!userInfo.paid && photosForTrain.length > 0}>
+				Upload your photos
+			</li>
+			<li class="step" class:step-primary={!!userInfo.paid && userInfo.trained}>Train the AI</li>
+			<li class="step" class:step-primary={!!userInfo.paid && photosGenerated.length > 0}>
+				Generate your avatars
+			</li>
+		</ul>
+		<div class="w-full bg-white shadow rounded-lg p-6">
+			<Title class="mb-4">Pay with Stripe</Title>
+			<div class="flex flex-row justify-center w-full">
+				{#if userInfo.paid == null}
+					<progress class="progress" />
+				{:else if userInfo.paid}
+					<Button size="small" disabled>Paid</Button>
 				{:else}
-					Start training
+					<Button size="small" link="/checkout" gradient>Pay now</Button>
 				{/if}
-			</Button>
-		</Tooltip>
-	</div>
-	<div
-		class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
-	>
-		<Title>Generate photos</Title>
-		<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
-			{#if generatedPhotosLoading}
+			</div>
+		</div>
+
+		{#if !userInfo.trained && !userInfo.in_training}
+			<form
+				on:submit|preventDefault={onUploadSubmit}
+				class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
+			>
+				<Title>Upload your photos</Title>
+				<Input
+					bind:input={inputFiles}
+					type="file"
+					name="photos"
+					multiple
+					disabled={!userInfo.paid}
+				/>
+				<Button size="small" type="submit" loading={uploadLoading} disabled={!userInfo.paid}
+					>Invia</Button
+				>
+			</form>
+		{/if}
+		<div
+			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
+		>
+			<Title>Photos for training</Title>
+			{#if trainingPhotosLoading}
 				<progress class="progress" />
-			{:else if photosGenerated.length > 0}
-				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
-					{#each photosGenerated as image, index}
-						<div class="carousel-item relative group aspect-square" id={`photo_${index}`}>
-							{#if image.complete}
-								<img
-									src={image.url}
-									loading="eager"
-									alt=""
-									class="aspect-square rounded-box max-w-[60vw]"
-								/>
-
-								<Button
-									class="absolute right-3 top-3 text-white opacity-0 group-hover:opacity-100"
-									icon="close"
-									size="small"
-									circle
-									primary
-									on:click={() => deletePhotoGenerated(index)}
-								/>
-
-								<Button
-									class="absolute right-3 bottom-3 text-white opacity-0 group-hover:opacity-100"
-									icon="download"
-									size="small"
-									circle
-									primary
-									link={image.url}
-									download
-									target="_blank"
-								/>
-							{:else}
-								<div
-									class="aspect-square max-w-[60vw] bg-slate-300 flex items-center justify-center p-8 rounded-md"
-								>
-									<progress class="progress w-56" />
-								</div>
-							{/if}
-						</div>
-					{/each}
-				</div>
+			{:else if photosForTrain.length > 0}
 				<div class="flex flex-col items-center">
 					<div
 						class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
 					>
-						{#each photosGenerated as image, index}
+						{#each photosForTrain as image, index}
 							<div class="relative group">
-								<a href={`#photo_${index}`}>
-									{#if image.complete}
-										<img
-											src={image.url}
-											loading="eager"
-											alt={image.name}
-											class="aspect-square h-24"
-										/>
-									{:else}
-										<div
-											class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm"
-										>
-											<progress class="progress" />
-										</div>
-									{/if}
-								</a>
-								<Button
-									class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
-									icon="close"
-									size="small"
-									circle
-									primary
-									on:click={() => deletePhotoGenerated(index)}
-								/>
+								<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
+
+								{#if !userInfo.in_training && !userInfo.trained}
+									<Button
+										class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
+										icon="close"
+										size="small"
+										circle
+										primary
+										on:click={() => deletePhotoForTraining(index)}
+									/>
+								{/if}
 							</div>
 						{/each}
 					</div>
@@ -510,36 +369,172 @@
 			{:else}
 				<p class="italic">There are not yet any images present.</p>
 			{/if}
+
+			{#if !userInfo.trained && !userInfo.in_training}
+				<div class="form-control w-full max-w-xs">
+					<label class="label" for="instance_class">
+						<span class="label-text">Specify the subject</span>
+					</label>
+					<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
+						<option disabled selected />
+						<option value="man">Man</option>
+						<option value="woman">Woman</option>
+						<option value="couple">Couple</option>
+						<option value="dog">Dog</option>
+						<option value="cat">Cat</option>
+					</select>
+				</div>
+			{/if}
+
+			<Tooltip
+				message={userInfo.trained
+					? ''
+					: 'Caution: If you continue, you will not be able to upload any more photos.'}
+			>
+				<Button
+					size="small"
+					type="button"
+					on:click={() => train()}
+					disabled={!userInfo.paid ||
+						photosForTrain.length == 0 ||
+						userInfo.trained ||
+						userInfo.in_training}
+					loading={userInfo.in_training}
+				>
+					{#if userInfo.in_training}
+						In training
+					{:else if userInfo.trained}
+						Trained
+					{:else}
+						Start training
+					{/if}
+				</Button>
+				{#if userInfo.in_training}
+					<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
+				{/if}
+			</Tooltip>
 		</div>
-		<!-- Move to component -->
-		<div class="form-control w-full max-w-xs">
-			<label class="label" for="theme">
-				<span class="label-text">Choose the style</span>
-			</label>
-			<select class="select select-bordered capitalize" id="theme" bind:value={theme}>
-				<option disabled selected />
-				{#each getThemes() as theme}
-					<option value={theme} class="capitalize">{theme}</option>
-				{/each}
-			</select>
-		</div>
-		{#if PUBLIC_ENV !== 'PRODUCTION'}
-			<Input
-				name="prompt"
-				bind:value={prompt}
-				type="textarea"
-				placeholder="Prompt"
-				block
-				containerClass="w-full max-w-xs"
-			/>
-			<Input name="seed" bind:value={seed} placeholder="Seed" />
-		{/if}
-		<Button
-			size="small"
-			type="button"
-			on:click={() => prediction()}
-			disabled={!userPaid || !userTrained || generating || userInTraining == null || userInTraining}
-			loading={generating}>Generate</Button
+		<div
+			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
 		>
-	</div>
+			<Title
+				>Generate photos ({userInfo.counter}) <Button
+					icon="autorenew"
+					on:click={loadPhotoGenerated}
+				/></Title
+			>
+			<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
+				{#if generatedPhotosLoading}
+					<progress class="progress" />
+				{:else if photosGenerated.length > 0}
+					<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
+						{#each photosGenerated as image, index}
+							<div class="carousel-item relative group aspect-square" id={`photo_${index}`}>
+								{#if image.complete}
+									<img
+										src={image.url}
+										loading="eager"
+										alt=""
+										class="aspect-square rounded-box max-w-[60vw]"
+									/>
+
+									<Button
+										class="absolute right-3 top-3 text-white opacity-0 group-hover:opacity-100"
+										icon="close"
+										size="small"
+										circle
+										primary
+										on:click={() => deletePhotoGenerated(index)}
+									/>
+
+									<Button
+										class="absolute right-3 bottom-3 text-white opacity-0 group-hover:opacity-100"
+										icon="download"
+										size="small"
+										circle
+										primary
+										link={image.url}
+										download
+										target="_blank"
+									/>
+								{:else}
+									<div
+										class="aspect-square max-w-[60vw] bg-slate-300 flex items-center justify-center p-8 rounded-md"
+									>
+										<progress class="progress w-56" />
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+					<div class="flex flex-col items-center">
+						<div
+							class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
+						>
+							{#each photosGenerated as image, index}
+								<div class="relative group">
+									<a href={`#photo_${index}`}>
+										{#if image.complete}
+											<img
+												src={image.url}
+												loading="eager"
+												alt={image.name}
+												class="aspect-square h-24"
+											/>
+										{:else}
+											<div
+												class="aspect-square h-24 bg-slate-300 flex items-center justify-center p-4 rounded-sm"
+											>
+												<progress class="progress" />
+											</div>
+										{/if}
+									</a>
+									<Button
+										class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
+										icon="close"
+										size="small"
+										circle
+										primary
+										on:click={() => deletePhotoGenerated(index)}
+									/>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{:else}
+					<p class="italic">There are not yet any images present.</p>
+				{/if}
+			</div>
+			<!-- Move to component -->
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="theme">
+					<span class="label-text">Choose the style</span>
+				</label>
+				<select class="select select-bordered capitalize" id="theme" bind:value={theme}>
+					<option disabled selected />
+					{#each getThemes() as theme}
+						<option value={theme} class="capitalize">{theme}</option>
+					{/each}
+				</select>
+			</div>
+			{#if PUBLIC_ENV !== 'PRODUCTION'}
+				<Input
+					name="prompt"
+					bind:value={prompt}
+					type="textarea"
+					placeholder="Prompt"
+					block
+					containerClass="w-full max-w-xs"
+				/>
+				<Input name="seed" bind:value={seed} placeholder="Seed" />
+			{/if}
+			<Button
+				size="small"
+				type="button"
+				on:click={() => prediction()}
+				disabled={!userInfo.paid || !userInfo.trained || generating || userInfo.in_training}
+				loading={generating}>Generate</Button
+			>
+		</div>
+	{/if}
 </div>
