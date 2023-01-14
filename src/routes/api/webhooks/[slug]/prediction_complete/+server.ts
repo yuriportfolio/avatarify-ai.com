@@ -16,15 +16,6 @@ export const POST: RequestHandler = async (event) => {
 			throw new Error('ID not valid');
 		}
 
-		handleError(
-			await supabaseClientAdmin.from('predictions').upsert({
-				id: payload.id,
-				user_id: userID,
-				status: payload.status,
-				completed_at: new Date().toISOString()
-			})
-		);
-
 		const [url] = payload.output || [];
 		if (url) {
 			const image = await fetch(url);
@@ -38,6 +29,15 @@ export const POST: RequestHandler = async (event) => {
 				cause: payload
 			});
 		}
+
+		handleError(
+			await supabaseClientAdmin.from('predictions').upsert({
+				id: payload.id,
+				user_id: userID,
+				status: payload.status,
+				completed_at: new Date().toISOString()
+			})
+		);
 
 		return json({});
 	} catch (error) {
