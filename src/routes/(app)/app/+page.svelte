@@ -532,7 +532,7 @@
 				block
 				containerClass="w-full max-w-xs"
 			/>
-			<!-- <Input name="seed" bind:value={seed} placeholder="Seed" /> -->
+			<Input name="seed" bind:value={seed} placeholder="Seed" />
 		{/if}
 		<Button
 			size="small"
