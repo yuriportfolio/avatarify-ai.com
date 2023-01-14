@@ -20,15 +20,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		switch (event.type) {
 			case 'checkout.session.completed': {
 				const session = event.data.object as Stripe.Checkout.Session;
-				const client_reference_id = session.client_reference_id;
+				const clientReferenceID = session.client_reference_id;
 				const email = session.customer_email || session.customer_details?.email;
 				console.log('session: ', session);
-				if (client_reference_id || email) {
+				if (clientReferenceID || email) {
 					let user: User | null = null;
 
-					if (client_reference_id) {
+					if (clientReferenceID) {
 						const { data, error } = await supabaseClientAdmin.auth.admin.getUserById(
-							client_reference_id
+							clientReferenceID
 						);
 						if (error) {
 							throw error;
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
 							throw errorUpsert;
 						}
 					} else {
-						throw new Error(`User not found: ref_id ${client_reference_id}, email:${email}`);
+						throw new Error(`User not found: ref_id ${clientReferenceID}, email:${email}`);
 					}
 				} else {
 					throw new Error('Missing reference id and email');

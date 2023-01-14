@@ -1,102 +1,96 @@
 import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
-import { AMQPClient } from '@cloudamqp/amqp-client';
-import {
-	PRIVATE_RABBITMQ_HOST,
-	PRIVATE_RABBITMQ_PASSWORD,
-	PRIVATE_RABBITMQ_PORT,
-	PRIVATE_RABBITMQ_PROTOCOL,
-	PRIVATE_RABBITMQ_USERNAME
-} from '$env/static/private';
-import { getSupabaseClient, supabaseClientAdmin } from '$lib/db.server';
-import { checkUserPaid } from '$lib/db';
-import { generatorIsAwake, startGenerator } from '$lib/aws.server';
+import { supabaseClientAdmin } from '$lib/db.server';
+import { getAdminUserInfo, updateAdminUserInfo } from '$lib/db';
 import { PUBLIC_ENV } from '$env/static/public';
+import { getTrainingStatus, runTrain } from '$lib/replicate.server';
+
+// Update the train status
+export const GET: RequestHandler = async (event) => {
+	try {
+		const { session } = await getSupabase(event);
+
+		if (!session) {
+			throw new Error('Session not valid');
+		}
+		const user = session.user;
+
+		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
+
+		if (!userInfo.paid) {
+			throw new Error('Payment required');
+		}
+		if (!userInfo.trained && userInfo.in_training) {
+			const trainResult = await getTrainingStatus(user);
+			console.log('Train result', trainResult);
+			if (trainResult.status === 'succeeded') {
+				await updateAdminUserInfo(
+					user.id,
+					{
+						replicate_version_id: trainResult.version,
+						replicate_train_status: trainResult.status,
+						in_training: false,
+						trained: true
+					},
+					supabaseClientAdmin
+				);
+			}
+		}
+
+		return json({ trained: true });
+	} catch (error) {
+		console.error(error);
+		if (error instanceof Error) {
+			console.error(error.cause);
+			throw svelteError(500, { message: error.message });
+		}
+		throw svelteError(500);
+	}
+};
 
 export const POST: RequestHandler = async (event) => {
 	try {
 		if (PUBLIC_ENV === 'STAGING') {
 			throw new Error("Can't train in staging");
 		}
+
+		const body = await event.request.json();
+		const instanceClass: string | undefined = body.instance_class;
+		if (!instanceClass) {
+			throw new Error('Subject not selected');
+		}
+
 		const { session } = await getSupabase(event);
 
 		if (!session) {
 			throw new Error('Session not valid');
 		}
-
-		const supabaseClient = await getSupabaseClient({
-			access_token: session.access_token,
-			refresh_token: session.refresh_token
-		});
-
-		if (!(await checkUserPaid(supabaseClient))) {
-			throw new Error('Payment required');
-		}
-
-		if (!(await generatorIsAwake())) {
-			await startGenerator();
-		}
-
 		const user = session.user;
 
-		const url = `${PRIVATE_RABBITMQ_PROTOCOL}://${encodeURIComponent(
-			PRIVATE_RABBITMQ_USERNAME
-		)}:${encodeURIComponent(
-			PRIVATE_RABBITMQ_PASSWORD
-		)}@${PRIVATE_RABBITMQ_HOST}:${PRIVATE_RABBITMQ_PORT}/`;
+		await updateAdminUserInfo(user.id, { instance_class: instanceClass }, supabaseClientAdmin);
 
-		const amqp = new AMQPClient(url);
-		const conn = await amqp.connect();
-		const ch = await conn.channel();
-		const q = await ch.queue('train_photos');
+		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
 
-		const { data: photos, error } = await supabaseClientAdmin.storage
-			.from('photos-for-training')
-			.list(user.id);
-
-		if (error) {
-			throw new Error("Can't list photos", { cause: error });
+		if (!userInfo.paid) {
+			throw new Error('Payment required');
+		}
+		if (userInfo.in_training || userInfo.trained) {
+			throw new Error('Can not train multiple times');
 		}
 
-		const listToSend: { base64: string; filename: string }[] = [];
+		const trainResult = await runTrain(instanceClass, user);
+		console.log('Train result', trainResult);
 
-		if (photos.length == 0 || photos.length > 100) {
-			throw new Error('Wrong photos number');
-		}
-
-		for (const image of photos) {
-			const { data: photo, error } = await supabaseClientAdmin.storage
-				.from('photos-for-training')
-				.download(user.id + '/' + image.name);
-			if (error) {
-				throw new Error("Can't download photo", { cause: error });
-			}
-			if (photo) {
-				listToSend.push({
-					base64: Buffer.from(await photo.arrayBuffer()).toString('base64'),
-					filename: image.name
-				});
-			}
-		}
-		await q.publish(JSON.stringify({ images: listToSend }), {
-			contentType: 'application/json',
-			headers: { session: user.id }
-		});
-		await conn.close();
-
-		const { count, error: updateError } = await supabaseClientAdmin
-			.from('user_info')
-			.update({
-				in_training: true
-			})
-			.eq('id', user.id);
-		if (updateError) {
-			throw new Error("Can't update user state", { cause: updateError });
-		}
-		if (count == 0) {
-			throw new Error("Can't find user info");
-		}
+		await updateAdminUserInfo(
+			user.id,
+			{
+				in_training: true,
+				start_training: new Date().toISOString(),
+				replicate_model_id: trainResult.id
+			},
+			supabaseClientAdmin
+		);
 
 		return json({ message: '' });
 	} catch (error) {

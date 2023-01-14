@@ -8,7 +8,6 @@
 		stopMessageTimeout
 	} from '$lib/utilities';
 	import Alert from '$lib/components/Alert.svelte';
-	import { identity } from 'svelte/internal';
 
 	beforeNavigate(() => {
 		resetMessages();

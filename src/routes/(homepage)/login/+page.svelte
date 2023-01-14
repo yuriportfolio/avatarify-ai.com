@@ -2,25 +2,24 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
-	import { supabaseClient } from '$lib/db';
+	import { handleError, supabaseClient } from '$lib/db';
 	import { getBaseUrl, showError, showInfo } from '$lib/utilities';
 
-	let email: string = '';
+	let email = '';
 	let loadingSubmit = false;
 	let loadingGoogle = false;
 
 	async function login() {
 		loadingSubmit = true;
 		try {
-			const { error } = await supabaseClient.auth.signInWithOtp({
-				email,
-				options: {
-					emailRedirectTo: getBaseUrl() + '/app'
-				}
-			});
-			if (error) {
-				throw error.message;
-			}
+			handleError(
+				await supabaseClient.auth.signInWithOtp({
+					email,
+					options: {
+						emailRedirectTo: getBaseUrl() + '/app'
+					}
+				})
+			);
 			showInfo('Please access the link we just sent you via email.');
 		} catch (error) {
 			if (error) {
@@ -34,15 +33,15 @@
 	async function loginWithGoogle() {
 		loadingGoogle = true;
 		try {
-			const { error } = await supabaseClient.auth.signInWithOAuth({
-				provider: 'google',
-				options: {
-					redirectTo: getBaseUrl() + '/app'
-				}
-			});
-			if (error) {
-				throw error.message;
-			}
+			handleError(
+				await supabaseClient.auth.signInWithOAuth({
+					provider: 'google',
+					options: {
+						redirectTo: getBaseUrl() + '/app'
+					}
+				})
+			);
+
 			goto('/app');
 		} catch (error) {
 			showError(error);

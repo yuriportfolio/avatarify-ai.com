@@ -11,51 +11,83 @@ export interface Database {
     Tables: {
       photos: {
         Row: {
-          id: number
           created_at: string | null
-          uid: string
+          id: number
           name: string
+          uid: string
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          uid: string
+          id?: number
           name: string
+          uid: string
         }
         Update: {
-          id?: number
           created_at?: string | null
-          uid?: string
+          id?: number
           name?: string
+          uid?: string
+        }
+      }
+      predictions: {
+        Row: {
+          completed_at: string | null
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          status?: string | null
+          user_id?: string
         }
       }
       user_info: {
         Row: {
-          id: string
           created_at: string | null
-          paid: boolean
-          trained: boolean
-          in_training: boolean
-          start_training: string | null
           end_training: string | null
+          id: string
+          in_training: boolean
+          instance_class: string | null
+          paid: boolean
+          replicate_model_id: string | null
+          replicate_train_status: string | null
+          replicate_version_id: string | null
+          start_training: string | null
+          trained: boolean
         }
         Insert: {
-          id: string
           created_at?: string | null
-          paid?: boolean
-          trained?: boolean
-          in_training?: boolean
-          start_training?: string | null
           end_training?: string | null
+          id: string
+          in_training?: boolean
+          instance_class?: string | null
+          paid?: boolean
+          replicate_model_id?: string | null
+          replicate_train_status?: string | null
+          replicate_version_id?: string | null
+          start_training?: string | null
+          trained?: boolean
         }
         Update: {
-          id?: string
           created_at?: string | null
-          paid?: boolean
-          trained?: boolean
-          in_training?: boolean
-          start_training?: string | null
           end_training?: string | null
+          id?: string
+          in_training?: boolean
+          instance_class?: string | null
+          paid?: boolean
+          replicate_model_id?: string | null
+          replicate_train_status?: string | null
+          replicate_version_id?: string | null
+          start_training?: string | null
+          trained?: boolean
         }
       }
     }

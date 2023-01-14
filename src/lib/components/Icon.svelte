@@ -13,5 +13,5 @@
 		'text-lg': size == 'large'
 	})}
 >
-{@html `&#x${Icons[name]};`}
+	{@html `&#x${Icons[name]};`}
 </span>

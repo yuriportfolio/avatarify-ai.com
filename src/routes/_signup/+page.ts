@@ -7,4 +7,5 @@ export const load: PageLoad = async (event) => {
 	if (session) {
 		throw redirect(303, '/');
 	}
+	return { session };
 };
