@@ -51,6 +51,7 @@ export interface Database {
       }
       user_info: {
         Row: {
+          counter: number
           created_at: string | null
           end_training: string | null
           id: string
@@ -64,6 +65,7 @@ export interface Database {
           trained: boolean
         }
         Insert: {
+          counter?: number
           created_at?: string | null
           end_training?: string | null
           id: string
@@ -77,6 +79,7 @@ export interface Database {
           trained?: boolean
         }
         Update: {
+          counter?: number
           created_at?: string | null
           end_training?: string | null
           id?: string

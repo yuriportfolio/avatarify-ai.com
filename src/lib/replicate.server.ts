@@ -60,6 +60,7 @@ export interface ReplicateTrainPayload {
 		instance_data: string;
 		max_train_steps: number;
 	};
+	logs: string;
 	model: string;
 	status: string;
 	trainer_version: string;
