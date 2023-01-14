@@ -382,7 +382,7 @@
 			<p class="italic">There are not yet any images present.</p>
 		{/if}
 
-		{#if userTrained != null && !userTrained}
+		{#if userTrained != null && !userTrained && userInTraining != null && !userInTraining}
 			<div class="form-control w-full max-w-xs">
 				<label class="label" for="instance_class">
 					<span class="label-text">Specify the subject</span>
