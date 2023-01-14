@@ -215,7 +215,7 @@
 
 	async function downloadPhoto(photo: GeneratedPhoto) {
 		if (photo.complete) {
-			await supabaseClient.storage.from('photos-generated').download(getPhotoPath(photo.name));
+			window.open(photo.url);
 		}
 	}
 
@@ -331,7 +331,11 @@
 	{#if userInfo}
 		<ul class="steps">
 			<li class="step" class:step-primary={!!userInfo.paid}>Payment</li>
-			<li class="step" class:step-primary={!!userInfo.paid && photosForTrain.length > 0}>
+			<li
+				class="step"
+				class:step-primary={!!userInfo.paid &&
+					(photosForTrain.length > 0 || userInfo.in_training || userInfo.trained)}
+			>
 				Upload your photos
 			</li>
 			<li class="step" class:step-primary={!!userInfo.paid && userInfo.trained}>Train the AI</li>
@@ -558,14 +562,22 @@
 					{/each}
 				</select>
 			</div>
-			<Input
-				name="prompt"
-				bind:value={prompt}
-				type="textarea"
-				placeholder="Prompt"
-				block
-				containerClass="w-full max-w-xs"
-			/>
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="prompt">
+					<span class="label-text">Prompt</span>
+				</label>
+				<Input
+					id="prompt"
+					bind:value={prompt}
+					type="textarea"
+					block
+					containerClass="w-full max-w-xs"
+					inputClass="text-xs leading-none"
+					placeholder="closeup portrait of @me as a (WHAT YOU WANT)"
+					rows="6"
+				/>
+			</div>
+
 			<Button
 				size="small"
 				type="button"
