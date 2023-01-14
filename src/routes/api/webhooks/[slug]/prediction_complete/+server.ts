@@ -20,7 +20,8 @@ export const POST: RequestHandler = async (event) => {
 			await supabaseClientAdmin.from('predictions').upsert({
 				id: payload.id,
 				user_id: userID,
-				status: payload.status
+				status: payload.status,
+				completed_at: new Date().toISOString()
 			})
 		);
 

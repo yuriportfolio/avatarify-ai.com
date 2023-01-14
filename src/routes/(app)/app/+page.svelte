@@ -157,7 +157,7 @@
 		return handleErrorAndGetData(
 			await supabaseClient.storage.from(bucket).createSignedUrl(
 				$page.data.session?.user.id + '/' + filename,
-				60,
+				86400,
 				thumbnail
 					? {
 							transform: {
@@ -269,6 +269,7 @@
 					'postgres_changes',
 					{ event: '*', schema: 'public', table: 'predictions' },
 					async (payload) => {
+						console.log('Prediction changes', payload);
 						if (payload.eventType == 'UPDATE') {
 							if (payload.old.status !== payload.new.status && payload.new.status === 'succeeded') {
 								photosGenerated = await Promise.all(
@@ -433,7 +434,7 @@
 			{:else if photosGenerated.length > 0}
 				<div class="carousel carousel-center w-full p-8 space-x-4 bg-neutral rounded-box">
 					{#each photosGenerated as image, index}
-						<div class="carousel-item relative group" id={`photo_${index}`}>
+						<div class="carousel-item relative group aspect-square" id={`photo_${index}`}>
 							{#if image.complete}
 								<img
 									src={image.url}
@@ -530,7 +531,7 @@
 				block
 				containerClass="w-full max-w-xs"
 			/>
-			<Input name="seed" bind:value={seed} placeholder="Seed" />
+			<!-- <Input name="seed" bind:value={seed} placeholder="Seed" /> -->
 		{/if}
 		<Button
 			size="small"
