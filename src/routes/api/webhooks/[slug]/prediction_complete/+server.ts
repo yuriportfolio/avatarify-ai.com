@@ -40,9 +40,12 @@ export const POST: RequestHandler = async (event) => {
 		);
 
 		handleError(
-			await supabaseClientAdmin.from('user_info').update({
-				counter: (await getAdminUserInfo(userID, supabaseClientAdmin)).counter + 1
-			})
+			await supabaseClientAdmin
+				.from('user_info')
+				.update({
+					counter: (await getAdminUserInfo(userID, supabaseClientAdmin)).counter + 1
+				})
+				.eq('id', userID)
 		);
 
 		return json({});
