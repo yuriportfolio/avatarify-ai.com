@@ -125,8 +125,6 @@
 			}
 		} catch (error) {
 			showError(error);
-		} finally {
-			userInTraining = false;
 		}
 	}
 	async function prediction() {
@@ -223,20 +221,23 @@
 	async function loadPhotoGenerated() {
 		generatedPhotosLoading = true;
 		try {
-			photosGenerated = await Promise.all(
-				handleErrorAndGetData(
-					await supabaseClient.storage.from('photos-generated').list($page.data.session?.user.id, {
-						sortBy: {
-							column: 'created_at',
-							order: 'asc'
-						}
-					})
-				).map(async (file) => ({
-					url: await getSignedUrl('photos-generated', file.name),
-					name: file.name,
-					complete: true
-				}))
-			);
+			const { data: photos } = await supabaseClient.storage
+				.from('photos-generated')
+				.list($page.data.session?.user.id, {
+					sortBy: {
+						column: 'created_at',
+						order: 'asc'
+					}
+				});
+			if (photos) {
+				photosGenerated = await Promise.all(
+					photos.map(async (file) => ({
+						url: await getSignedUrl('photos-generated', file.name),
+						name: file.name,
+						complete: true
+					}))
+				);
+			}
 			photosGenerated = [
 				...photosGenerated,
 				...(((

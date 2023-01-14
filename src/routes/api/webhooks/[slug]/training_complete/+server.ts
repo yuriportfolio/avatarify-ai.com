@@ -7,6 +7,7 @@ import { supabaseClientAdmin } from '$lib/db.server';
 export const POST: RequestHandler = async (event) => {
 	try {
 		const payload = (await event.request.json()) as ReplicateTrainPayload;
+		console.log('Payload', payload);
 		const userID = event.params.slug;
 
 		if (!userID) {
