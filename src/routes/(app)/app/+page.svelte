@@ -18,8 +18,17 @@
 
 	async function updateUserInfo() {
 		userInfo = await getUserInfo();
+		if (typeof spoilerOpen == 'undefined') {
+			spoilerOpen = !userInfo.in_training && !userInfo.trained;
+		}
 	}
 	updateUserInfo();
+
+	$: {
+		if (spoilerOpen && photosForTrain.length == 0) {
+			loadPhotosForTraining();
+		}
+	}
 
 	let uploadLoading = false;
 	let inputFiles: HTMLInputElement;
@@ -28,7 +37,7 @@
 	let generatedPhotosLoading = false;
 	let generating = false;
 	let photosForTrain: { url: string; name: string }[] = [];
-	type GeneratedPhoto = { id: string; path: string } & (
+	type GeneratedPhoto = { name: string } & (
 		| { url: string; thumb: string; complete: true }
 		| { complete: false }
 	);
@@ -38,6 +47,7 @@
 	let theme = '';
 	let prompt = '';
 	let seed = '';
+	let spoilerOpen: boolean | undefined = undefined;
 
 	async function onUploadSubmit() {
 		uploadLoading = true;
@@ -179,10 +189,14 @@
 		try {
 			await supabaseClient.storage
 				.from('photos-for-training')
-				.remove([$page.data.session?.user.id + '/' + photoToDelete.name]);
+				.remove([getPhotoPath(photoToDelete.name)]);
 		} catch (error) {
 			showError(error);
 		}
+	}
+
+	function getPhotoPath(name: string) {
+		return `${$page.data.session?.user.id}/${name}`;
 	}
 
 	async function deletePhotoGenerated(index: number) {
@@ -190,7 +204,9 @@
 		photosGenerated = photosGenerated.filter((photo) => photo !== photoToDelete);
 		if (photoToDelete.complete) {
 			try {
-				await supabaseClient.storage.from('photos-generated').remove([photoToDelete.path]);
+				await supabaseClient.storage
+					.from('photos-generated')
+					.remove([getPhotoPath(photoToDelete.name)]);
 			} catch (error) {
 				showError(error);
 			}
@@ -199,7 +215,7 @@
 
 	async function downloadPhoto(photo: GeneratedPhoto) {
 		if (photo.complete) {
-			await supabaseClient.storage.from('photos-generated').download(photo.path);
+			await supabaseClient.storage.from('photos-generated').download(getPhotoPath(photo.name));
 		}
 	}
 
@@ -215,18 +231,15 @@
 				})
 			).map((photo) => ({
 				complete: true,
-				id: photo.name,
-				path: `${$page.data.session?.user.id}/${photo.name}`,
-				url: supabaseClient.storage
-					.from('photos-generated')
-					.getPublicUrl(`${$page.data.session?.user.id}/${photo.name}`).data.publicUrl,
+				name: photo.name,
+				url: supabaseClient.storage.from('photos-generated').getPublicUrl(getPhotoPath(photo.name))
+					.data.publicUrl,
 				thumb: supabaseClient.storage
 					.from('photos-generated')
-					.getPublicUrl(`${$page.data.session?.user.id}/${photo.name}`, {
+					.getPublicUrl(getPhotoPath(photo.name), {
 						transform: {
-							width: 96,
 							height: 96,
-							resize: 'contain'
+							width: 96
 						}
 					}).data.publicUrl
 			}));
@@ -241,9 +254,8 @@
 						.in('status', ['starting', 'processing'])
 				).data?.map((image) => ({
 					complete: false,
-					id: image.id,
-					path: `${$page.data.session?.user.id}/${image.id}`
-				})) || []) as { complete: false; id: string; path: string }[])
+					name: `${image.id}.jpg`
+				})) || []) as { complete: false; name: string }[])
 			];
 		} catch (error) {
 			showError(error);
@@ -254,7 +266,6 @@
 
 	onMount(async () => {
 		if (browser) {
-			loadPhotosForTraining();
 			loadPhotoGenerated();
 
 			// Subscribe for new generated photos and update the list
@@ -267,31 +278,34 @@
 						console.log('Prediction changes', payload);
 						if (payload.eventType == 'UPDATE') {
 							if (payload.old.status !== payload.new.status && payload.new.status === 'succeeded') {
-								photosGenerated = await Promise.all(
-									photosGenerated.map(async (photo) => {
-										if (photo.id === payload.new.id) {
-											return {
-												...photo,
-												complete: true,
-												url: (
-													await supabaseClient.storage
-														.from('photos-generated')
-														.getPublicUrl(photo.path)
-												).data.publicUrl
-											};
-										} else {
-											return photo;
-										}
-									})
-								);
+								photosGenerated = photosGenerated.map((photo): GeneratedPhoto => {
+									if (photo.name === `${payload.new.id}.jpg`) {
+										return {
+											...photo,
+											complete: true,
+											url: supabaseClient.storage
+												.from('photos-generated')
+												.getPublicUrl(getPhotoPath(photo.name)).data.publicUrl,
+											thumb: supabaseClient.storage
+												.from('photos-generated')
+												.getPublicUrl(getPhotoPath(photo.name), {
+													transform: {
+														height: 96,
+														width: 96
+													}
+												}).data.publicUrl
+										};
+									} else {
+										return photo;
+									}
+								});
 							}
 						} else if (payload.eventType == 'INSERT' && payload.new.status !== 'succeeded') {
 							photosGenerated = [
 								...photosGenerated,
 								{
 									complete: false,
-									id: payload.new.id,
-									path: `${$page.data.session?.user.id}/${payload.new.id}`
+									name: `${payload.new.id}.jpg`
 								}
 							];
 						}
@@ -356,82 +370,99 @@
 				>
 			</form>
 		{/if}
+
 		<div
-			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
+			tabindex="0"
+			role="button"
+			class:collapse-open={spoilerOpen}
+			class:collapse-close={!spoilerOpen}
+			class="collapse collapse-arrow w-full bg-white shadow rounded-lg p-6"
 		>
-			<Title>Photos for training</Title>
-			{#if trainingPhotosLoading}
-				<progress class="progress" />
-			{:else if photosForTrain.length > 0}
-				<div class="flex flex-col items-center">
-					<div
-						class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
-					>
-						{#each photosForTrain as image, index}
-							<div class="relative group">
-								<img src={image.url} loading="eager" alt={image.name} class="aspect-square h-24" />
-
-								{#if !userInfo.in_training && !userInfo.trained}
-									<Button
-										class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
-										icon="close"
-										size="small"
-										circle
-										primary
-										on:click={() => deletePhotoForTraining(index)}
-									/>
-								{/if}
-							</div>
-						{/each}
-					</div>
-				</div>
-			{:else}
-				<p class="italic">There are not yet any images present.</p>
-			{/if}
-
-			{#if !userInfo.trained && !userInfo.in_training}
-				<div class="form-control w-full max-w-xs">
-					<label class="label" for="instance_class">
-						<span class="label-text">Specify the subject</span>
-					</label>
-					<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
-						<option disabled selected />
-						<option value="man">Man</option>
-						<option value="woman">Woman</option>
-						<option value="couple">Couple</option>
-						<option value="dog">Dog</option>
-						<option value="cat">Cat</option>
-					</select>
-				</div>
-			{/if}
-
-			<Tooltip
-				message={userInfo.trained
-					? ''
-					: 'Caution: If you continue, you will not be able to upload any more photos.'}
+			<Title
+				class="collapse-title"
+				on:click={() => {
+					spoilerOpen = !spoilerOpen;
+				}}>Photos for training</Title
 			>
-				<Button
-					size="small"
-					type="button"
-					on:click={() => train()}
-					disabled={!userInfo.paid ||
-						photosForTrain.length == 0 ||
-						userInfo.trained ||
-						userInfo.in_training}
-					loading={userInfo.in_training}
-				>
-					{#if userInfo.in_training}
-						In training
-					{:else if userInfo.trained}
-						Trained
-					{:else}
-						Start training
-					{/if}
-				</Button>
-				{#if userInfo.in_training}
-					<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
+			<div class="collapse-content flex flex-col items-center gap-4 overflow-hidden">
+				{#if trainingPhotosLoading}
+					<progress class="progress" />
+				{:else if photosForTrain.length > 0}
+					<div class="flex flex-col items-center">
+						<div
+							class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
+						>
+							{#each photosForTrain as image, index}
+								<div class="relative group">
+									<img
+										src={image.url}
+										loading="eager"
+										alt={image.name}
+										class="aspect-square h-24"
+									/>
+
+									{#if !userInfo.in_training && !userInfo.trained}
+										<Button
+											class="absolute -right-2 -top-2 text-white opacity-0 group-hover:opacity-100 z-10"
+											icon="close"
+											size="small"
+											circle
+											primary
+											on:click={() => deletePhotoForTraining(index)}
+										/>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</div>
+				{:else}
+					<p class="italic">There are not yet any images present.</p>
 				{/if}
-			</Tooltip>
+
+				{#if !userInfo.trained && !userInfo.in_training}
+					<div class="form-control w-full max-w-xs">
+						<label class="label" for="instance_class">
+							<span class="label-text">Specify the subject</span>
+						</label>
+						<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
+							<option disabled selected />
+							<option value="man">Man</option>
+							<option value="woman">Woman</option>
+							<option value="couple">Couple</option>
+							<option value="dog">Dog</option>
+							<option value="cat">Cat</option>
+						</select>
+					</div>
+				{/if}
+
+				<Tooltip
+					message={userInfo.trained
+						? ''
+						: 'Caution: If you continue, you will not be able to upload any more photos.'}
+				>
+					<Button
+						size="small"
+						type="button"
+						on:click={() => train()}
+						disabled={!userInfo.paid ||
+							photosForTrain.length == 0 ||
+							userInfo.trained ||
+							userInfo.in_training}
+						loading={userInfo.in_training}
+					>
+						{#if userInfo.in_training}
+							In training
+						{:else if userInfo.trained}
+							Trained
+						{:else}
+							Start training
+						{/if}
+					</Button>
+					{#if userInfo.in_training}
+						<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
+					{/if}
+				</Tooltip>
+			</div>
 		</div>
 		<div
 			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
@@ -527,17 +558,14 @@
 					{/each}
 				</select>
 			</div>
-			{#if PUBLIC_ENV !== 'PRODUCTION'}
-				<Input
-					name="prompt"
-					bind:value={prompt}
-					type="textarea"
-					placeholder="Prompt"
-					block
-					containerClass="w-full max-w-xs"
-				/>
-				<Input name="seed" bind:value={seed} placeholder="Seed" />
-			{/if}
+			<Input
+				name="prompt"
+				bind:value={prompt}
+				type="textarea"
+				placeholder="Prompt"
+				block
+				containerClass="w-full max-w-xs"
+			/>
 			<Button
 				size="small"
 				type="button"

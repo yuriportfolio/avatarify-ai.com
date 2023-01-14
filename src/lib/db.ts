@@ -45,7 +45,9 @@ export function handleErrorAndGetData<TData, TError extends { message: string }>
 }
 
 export const getUserInfo = async () =>
-	(await supabaseClient.from('user_info').select('*', { count: 'exact' }).single()).data;
+	handleErrorAndGetData(
+		await supabaseClient.from('user_info').select('*', { count: 'exact' }).single()
+	);
 
 export const getAdminUserInfo = async (userID: string, client: TypedSupabaseClient) =>
 	handleErrorAndGetData(
