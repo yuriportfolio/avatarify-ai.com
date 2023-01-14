@@ -34,6 +34,10 @@ export const GET: RequestHandler = async (event) => {
 			throw new Error('Model not trained');
 		}
 
+		if (userInfo.counter >= 100) {
+			throw new Error('You cannot generate more than 100 photos');
+		}
+
 		const predictionResponse = await getPredictionStatus(predictionID);
 		console.log('Predict response', predictionResponse);
 

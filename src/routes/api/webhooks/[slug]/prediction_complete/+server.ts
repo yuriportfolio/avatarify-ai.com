@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
 import type { ReplicatePredictionPayload } from '$lib/replicate.server';
 import { supabaseClientAdmin } from '$lib/db.server';
-import { handleError } from '$lib/db';
+import { getAdminUserInfo, handleError } from '$lib/db';
 
 export const POST: RequestHandler = async (event) => {
 	try {
@@ -36,6 +36,12 @@ export const POST: RequestHandler = async (event) => {
 				user_id: userID,
 				status: payload.status,
 				completed_at: new Date().toISOString()
+			})
+		);
+
+		handleError(
+			await supabaseClientAdmin.from('user_info').update({
+				counter: (await getAdminUserInfo(userID, supabaseClientAdmin)).counter + 1
 			})
 		);
 
