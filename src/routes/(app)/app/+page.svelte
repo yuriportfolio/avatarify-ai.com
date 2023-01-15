@@ -224,7 +224,7 @@
 				.then((img: HTMLImageElement) => {
 					const a = document.createElement('a');
 					a.href = img.src;
-					a.download = photo.name;
+					a.download = photo.name.replace('.jpg', '.png');
 					a.click();
 				});
 		}
