@@ -46,6 +46,7 @@
 		"daisyui": "^2.46.0",
 		"dotenv": "^16.0.3",
 		"jszip": "^3.10.1",
-		"stripe": "^11.6.0"
+		"stripe": "^11.6.0",
+		"watermarkjs": "^2.1.1"
 	}
 }

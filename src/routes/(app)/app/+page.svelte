@@ -12,7 +12,7 @@
 	import { getThemes } from '$lib/themes';
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
-	import { PUBLIC_ENV } from '$env/static/public';
+	import watermark from 'watermarkjs';
 
 	let userInfo: Database['public']['Tables']['user_info']['Row'] | null = null;
 
@@ -212,10 +212,21 @@
 			}
 		}
 	}
-
+	const options = {
+		init(img) {
+			img.crossOrigin = 'anonymous';
+		}
+	};
 	async function downloadPhoto(photo: GeneratedPhoto) {
 		if (photo.complete) {
-			window.open(photo.url);
+			watermark([photo.url, 'logo-xs.png'], options)
+				.image(watermark.image.lowerRight(0.85))
+				.then((img: HTMLImageElement) => {
+					const a = document.createElement('a');
+					a.href = img.src;
+					a.download = photo.name;
+					a.click();
+				});
 		}
 	}
 
@@ -485,6 +496,11 @@
 										loading="eager"
 										alt=""
 										class="aspect-square rounded-box max-w-[60vw]"
+									/>
+									<img
+										src="logo-xs.png"
+										class="absolute right-2 bottom-2 opacity-85"
+										alt="Avatarify AI"
 									/>
 
 									<Button
