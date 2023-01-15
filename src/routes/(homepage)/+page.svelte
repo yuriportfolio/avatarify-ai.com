@@ -1,9 +1,8 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
-	const avatars = Array.from({ length: 19 }, (_, index) => `avatars/me_${index + 1}.jpg`);
 
-	const first = avatars.slice(0, 10);
-	const second = avatars.slice(10);
+	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpg`);
+	const womanAvatars = Array.from({ length: 12 }, (_, index) => `avatars/woman (${index + 1}).jpg`);
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
@@ -14,7 +13,7 @@
 </div>
 <div class="marquee w-full">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
-		{#each first as image}
+		{#each manAvatars as image}
 			<div class="carousel-item">
 				<img
 					src={image}
@@ -28,7 +27,7 @@
 </div>
 <div class="marquee marquee--reverse w-full -mt-4">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
-		{#each second as image}
+		{#each womanAvatars as image}
 			<div class="carousel-item">
 				<img
 					src={image}
