@@ -25,7 +25,7 @@
 	updateUserInfo();
 
 	$: {
-		if (spoilerOpen && photosForTrain.length == 0) {
+		if (spoilerOpen && typeof photosForTrain === 'undefined') {
 			loadPhotosForTraining();
 		}
 	}
@@ -36,7 +36,7 @@
 	let trainingPhotosLoading = false;
 	let generatedPhotosLoading = false;
 	let generating = false;
-	let photosForTrain: { url: string; name: string }[] = [];
+	let photosForTrain: { url: string; name: string }[] | undefined = undefined;
 	type GeneratedPhoto = { name: string } & (
 		| { url: string; thumb: string; complete: true }
 		| { complete: false }
@@ -184,14 +184,16 @@
 	}
 
 	async function deletePhotoForTraining(index: number) {
-		const photoToDelete = photosForTrain[index];
-		photosForTrain = photosForTrain.filter((photo) => photo !== photoToDelete);
-		try {
-			await supabaseClient.storage
-				.from('photos-for-training')
-				.remove([getPhotoPath(photoToDelete.name)]);
-		} catch (error) {
-			showError(error);
+		const photoToDelete = photosForTrain?.[index];
+		if (photoToDelete) {
+			photosForTrain = photosForTrain?.filter((photo) => photo !== photoToDelete);
+			try {
+				await supabaseClient.storage
+					.from('photos-for-training')
+					.remove([getPhotoPath(photoToDelete.name)]);
+			} catch (error) {
+				showError(error);
+			}
 		}
 	}
 
@@ -213,7 +215,7 @@
 		}
 	}
 	const options = {
-		init(img) {
+		init(img: HTMLImageElement) {
 			img.crossOrigin = 'anonymous';
 		}
 	};
@@ -345,7 +347,9 @@
 			<li
 				class="step"
 				class:step-primary={!!userInfo.paid &&
-					(photosForTrain.length > 0 || userInfo.in_training || userInfo.trained)}
+					((photosForTrain && photosForTrain.length > 0) ||
+						userInfo.in_training ||
+						userInfo.trained)}
 			>
 				Upload your photos
 			</li>
@@ -402,7 +406,7 @@
 			<div class="collapse-content flex flex-col items-center gap-4 overflow-hidden">
 				{#if trainingPhotosLoading}
 					<progress class="progress" />
-				{:else if photosForTrain.length > 0}
+				{:else if photosForTrain && photosForTrain.length > 0}
 					<div class="flex flex-col items-center">
 						<div
 							class="flex flex-row justify-center bg-neutral gap-2 p-2 flex-wrap max-h-[40vh] overflow-y-auto overflow-x-hidden rounded-md"
@@ -460,7 +464,7 @@
 						type="button"
 						on:click={() => train()}
 						disabled={!userInfo.paid ||
-							photosForTrain.length == 0 ||
+							(photosForTrain && photosForTrain.length == 0) ||
 							userInfo.trained ||
 							userInfo.in_training}
 						loading={userInfo.in_training}

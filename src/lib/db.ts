@@ -44,10 +44,29 @@ export function handleErrorAndGetData<TData, TError extends { message: string }>
 	}
 }
 
-export const getUserInfo = async () =>
-	handleErrorAndGetData(
-		await supabaseClient.from('user_info').select('*', { count: 'exact' }).single()
-	);
+export const getUserInfo = async (): Promise<Database['public']['Tables']['user_info']['Row']> => {
+	const { error, data } = await supabaseClient
+		.from('user_info')
+		.select('*', { count: 'exact' })
+		.single();
+	if (!error) {
+		return data;
+	}
+	return {
+		id: '',
+		paid: false,
+		in_training: false,
+		trained: false,
+		counter: 0,
+		created_at: null,
+		end_training: null,
+		instance_class: null,
+		replicate_model_id: null,
+		replicate_train_status: null,
+		replicate_version_id: null,
+		start_training: null
+	};
+};
 
 export const getAdminUserInfo = async (userID: string, client: TypedSupabaseClient) =>
 	handleErrorAndGetData(

@@ -13,8 +13,17 @@
 		</div>
 		<div class="navbar-end gap-2">
 			{#if $page.data.session}
-				<Button link="/login" href="/logout" ghost data-sveltekit-preload-data="off">Logout</Button>
-				<Button type="button" link="/app" endIcon="arrow_right">Launch</Button>
+				<div class="dropdown dropdown-end">
+					<div class="tooltip tooltip-left" data-tip={$page.data.session.user.email}>
+						<Button type="button" ghost icon="person" circle />
+					</div>
+					<ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+						<Button link="/logout" ghost data-sveltekit-preload-data="off">Logout</Button>
+					</ul>
+				</div>
+				{#if !$page.url.pathname.startsWith('/app')}
+					<Button type="button" link="/app" endIcon="arrow_right">Launch</Button>
+				{/if}
 			{:else}
 				<Button type="button" link="/login" endIcon="arrow_right">Start now</Button>
 			{/if}
