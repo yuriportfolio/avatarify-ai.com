@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
 
-	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpg`);
-	const womanAvatars = Array.from({ length: 12 }, (_, index) => `avatars/woman (${index + 1}).jpg`);
+	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpeg`);
+	const womanAvatars = Array.from({ length: 12 }, (_, index) => `avatars/woman (${index + 1}).jpeg`);
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">

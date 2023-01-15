@@ -5,7 +5,7 @@
 
 <div
 	class="hero h-[40vh] w-full"
-	style="background-image: url('/avatars/man (7).jpg'); background-position: center 50%;"
+	style="background-image: url('/avatars/man (7).jpeg'); background-position: center 50%;"
 >
 	<div class="hero-overlay bg-opacity-60" />
 	<div class="hero-content text-center text-neutral-content">
