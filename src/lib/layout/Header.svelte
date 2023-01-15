@@ -16,8 +16,7 @@
 				<Button link="/login" href="/logout" ghost data-sveltekit-preload-data="off">Logout</Button>
 				<Button type="button" link="/app" endIcon="arrow_right">Launch</Button>
 			{:else}
-				<Button link="/login" href="/login" ghost>Login</Button>
-				<Button type="button" link="/checkout" endIcon="arrow_right">Start now</Button>
+				<Button type="button" link="/login" endIcon="arrow_right">Start now</Button>
 			{/if}
 			<!-- <Button circle icon="search" ghost />
             <Button circle icon="notification_important" ghost /> -->

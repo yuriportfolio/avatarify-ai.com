@@ -24,7 +24,7 @@
 		"postcss": "^8.4.20",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
-		"supabase": "^1.27.7",
+		"supabase": "^1.33.0",
 		"svelte": "^3.54.0",
 		"svelte-check": "^2.9.2",
 		"tailwindcss": "^3.2.4",
@@ -37,7 +37,7 @@
 		"@cloudamqp/amqp-client": "^2.1.1",
 		"@stripe/stripe-js": "^1.46.0",
 		"@supabase/auth-helpers-sveltekit": "^0.8.6",
-		"@supabase/supabase-js": "^2.2.2",
+		"@supabase/supabase-js": "^2.4.0",
 		"@sveltejs/adapter-vercel": "^1.0.0",
 		"@tailwindcss/typography": "^0.5.8",
 		"aws-sdk": "^2.1290.0",
@@ -46,6 +46,7 @@
 		"daisyui": "^2.46.0",
 		"dotenv": "^16.0.3",
 		"jszip": "^3.10.1",
-		"stripe": "^11.6.0"
+		"stripe": "^11.6.0",
+		"watermarkjs": "^2.1.1"
 	}
 }

@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { handleError, supabaseClient } from '$lib/db';
 	import { getBaseUrl, showError, showInfo } from '$lib/utilities';
 
@@ -54,6 +55,10 @@
 <div class="w-full max-w-sm mx-auto my-16 px-2">
 	<div class="w-full bg-white shadow rounded-lg divide-y divide-gray-200">
 		<form class="px-5 py-7 flex flex-col gap-4" on:submit|preventDefault={login}>
+			<Title>Login to Avatarify AI</Title>
+			<p class="italic text-center">
+				Sign in now to create personalized avatars that represents you.
+			</p>
 			<Input bind:value={email} id="email" label="E-mail" name="email" block />
 			<Button
 				endIcon="arrow_forward"

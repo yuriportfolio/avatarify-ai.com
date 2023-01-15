@@ -23,6 +23,16 @@
 
 <svelte:head>
 	<title>Avatarify AI</title>
+	<meta
+		name="description"
+		content="Avatarify AI is a SaaS service that uses stable diffusion and Artificial Intelligence to generate an AI model trained on your photos. Create up to 100 personalized profile pictures with various themes available"
+	/>
+	<meta
+		name="keywords"
+		content="Avatarify AI, SaaS service, stable diffusion, Profile pictures, Avatar, Artificial Intelligence, AI model, personalized profile pictures, themes"
+	/>
+	<meta name="author" content="Pavanello Emanuele" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-100 flex flex-col">

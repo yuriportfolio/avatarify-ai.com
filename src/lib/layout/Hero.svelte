@@ -5,7 +5,7 @@
 
 <div
 	class="hero h-[40vh] w-full"
-	style="background-image: url(/avatars/me_1.jpg); background-position: center 50%;"
+	style="background-image: url('/avatars/man (7).jpeg'); background-position: center 50%;"
 >
 	<div class="hero-overlay bg-opacity-60" />
 	<div class="hero-content text-center text-neutral-content">
@@ -22,7 +22,7 @@
 				<Button type="button" link="/app" gradient>Go to the app</Button>
 			{:else}
 				<!-- <Button type="button" on:click={checkout} gradient>Start generating images</Button> -->
-				<Button type="button" link="/checkout" gradient>Start generating images</Button>
+				<Button type="button" link="/login" gradient>Start generating images</Button>
 			{/if}
 		</div>
 	</div>
