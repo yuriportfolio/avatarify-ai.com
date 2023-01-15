@@ -22,7 +22,7 @@
 				<Button type="button" link="/app" gradient>Go to the app</Button>
 			{:else}
 				<!-- <Button type="button" on:click={checkout} gradient>Start generating images</Button> -->
-				<Button type="button" link="/checkout" gradient>Start generating images</Button>
+				<Button type="button" link="/login" gradient>Start generating images</Button>
 			{/if}
 		</div>
 	</div>

@@ -46,8 +46,8 @@
 		<li>💸 Make a payment with Stripe</li>
 		<li>🔓 Activate your account using the confirmation link sent to your email</li>
 		<li>📸 Upload your photos</li>
-		<li>👩🏽‍🏫 Start the AI training process (this may take up to 24 hours)</li>
-		<li>⚙️ Generate unlimited high-definition photos from a wide range of available themes</li>
+		<li>👩🏽‍🏫 Start the AI training process (this may take up to 2 hours)</li>
+		<li>⚙️ Generate up to 100 high-definition photos from a wide range of available themes</li>
 	</ol>
 </div>
 
@@ -66,7 +66,6 @@
 	</h2>
 	<div class="gap-4">
 		<Button type="button" link="/checkout" gradient endIcon="arrow_right">Start now</Button>
-		<Button type="button" link="/login" ghost>Login</Button>
 	</div>
 </div>
 
