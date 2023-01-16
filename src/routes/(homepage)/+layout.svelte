@@ -25,7 +25,7 @@
 	<title>Avatarify AI</title>
 	<meta
 		name="description"
-		content="Avatarify AI is a SaaS service that uses stable diffusion and Artificial Intelligence to generate an AI model trained on your photos. Create up to 100 personalized profile pictures with various themes available"
+		content="Create personalized avatars with Avatarify AI's SaaS service using stable diffusion and AI. Generate up to 100 profile pictures with different themes."
 	/>
 	<meta
 		name="keywords"
@@ -33,6 +33,28 @@
 	/>
 	<meta name="author" content="Pavanello Emanuele" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Avatarify AI" />
+	<meta
+		property="og:description"
+		content="Create personalized avatars with Avatarify AI's SaaS service using stable diffusion and AI. Generate up to 100 profile pictures with different themes."
+	/>
+
+	<!-- Twitter Card data -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="https://twitter.com/e_pavanello" />
+	<meta name="twitter:title" content="Avatarify AI" />
+	<meta
+		name="twitter:description"
+		content="Create personalized avatars with Avatarify AI's SaaS service using stable diffusion and AI. Generate up to 100 profile pictures with different themes."
+	/>
+	<meta name="twitter:creator" content="@e_pavanello" />
+	<meta name="twitter:image:src" content="https://avatarify-ai.com/og.jpg" />
+	<!-- Open Graph data -->
+	<meta property="og:title" content="Avatarify AI" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://avatarify-ai.com" />
+	<meta property="og:image" content="https://avatarify-ai.com/og.jpg" />
+	<meta property="og:site_name" content="Avatarify AI" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-100 flex flex-col">
