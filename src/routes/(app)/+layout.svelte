@@ -20,10 +20,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Avatarify AI</title>
-</svelte:head>
-
 <div class="min-h-screen bg-gray-100 flex flex-col">
 	<div class="w-full flex-1">
 		<Header />
