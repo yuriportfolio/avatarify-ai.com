@@ -48,7 +48,7 @@
 		content="Create personalized avatars with Avatarify AI's SaaS service using stable diffusion and AI. Generate up to 100 profile pictures with different themes."
 	/>
 	<meta name="twitter:creator" content="@e_pavanello" />
-	<meta name="twitter:image:src" content="https://avatarify-ai.com/og.jpg" />
+	<meta name="twitter:image" content="https://avatarify-ai.com/og.jpg" />
 	<!-- Open Graph data -->
 	<meta property="og:title" content="Avatarify AI" />
 	<meta property="og:type" content="website" />
