@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Button from '$lib/components/Button.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 </script>
 
 <div class="sm:px-4 w-full">
@@ -15,10 +16,14 @@
 			{#if $page.data.session}
 				<div class="dropdown dropdown-end">
 					<div class="tooltip tooltip-left" data-tip={$page.data.session.user.email}>
-						<Button type="button" ghost icon="person" circle />
+						<label tabindex="0" class="btn btn-ghost btn-circle">
+							<Icon name="person" />
+						</label>
 					</div>
-					<ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-						<Button link="/logout" ghost data-sveltekit-preload-data="off">Logout</Button>
+					<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+						<li>
+							<Button link="/logout" ghost data-sveltekit-preload-data="off">Logout</Button>
+						</li>
 					</ul>
 				</div>
 				{#if !$page.url.pathname.startsWith('/app')}
