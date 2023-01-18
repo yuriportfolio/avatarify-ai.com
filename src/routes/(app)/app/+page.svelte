@@ -101,6 +101,11 @@
 	async function train() {
 		try {
 			if (!userInfo) return;
+			if (photosForTrain?.length || 0 < 4) {
+				throw new Error(
+					'You need to upload multiple photos for the AI to learn what you look like'
+				);
+			}
 			userInfo.in_training = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
@@ -453,6 +458,8 @@
 						</select>
 					</div>
 				{/if}
+
+				<p class="italic text-center">It is optimal to upload at least a dozen photos</p>
 
 				<Tooltip
 					message={userInfo.trained
