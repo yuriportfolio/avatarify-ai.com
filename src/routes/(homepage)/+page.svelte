@@ -2,7 +2,10 @@
 	import Button from '$lib/components/Button.svelte';
 
 	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpeg`);
-	const womanAvatars = Array.from({ length: 12 }, (_, index) => `avatars/woman (${index + 1}).jpeg`);
+	const womanAvatars = Array.from(
+		{ length: 12 },
+		(_, index) => `avatars/woman (${index + 1}).jpeg`
+	);
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
@@ -64,7 +67,7 @@
 		Build a unique and personalized <span class="text-gradient">Avatar</span> with the help of AI
 	</h2>
 	<div class="gap-4">
-		<Button type="button" link="/checkout" gradient endIcon="arrow_right">Start now</Button>
+		<Button type="button" link="/checkout" disco endIcon="arrow_forward">Start now</Button>
 	</div>
 </div>
 

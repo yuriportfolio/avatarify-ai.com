@@ -9,11 +9,16 @@
 		class="navbar bg-base-100 drop-shadow-xl sm:rounded-xl mx-auto container max-w-6xl sm:mt-4 w-full"
 	>
 		<div class="navbar-start">
-			<Button ghost link="/" class="text-xl text-gradient font-bold" normalCase>Avatarify AI</Button
-			>
+			<Button ghost link="/" class="text-xl text-gradient font-bold" normalCase>
+				<img src="logo.png" alt="Avatarify AI" class="w-48" />
+				<!-- Avatarify AI -->
+			</Button>
 		</div>
 		<div class="navbar-end gap-2">
 			{#if $page.data.session}
+				{#if !$page.url.pathname.startsWith('/app')}
+					<Button type="button" link="/app" ghost>Launch</Button>
+				{/if}
 				<div class="dropdown dropdown-end">
 					<div class="tooltip tooltip-left" data-tip={$page.data.session.user.email}>
 						<label tabindex="0" class="btn btn-ghost btn-circle">
@@ -26,11 +31,8 @@
 						</li>
 					</ul>
 				</div>
-				{#if !$page.url.pathname.startsWith('/app')}
-					<Button type="button" link="/app" endIcon="arrow_right">Launch</Button>
-				{/if}
 			{:else}
-				<Button type="button" link="/login" endIcon="arrow_right">Start now</Button>
+				<Button type="button" link="/login" ghost>Start now</Button>
 			{/if}
 			<!-- <Button circle icon="search" ghost />
             <Button circle icon="notification_important" ghost /> -->

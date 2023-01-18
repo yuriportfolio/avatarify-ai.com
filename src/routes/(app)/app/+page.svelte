@@ -366,7 +366,7 @@
 				{:else if userInfo.paid}
 					<Button size="small" disabled>Paid</Button>
 				{:else}
-					<Button size="small" link="/checkout" gradient>Pay now</Button>
+					<Button size="small" link="/checkout" disco>Pay now</Button>
 				{/if}
 			</div>
 		</div>
@@ -384,8 +384,8 @@
 					multiple
 					disabled={!userInfo.paid}
 				/>
-				<Button size="small" type="submit" loading={uploadLoading} disabled={!userInfo.paid}
-					>Invia</Button
+				<Button size="small" type="submit" disco={generating} disabled={!userInfo.paid}
+					>Upload</Button
 				>
 			</form>
 		{/if}
@@ -467,7 +467,7 @@
 							(photosForTrain && photosForTrain.length == 0) ||
 							userInfo.trained ||
 							userInfo.in_training}
-						loading={userInfo.in_training}
+						disco={userInfo.in_training}
 					>
 						{#if userInfo.in_training}
 							In training
@@ -603,7 +603,7 @@
 				type="button"
 				on:click={() => prediction()}
 				disabled={!userInfo.paid || !userInfo.trained || generating || userInfo.in_training}
-				loading={generating}>Generate</Button
+				disco={generating}>Generate</Button
 			>
 		</div>
 	{/if}
