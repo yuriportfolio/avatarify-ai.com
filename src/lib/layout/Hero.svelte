@@ -7,7 +7,7 @@
 	class="hero h-[40vh] w-full"
 	style="background-image: url('/avatars/man (7).jpeg'); background-position: center 50%;"
 >
-	<div class="hero-overlay bg-opacity-60" />
+	<div class="hero-overlay bg-black bg-opacity-70" />
 	<div class="hero-content text-center text-neutral-content">
 		<div class="max-w-md flex flex-col gap-4 items-center">
 			<!-- <h1 class="mb-5 text-3xl font-bold">AI-generated profile picture.</h1> -->

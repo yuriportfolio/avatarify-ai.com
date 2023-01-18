@@ -30,7 +30,7 @@
 	data-sveltekit-preload-data="off"
 	on:click
 	class={cn(
-		'btn gap-1 relative overflow-hidden',
+		'btn gap-1 relative',
 		{
 			'btn-xs': size == 'tiny',
 			'btn-sm': size == 'small',
@@ -63,17 +63,16 @@
 	{#if icon}
 		<Icon name={icon} {size} />
 	{:else if disco}
+		<span aria-hidden class="absolute inset-0 overflow-hidden rounded-lg blur-sm">
+			<span
+				aria-hidden
+				class="absolute inset-0 scale-x-[2.0] before:absolute before:inset-0 before:top-1/2 before:aspect-square before:animate-disco before:bg-gradient-conic before:from-[#4ade80] before:via-[#3b82f6] before:to-[#4ade80]"
+			/>
+		</span>
 		<span
-			aria-hidden
-			class="absolute inset-0 scale-x-[2.0] blur before:absolute before:inset-0 before:top-1/2 before:aspect-square before:animate-disco before:bg-gradient-conic before:from-purple-700 before:via-red-500 before:to-amber-400"
+			class="absolute inset-px grid place-items-center rounded-lg bg-gray-800 bg-gradient-to-tr from-gray-800 to-gray-700"
 		/>
-		<span
-			class={cn('absolute inset-px grid place-items-center rounded-lg bg-gradient-to-tr', {
-				'bg-gray-800 from-gray-800 to-gray-700': !outline,
-				'bg-gray-50': outline
-			})}
-		/>
-		<span class="relative">
+		<span class="relative text-white">
 			<slot />
 		</span>
 	{:else}

@@ -13,6 +13,9 @@
 	async function login() {
 		loadingSubmit = true;
 		try {
+			if (!email.trim()) {
+				throw new Error('Enter an email');
+			}
 			handleError(
 				await supabaseClient.auth.signInWithOtp({
 					email,

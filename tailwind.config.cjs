@@ -13,7 +13,7 @@ module.exports = {
 				}
 			},
 			animation: {
-				disco: 'disco 1.5s linear infinite'
+				disco: 'disco 1s linear infinite'
 			}
 		}
 	},

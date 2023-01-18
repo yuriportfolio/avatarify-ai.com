@@ -16,9 +16,6 @@
 		</div>
 		<div class="navbar-end gap-2">
 			{#if $page.data.session}
-				{#if !$page.url.pathname.startsWith('/app')}
-					<Button type="button" link="/app" ghost>Launch</Button>
-				{/if}
 				<div class="dropdown dropdown-end">
 					<div class="tooltip tooltip-left" data-tip={$page.data.session.user.email}>
 						<label tabindex="0" class="btn btn-ghost btn-circle">
@@ -31,6 +28,9 @@
 						</li>
 					</ul>
 				</div>
+				{#if !$page.url.pathname.startsWith('/app')}
+					<Button type="button" link="/app" ghost>Launch</Button>
+				{/if}
 			{:else}
 				<Button type="button" link="/login" ghost>Start now</Button>
 			{/if}
