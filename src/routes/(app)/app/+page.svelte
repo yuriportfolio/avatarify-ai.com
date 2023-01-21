@@ -446,7 +446,7 @@
 			</div>
 		</div>
 		<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
-			<Title class="mb-4">Training</Title>
+			<Title class="mb-4">Train the AI</Title>
 
 			{#if !userInfo.trained && !userInfo.in_training}
 				<div class="form-control w-full max-w-xs">
