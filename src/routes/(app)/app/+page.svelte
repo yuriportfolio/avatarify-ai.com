@@ -496,7 +496,7 @@
 		<div
 			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
 		>
-			<Title>Generate photos ({userInfo.counter})</Title>
+			<Title>Generate your avatars ({userInfo.counter})</Title>
 			<div class="flex flex-row justify-center gap-4 flex-wrap w-full">
 				{#if generatedPhotosLoading}
 					<progress class="progress" />
