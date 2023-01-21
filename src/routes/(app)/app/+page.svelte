@@ -465,8 +465,8 @@
 			{/if}
 
 			<Tooltip
-				message={userInfo.trained
-					? ''
+				message={!userInfo.paid
+					? 'Before being able to train the AI, you must first complete the payment.'
 					: 'Caution: If you continue, you will not be able to upload any more photos.'}
 			>
 				<Button
