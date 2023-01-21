@@ -69,21 +69,16 @@
 				on:click={loginWithGoogle}
 				block
 				loading={loadingGoogle}
-				disco={loadingGoogle}
 				disabled={loadingGoogle}
+				animated
 			>
 				<Google />
 				Sign in with Google
 			</Button>
 			<p class="text-center -mb-8">or</p>
 			<Input bind:value={email} id="email" label="E-mail" name="email" block />
-			<Button
-				outline
-				endIcon="arrow_forward"
-				block
-				type="submit"
-				disco={loadingSubmit}
-				disabled={loadingSubmit}>Login with magic link</Button
+			<Button outline endIcon="arrow_forward" block type="submit" disabled={loadingSubmit} animated
+				>Login with magic link</Button
 			>
 		</form>
 		<div class="py-5">

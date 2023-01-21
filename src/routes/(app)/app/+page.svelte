@@ -381,7 +381,13 @@
 				>
 					<Title>Upload your photos</Title>
 					<Input bind:input={inputFiles} accept="image/*" type="file" name="photos" multiple />
-					<Button size="small" type="submit" disco={!generating}>Upload</Button>
+					<Button
+						size="small"
+						type="submit"
+						disabled={userInfo.in_training}
+						loading={uploadLoading}
+						animated>Upload</Button
+					>
 				</form>
 			{:else}
 				<Title
@@ -437,7 +443,7 @@
 				{:else if userInfo.paid}
 					<Button size="small" disabled>Paid</Button>
 				{:else}
-					<Button size="small" link="/checkout" disco>Pay now</Button>
+					<Button size="small" link="/checkout" animated>Pay now</Button>
 				{/if}
 			</div>
 		</div>
@@ -473,7 +479,7 @@
 						(photosForTrain && photosForTrain.length == 0) ||
 						userInfo.trained ||
 						userInfo.in_training}
-					disco={userInfo.paid}
+					animated
 				>
 					{#if userInfo.in_training}
 						In training
@@ -609,7 +615,7 @@
 				type="button"
 				on:click={() => prediction()}
 				disabled={!userInfo.paid || !userInfo.trained || generating || userInfo.in_training}
-				disco={userInfo.paid && !generating}>Generate</Button
+				animated>Generate</Button
 			>
 		</div>
 	{/if}

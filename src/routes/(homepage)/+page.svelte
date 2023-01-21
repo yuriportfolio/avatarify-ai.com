@@ -67,7 +67,7 @@
 		Build a unique and personalized <span class="text-gradient">Avatar</span> with the help of AI
 	</h2>
 	<div class="gap-4">
-		<Button type="button" link="/checkout" disco endIcon="arrow_forward">Start now</Button>
+		<Button type="button" link="/app" animated endIcon="arrow_forward">Start now</Button>
 	</div>
 </div>
 

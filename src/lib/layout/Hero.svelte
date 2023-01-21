@@ -19,10 +19,10 @@
 			</p>
 			<!-- <p class="mb-5">Unleash the power of AI on your images. Simple, unique, professional.</p> -->
 			{#if $page.data.session}
-				<Button type="button" link="/app" disco endIcon="arrow_forward">Go to the app</Button>
+				<Button type="button" link="/app" animated endIcon="arrow_forward">Go to the app</Button>
 			{:else}
 				<!-- <Button type="button" on:click={checkout} gradient>Start generating images</Button> -->
-				<Button type="button" link="/login" disco endIcon="arrow_forward"
+				<Button type="button" link="/login" animated endIcon="arrow_forward"
 					>Start generating images</Button
 				>
 			{/if}
