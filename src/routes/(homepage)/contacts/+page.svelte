@@ -3,7 +3,9 @@
 	<p>Need to get in touch with us? Here are a few ways you can reach us:</p>
 	<h3>Email</h3>
 	<p>
-		You can send us an email at <a href="mailto:info@company.com">pavanello.emanuele@gmail.com</a>.
+		You can send us an email at <a href="mailto:contact@avatarify-ai.com"
+			>contact@avatarify-ai.com</a
+		>.
 	</p>
 	<!-- 	
 	<h3>Discord Server</h3>

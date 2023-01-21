@@ -53,6 +53,9 @@
 		uploadLoading = true;
 		try {
 			if (inputFiles.files) {
+				if ((photosForTrain?.length || 0) + inputFiles.files?.length > 20) {
+					throw new Error('You can upload a maximum of 20 photos');
+				}
 				const requests = [];
 				for (let i = 0; i < inputFiles.files.length; i++) {
 					requests.push(
@@ -63,6 +66,7 @@
 									height: 512,
 									resize: 'cover',
 									quality: 1,
+									strict: false,
 									error(error) {
 										showError(error);
 										reject();
@@ -103,7 +107,7 @@
 			if (!userInfo) return;
 			if (photosForTrain?.length || 0 < 4) {
 				throw new Error(
-					'You need to upload multiple photos for the AI to learn what you look like'
+					'You need to upload at least 4 photos for the AI to learn what you look like'
 				);
 			}
 			userInfo.in_training = true;
@@ -347,67 +351,46 @@
 
 <div class="w-full max-w-2xl mx-auto my-16 px-2 gap-4 flex flex-col items-center">
 	{#if userInfo}
-		<ul class="steps">
-			<li class="step" class:step-primary={!!userInfo.paid}>Payment</li>
+		<ul class="steps text-xs sm:text-base">
 			<li
 				class="step"
-				class:step-primary={!!userInfo.paid &&
-					((photosForTrain && photosForTrain.length > 0) ||
-						userInfo.in_training ||
-						userInfo.trained)}
+				class:step-primary={(photosForTrain && photosForTrain.length > 0) ||
+					userInfo.in_training ||
+					userInfo.trained}
 			>
 				Upload your photos
 			</li>
+			<li class="step" class:step-primary={!!userInfo.paid}>Payment</li>
 			<li class="step" class:step-primary={!!userInfo.paid && userInfo.trained}>Train the AI</li>
 			<li class="step" class:step-primary={!!userInfo.paid && photosGenerated.length > 0}>
 				Generate your avatars
 			</li>
 		</ul>
-		<div class="w-full bg-white shadow rounded-lg p-6">
-			<Title class="mb-4">Pay with Stripe</Title>
-			<div class="flex flex-row justify-center w-full">
-				{#if userInfo.paid == null}
-					<progress class="progress" />
-				{:else if userInfo.paid}
-					<Button size="small" disabled>Paid</Button>
-				{:else}
-					<Button size="small" link="/checkout" disco>Pay now</Button>
-				{/if}
-			</div>
-		</div>
-
-		{#if !userInfo.trained && !userInfo.in_training}
-			<form
-				on:submit|preventDefault={onUploadSubmit}
-				class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
-			>
-				<Title>Upload your photos</Title>
-				<Input
-					bind:input={inputFiles}
-					type="file"
-					name="photos"
-					multiple
-					disabled={!userInfo.paid}
-				/>
-				<Button size="small" type="submit" disco={generating} disabled={!userInfo.paid}
-					>Upload</Button
-				>
-			</form>
-		{/if}
 
 		<div
 			tabindex="0"
 			role="button"
 			class:collapse-open={spoilerOpen}
 			class:collapse-close={!spoilerOpen}
-			class="collapse collapse-arrow w-full bg-white shadow rounded-lg p-6"
+			class="collapse collapse-arrow w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
 		>
-			<Title
-				class="collapse-title"
-				on:click={() => {
-					spoilerOpen = !spoilerOpen;
-				}}>Photos for training</Title
-			>
+			{#if !userInfo.trained && !userInfo.in_training}
+				<form
+					on:submit|preventDefault={onUploadSubmit}
+					class="w-full flex flex-col items-center gap-4"
+				>
+					<Title>Upload your photos</Title>
+					<Input bind:input={inputFiles} accept="image/*" type="file" name="photos" multiple />
+					<Button size="small" type="submit" disco={!generating}>Upload</Button>
+				</form>
+			{:else}
+				<Title
+					class="collapse-title"
+					on:click={() => {
+						spoilerOpen = !spoilerOpen;
+					}}>Photos for training</Title
+				>
+			{/if}
 			<div class="collapse-content flex flex-col items-center gap-4 overflow-hidden">
 				{#if trainingPhotosLoading}
 					<progress class="progress" />
@@ -442,54 +425,70 @@
 				{:else}
 					<p class="italic">There are not yet any images present.</p>
 				{/if}
-
-				{#if !userInfo.trained && !userInfo.in_training}
-					<div class="form-control w-full max-w-xs">
-						<label class="label" for="instance_class">
-							<span class="label-text">Specify the subject</span>
-						</label>
-						<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
-							<option disabled selected />
-							<option value="man">Man</option>
-							<option value="woman">Woman</option>
-							<option value="couple">Couple</option>
-							<option value="dog">Dog</option>
-							<option value="cat">Cat</option>
-						</select>
-					</div>
-				{/if}
-
 				<p class="italic text-center">It is optimal to upload at least a dozen photos</p>
-
-				<Tooltip
-					message={userInfo.trained
-						? ''
-						: 'Caution: If you continue, you will not be able to upload any more photos.'}
-				>
-					<Button
-						size="small"
-						type="button"
-						on:click={() => train()}
-						disabled={!userInfo.paid ||
-							(photosForTrain && photosForTrain.length == 0) ||
-							userInfo.trained ||
-							userInfo.in_training}
-						disco={userInfo.in_training}
-					>
-						{#if userInfo.in_training}
-							In training
-						{:else if userInfo.trained}
-							Trained
-						{:else}
-							Start training
-						{/if}
-					</Button>
-					{#if userInfo.in_training}
-						<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
-					{/if}
-				</Tooltip>
 			</div>
 		</div>
+
+		<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
+			<Title class="mb-4">Pay with Stripe</Title>
+			<div class="flex flex-row justify-center w-full">
+				{#if userInfo.paid == null}
+					<progress class="progress" />
+				{:else if userInfo.paid}
+					<Button size="small" disabled>Paid</Button>
+				{:else}
+					<Button size="small" link="/checkout" disco>Pay now</Button>
+				{/if}
+			</div>
+		</div>
+		<div class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4">
+			<Title class="mb-4">Training</Title>
+
+			{#if !userInfo.trained && !userInfo.in_training}
+				<div class="form-control w-full max-w-xs">
+					<label class="label" for="instance_class">
+						<span class="label-text">Specify the subject</span>
+					</label>
+					<select class="select select-bordered" id="instance_class" bind:value={instanceClass}>
+						<option disabled selected />
+						<option value="man">Man</option>
+						<option value="woman">Woman</option>
+						<option value="couple">Couple</option>
+						<option value="dog">Dog</option>
+						<option value="cat">Cat</option>
+					</select>
+				</div>
+			{/if}
+
+			<Tooltip
+				message={userInfo.trained
+					? ''
+					: 'Caution: If you continue, you will not be able to upload any more photos.'}
+			>
+				<Button
+					size="small"
+					type="button"
+					on:click={() => train()}
+					disabled={!userInfo.paid ||
+						(photosForTrain && photosForTrain.length == 0) ||
+						userInfo.trained ||
+						userInfo.in_training}
+					disco={userInfo.paid}
+				>
+					{#if userInfo.in_training}
+						In training
+					{:else if userInfo.trained}
+						Trained
+					{:else}
+						Start training
+					{/if}
+				</Button>
+				{#if userInfo.in_training}
+					<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
+				{/if}
+			</Tooltip>
+		</div>
+
 		<div
 			class="w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4 overflow-hidden"
 		>
@@ -610,7 +609,7 @@
 				type="button"
 				on:click={() => prediction()}
 				disabled={!userInfo.paid || !userInfo.trained || generating || userInfo.in_training}
-				disco={generating}>Generate</Button
+				disco={userInfo.paid && !generating}>Generate</Button
 			>
 		</div>
 	{/if}

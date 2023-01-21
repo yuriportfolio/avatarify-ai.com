@@ -30,7 +30,7 @@
 	data-sveltekit-preload-data="off"
 	on:click
 	class={cn(
-		'btn gap-1 relative',
+		'btn gap-1',
 		{
 			'btn-xs': size == 'tiny',
 			'btn-sm': size == 'small',
@@ -50,7 +50,8 @@
 				gradient,
 			loading: loading,
 			'no-animation': noAnimation || disabled,
-			'cursor-not-allowed': disabled
+			'cursor-not-allowed': disabled,
+			relative: disco
 		},
 		classes
 	)}

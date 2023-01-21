@@ -45,9 +45,9 @@
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
 	<h2>How it works</h2>
 	<ol class="max-w-xl mx-auto text-left">
-		<li>💸 Make a payment with Stripe</li>
-		<li>🔓 Activate your account using the confirmation link sent to your email</li>
+		<li>👤 Sign up</li>
 		<li>📸 Upload your photos</li>
+		<li>💸 Make a payment with Stripe</li>
 		<li>👩🏽‍🏫 Start the AI training process (this may take up to 2 hours)</li>
 		<li>⚙️ Generate up to 100 high-definition photos from a wide range of available themes</li>
 	</ol>
