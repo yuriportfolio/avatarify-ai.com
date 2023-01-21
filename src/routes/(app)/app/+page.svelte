@@ -428,8 +428,6 @@
 							{/each}
 						</div>
 					</div>
-				{:else}
-					<p class="italic">There are not yet any images present.</p>
 				{/if}
 				<p class="italic text-center">It is optimal to upload at least a dozen photos</p>
 			</div>
