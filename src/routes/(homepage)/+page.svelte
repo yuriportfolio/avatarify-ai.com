@@ -54,6 +54,59 @@
 </div>
 
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
+	<h2>What Does It Cost?</h2>
+</div>
+
+<div
+	class="mt-12 m-auto -space-y-4 items-center justify-center md:flex md:space-y-0 md:-space-x-4 xl:w-10/12"
+>
+	<div class="relative z-10 -mx-4 group md:w-6/12 md:mx-0 lg:w-5/12">
+		<div
+			aria-hidden="true"
+			class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-xl transition duration-500 group-hover:scale-105 lg:group-hover:scale-110"
+		/>
+		<div class="relative p-6 space-y-6 lg:p-8">
+			<h3 class="text-3xl text-gray-700 font-bold text-center">100 avatars</h3>
+			<div>
+				<div class="relative flex justify-center gap-8">
+					<div class="flex items-end">
+						<span class="text-6xl text-gray-800 font-bold leading-0">40</span>
+						<div class="pb-1">
+							<span class="block text-lg text-gray-700 font-bold">%</span>
+							<span class="block text-sm text-blue-500 font-bold">Off</span>
+						</div>
+					</div>
+					<div class="relative flex justify-around mb-4">
+						<div class="flex flex-row items-end gap-1">
+							<span class="text-4xl text-gray-800 font-bold leading-0">5.99</span>
+							<span class="block text-sm text-blue-500 font-bold">EUR</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<Button type="button" link="/checkout" block>Buy now</Button>
+		</div>
+	</div>
+
+	<div class="relative group md:w-6/12 lg:w-7/12">
+		<div
+			aria-hidden="true"
+			class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-lg transition duration-500 group-hover:scale-105"
+		/>
+		<div
+			class="relative p-6 pt-16 md:p-8 md:pl-12 md:rounded-r-2xl lg:pl-20 lg:p-16 prose px-2 lg:prose-xl text-center"
+		>
+			<p class="max-w-2xl mx-auto">
+				Training an AI model to understand the physiognomy of a specific subject requires a lot of
+				computational power, so it is quite costly to create a model that can accurately reproduce
+				the specified subject.
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
 	<h2>Who is behind this project?</h2>
 	<p class="max-w-2xl mx-auto">
 		I am the sole creator of this service. As an independent Developer, I own and operate all of my
