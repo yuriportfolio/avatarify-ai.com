@@ -58,7 +58,7 @@
 </div>
 
 <div
-	class="mt-12 m-auto -space-y-4 items-center justify-center md:flex md:space-y-0 md:-space-x-4 xl:w-10/12"
+	class="mt-12 m-auto -space-y-4 items-center justify-center md:flex md:space-y-0 md:-space-x-4 xl:w-10/12 px-8"
 >
 	<div class="relative z-10 -mx-4 group md:w-6/12 md:mx-0 lg:w-5/12">
 		<div
@@ -66,7 +66,7 @@
 			class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-xl transition duration-500 group-hover:scale-105 lg:group-hover:scale-110"
 		/>
 		<div class="relative p-6 space-y-6 lg:p-8">
-			<h3 class="text-3xl text-gray-700 font-bold text-center">100 avatars</h3>
+			<h3 class="text-3xl text-gray-700 font-semibold text-center">100 avatars</h3>
 			<div>
 				<div class="relative flex justify-center gap-8">
 					<div class="flex items-end">
@@ -76,7 +76,7 @@
 							<span class="block text-sm text-blue-500 font-bold">Off</span>
 						</div>
 					</div>
-					<div class="relative flex justify-around mb-4">
+					<div class="relative flex justify-around mb-2">
 						<div class="flex flex-row items-end gap-1">
 							<span class="text-4xl text-gray-800 font-bold leading-0">5.99</span>
 							<span class="block text-sm text-blue-500 font-bold">EUR</span>
