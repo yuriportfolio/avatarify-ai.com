@@ -85,7 +85,7 @@
 				</div>
 			</div>
 
-			<Button type="button" link="/checkout" block>Buy now</Button>
+			<Button type="button" link="/checkout" block animated>Buy now</Button>
 		</div>
 	</div>
 
