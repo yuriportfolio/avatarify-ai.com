@@ -109,7 +109,8 @@
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
 	<h2>Who is behind this project?</h2>
 	<p class="max-w-2xl mx-auto">
-		I am the sole creator of this service. As an independent Developer, I own and operate all of my
+		I am <a href="https://twitter.com/e_pavanello" target="_blank" rel="noreferrer">Emanuele</a>,
+		the sole creator of this service. As an independent Developer, I own and operate all of my
 		sites. Your data is safe with me as I have no outside influence or agendas. Trust in the quality
 		and care put into this service.
 	</p>

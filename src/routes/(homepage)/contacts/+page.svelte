@@ -15,7 +15,7 @@
 	</p> -->
 	<h3>Twitter</h3>
 	<p>
-		Follow us on Twitter at <a href="https://twitter.com/e_pavanello">@e_pavanello</a> to stay updated
+		Follow us on Twitter at <a href="https://twitter.com/avatarify_ai">@avatarify_ai</a> to stay updated
 		on our latest news and updates.
 	</p>
 </article>

@@ -14,7 +14,7 @@
 	</div>
 	<div>
 		<div class="grid grid-flow-col gap-4">
-			<a href="https://twitter.com/e_pavanello" target="_blank" rel="noreferrer">
+			<a href="https://twitter.com/avatarify_ai" target="_blank" rel="noreferrer">
 				<Twitter />
 			</a>
 			<a href="https://github.com/epavanello/avatarify-ai.com" target="_blank" rel="noreferrer">
