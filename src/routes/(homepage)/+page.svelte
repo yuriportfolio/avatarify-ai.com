@@ -17,6 +17,21 @@
 		Try it now and see the possibilities.
 	</p>
 </div>
+<div class="relative pb-28">
+	<div class="absolute bottom-0 left-[20%] -ml-12 overflow-visible w-40 aspect-square">
+		<img
+			src="avatars/man_from.jpg"
+			loading="lazy"
+			alt="Demo source"
+			class="absolute z-10 w-40 aspect-square rotate-12 shadow-sm outline outline-1 outline-gray-200"
+		/>
+		<img
+			src="arrow.svg"
+			alt="Arrow"
+			class="absolute text-black left-40 -bottom-4 z-20 rotate-[240deg]"
+		/>
+	</div>
+</div>
 <div class="marquee w-full">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
 		{#each manAvatars as image}
