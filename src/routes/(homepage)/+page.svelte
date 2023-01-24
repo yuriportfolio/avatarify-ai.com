@@ -10,7 +10,12 @@
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
-	<h2>Some examples</h2>
+	<h2>Create stunning photos with AI-based generation</h2>
+
+	<p class="max-w-2xl mx-auto">
+		Generate unique, professional-looking images tailored to your taste with our AI-based service.
+		Try it now and see the possibilities.
+	</p>
 </div>
 <div class="marquee w-full">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
