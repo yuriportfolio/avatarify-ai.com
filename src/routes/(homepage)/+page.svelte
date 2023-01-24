@@ -10,10 +10,7 @@
 </script>
 
 <div class="prose px-2 lg:prose-xl text-center py-16 min-w-full">
-	<h2>Some generated avatars</h2>
-	<p>
-		Tag us on social media and use our hashtag to share your AI-generated images and get noticed
-	</p>
+	<h2>Some examples</h2>
 </div>
 <div class="marquee w-full">
 	<div class="carousel carousel-center p-4 space-x-4 bg-neutral marquee__group">
@@ -42,16 +39,6 @@
 			</div>
 		{/each}
 	</div>
-</div>
-<div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
-	<h2>How it works</h2>
-	<ol class="max-w-xl mx-auto text-left">
-		<li>👤 Sign up</li>
-		<li>📸 Upload your photos</li>
-		<li>💸 Make a payment with Stripe</li>
-		<li>👩🏽‍🏫 Start the AI training process (this may take up to 2 hours)</li>
-		<li>⚙️ Generate up to 100 high-definition photos from a wide range of available themes</li>
-	</ol>
 </div>
 
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
@@ -86,7 +73,16 @@
 				</div>
 			</div>
 
-			<Button type="button" link={PUBLIC_STRIPE_PAYMENT_LINK} block animated>Buy now</Button>
+			<div>
+				<Button type="button" link={PUBLIC_STRIPE_PAYMENT_LINK} block animated>Buy now</Button>
+				<div class="flex flex-row gap-1 h-5 mt-3 mx-auto">
+					<img src="mastercard-alt.svg" alt="Mastercard" />
+					<img src="visa.svg" alt="Visa" />
+					<img src="american-express.svg" alt="American Express" />
+					<img src="apple-pay.svg" alt="Apple Pay" />
+					<img src="google-pay.svg" alt="Google Pay" />
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -105,6 +101,17 @@
 			</p>
 		</div>
 	</div>
+</div>
+
+<div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
+	<h2>How it works</h2>
+	<ol class="max-w-xl mx-auto text-left">
+		<li>👤 Sign up</li>
+		<li>📸 Upload your photos</li>
+		<li>💸 Make a payment with Stripe</li>
+		<li>👩🏽‍🏫 Start the AI training process (this may take up to 2 hours)</li>
+		<li>⚙️ Generate up to 100 high-definition photos from a wide range of available themes</li>
+	</ol>
 </div>
 
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
