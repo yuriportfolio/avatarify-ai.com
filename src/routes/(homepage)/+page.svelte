@@ -79,7 +79,7 @@
 					</div>
 					<div class="relative flex justify-around mb-2">
 						<div class="flex flex-row items-end gap-1">
-							<span class="text-4xl text-gray-800 font-bold leading-0">5.99</span>
+							<span class="text-4xl text-gray-800 font-bold leading-0">9.99</span>
 							<span class="block text-sm text-blue-500 font-bold">EUR</span>
 						</div>
 					</div>
