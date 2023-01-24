@@ -61,9 +61,9 @@
 	</div>
 </div>
 <div class="relative pb-28">
-	<div class="absolute bottom-0 left-[20%] -ml-12 overflow-visible w-40 aspect-square">
+	<div class="absolute top-0 right-[20%] -ml-12 overflow-visible w-40 aspect-square">
 		<img
-			src="avatars/man_from.jpg"
+			src="avatars/woman_from.jpg"
 			loading="lazy"
 			alt="Demo source"
 			class="absolute z-10 w-40 aspect-square rotate-12 shadow-md rounded-md"
@@ -71,7 +71,7 @@
 		<img
 			src="arrow.svg"
 			alt="Arrow"
-			class="absolute text-black left-40 -bottom-4 z-20 rotate-[240deg]"
+			class="absolute text-black right-44 bottom-8 z-20 rotate-[60deg]"
 		/>
 	</div>
 </div>
