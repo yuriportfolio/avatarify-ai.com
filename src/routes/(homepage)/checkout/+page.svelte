@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { getGtripe } from '$lib/stripe';
+	import { getStripe } from '$lib/stripe';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { PUBLIC_STRIPE_PRICE_ID } from '$env/static/public';
@@ -9,7 +9,7 @@
 	onMount(async () => {
 		if (browser) {
 			const baseUrl = getBaseUrl();
-			(await getGtripe())?.redirectToCheckout({
+			(await getStripe())?.redirectToCheckout({
 				successUrl: `${baseUrl}/payment_success?session_id={CHECKOUT_SESSION_ID}`,
 				cancelUrl: baseUrl,
 				mode: 'payment',

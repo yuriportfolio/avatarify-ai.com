@@ -13,6 +13,8 @@
 	import { showError } from '$lib/utilities';
 	import { onMount } from 'svelte';
 	import watermark from 'watermarkjs';
+	import { i18n } from '$lib/i18n';
+	import { PUBLIC_STRIPE_PAYMENT_LINK } from '$env/static/public';
 
 	let userInfo: Database['public']['Tables']['user_info']['Row'] | null = null;
 
@@ -358,10 +360,12 @@
 					userInfo.in_training ||
 					userInfo.trained}
 			>
-				Upload your photos
+				{$i18n.t('uploadYourPhotos')}
 			</li>
-			<li class="step" class:step-primary={!!userInfo.paid}>Payment</li>
-			<li class="step" class:step-primary={!!userInfo.paid && userInfo.trained}>Train the AI</li>
+			<li class="step" class:step-primary={!!userInfo.paid}>{$i18n.t('payment')}</li>
+			<li class="step" class:step-primary={!!userInfo.paid && userInfo.trained}>
+				{$i18n.t('trainTheAI')}
+			</li>
 			<li class="step" class:step-primary={!!userInfo.paid && photosGenerated.length > 0}>
 				Generate your avatars
 			</li>
@@ -375,20 +379,12 @@
 			class="collapse collapse-arrow w-full bg-white shadow rounded-lg p-6 flex flex-col items-center gap-4"
 		>
 			{#if !userInfo.trained && !userInfo.in_training}
-				<form
-					on:submit|preventDefault={onUploadSubmit}
-					class="w-full flex flex-col items-center gap-4"
+				<Title
+					class="collapse-title"
+					on:click={() => {
+						spoilerOpen = !spoilerOpen;
+					}}>Upload your photos</Title
 				>
-					<Title>Upload your photos</Title>
-					<Input bind:input={inputFiles} accept="image/*" type="file" name="photos" multiple />
-					<Button
-						size="small"
-						type="submit"
-						disabled={userInfo.in_training}
-						loading={uploadLoading}
-						animated>Upload</Button
-					>
-				</form>
 			{:else}
 				<Title
 					class="collapse-title"
@@ -398,6 +394,21 @@
 				>
 			{/if}
 			<div class="collapse-content flex flex-col items-center gap-4 overflow-hidden">
+				{#if !userInfo.trained && !userInfo.in_training}
+					<form
+						on:submit|preventDefault={onUploadSubmit}
+						class="w-full flex flex-col items-center gap-4"
+					>
+						<Input bind:input={inputFiles} accept="image/*" type="file" name="photos" multiple />
+						<Button
+							size="small"
+							type="submit"
+							disabled={userInfo.in_training}
+							loading={uploadLoading}
+							animated>Upload</Button
+						>
+					</form>
+				{/if}
 				{#if trainingPhotosLoading}
 					<progress class="progress" />
 				{:else if photosForTrain && photosForTrain.length > 0}
@@ -441,7 +452,7 @@
 				{:else if userInfo.paid}
 					<Button size="small" disabled>Paid</Button>
 				{:else}
-					<Button size="small" link="/checkout" animated>Pay now</Button>
+					<Button size="small" link={PUBLIC_STRIPE_PAYMENT_LINK} animated>Pay now</Button>
 				{/if}
 			</div>
 		</div>

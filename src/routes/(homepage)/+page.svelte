@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_STRIPE_PAYMENT_LINK } from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
 
 	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpeg`);
@@ -85,7 +86,7 @@
 				</div>
 			</div>
 
-			<Button type="button" link="/checkout" block animated>Buy now</Button>
+			<Button type="button" link={PUBLIC_STRIPE_PAYMENT_LINK} block animated>Buy now</Button>
 		</div>
 	</div>
 
