@@ -107,11 +107,7 @@
 	async function train() {
 		try {
 			if (!userInfo) return;
-			if (photosForTrain?.length || 0 < 4) {
-				throw new Error(
-					'You need to upload at least 4 photos for the AI to learn what you look like'
-				);
-			}
+			
 			userInfo.in_training = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
