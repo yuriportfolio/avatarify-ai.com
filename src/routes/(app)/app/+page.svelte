@@ -111,7 +111,7 @@
 	async function train() {
 		try {
 			if (!userInfo) return;
-			
+
 			userInfo.in_training = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
@@ -621,7 +621,13 @@
 				inputClass="text-xs leading-none"
 				placeholder="closeup portrait of @me as a (WHAT YOU WANT)"
 				rows="6"
-			/>
+			>
+				<p slot="altLabel" class="italic">
+					Find suggestions on <a href="https://lexica.art/" class="underline" target="_blank"
+						>lexica.art</a
+					>
+				</p>
+			</Input>
 
 			<Button
 				size="small"

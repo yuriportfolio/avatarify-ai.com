@@ -5,6 +5,7 @@
 	export let id: string | undefined = undefined;
 	export let name: string | undefined = undefined;
 	export let label: string | undefined = undefined;
+	export let altLabel: string | undefined = undefined;
 	export let input: HTMLInputElement | undefined = undefined;
 	export let value: string | number | undefined = undefined;
 	export let type: 'text' | 'password' | 'number' | 'file' | 'textarea' | 'select' = 'text';
@@ -79,4 +80,13 @@
 			<Button class="absolute top-0 right-0 rounded-l-none" primary on:click>{labelButton}</Button>
 		{/if}
 	</div>
+	{#if altLabel || $$slots.altLabel}
+		<label class="label">
+			<span class="label-text-alt">
+				<slot name="altLabel">
+					{altLabel}
+				</slot>
+			</span>
+		</label>
+	{/if}
 </div>
