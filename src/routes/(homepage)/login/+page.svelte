@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
+	import Google from '$lib/components/svg/Google.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { handleError, supabaseClient } from '$lib/db';
 	import { getBaseUrl, showError, showInfo } from '$lib/utilities';
@@ -13,6 +14,9 @@
 	async function login() {
 		loadingSubmit = true;
 		try {
+			if (!email.trim()) {
+				throw new Error('Enter an email');
+			}
 			handleError(
 				await supabaseClient.auth.signInWithOtp({
 					email,
@@ -59,17 +63,6 @@
 			<p class="italic text-center">
 				Sign in now to create personalized avatars that represents you.
 			</p>
-			<Input bind:value={email} id="email" label="E-mail" name="email" block />
-			<Button
-				outline
-				endIcon="arrow_forward"
-				block
-				type="submit"
-				loading={loadingSubmit}
-				disabled={loadingSubmit}>Login with magic link</Button
-			>
-
-			<p class="text-center">or</p>
 			<Button
 				type="button"
 				normalCase
@@ -77,9 +70,16 @@
 				block
 				loading={loadingGoogle}
 				disabled={loadingGoogle}
+				animated
 			>
+				<Google />
 				Sign in with Google
 			</Button>
+			<p class="text-center -mb-8">or</p>
+			<Input bind:value={email} id="email" label="E-mail" name="email" block />
+			<Button outline endIcon="arrow_forward" block type="submit" disabled={loadingSubmit} animated
+				>Login with magic link</Button
+			>
 		</form>
 		<div class="py-5">
 			<div class="flex flex-row justify-between px-4">
