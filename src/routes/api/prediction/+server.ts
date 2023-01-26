@@ -6,11 +6,14 @@ import { getAdminUserInfo, handleError } from '$lib/db';
 import { getNegativePrompt, getReplacedPrompt } from '$lib/prompts.server';
 import { getPredictionStatus, runPrediction } from '$lib/replicate.server';
 import { getPrompt } from '$lib/themes';
+import type { PostgrestResponse } from '@supabase/supabase-js';
+import { getLimitedQuantity } from '$lib/predictions.server';
 
 interface GeneratePayload {
 	theme: string | undefined;
 	prompt: string | undefined;
 	seed: string | undefined;
+	quantity: number | undefined;
 }
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -78,7 +81,7 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		const body = (await event.request.json()) as GeneratePayload;
 		const { theme, seed } = body;
-		let { prompt } = body;
+		let { prompt, quantity = 1 } = body;
 
 		if (theme) {
 			prompt = getPrompt(theme);
@@ -93,6 +96,7 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		const user = session.user;
+		console.log('user', user);
 
 		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
 
@@ -107,22 +111,39 @@ export const POST: RequestHandler = async (event) => {
 		const negativePrompt = getNegativePrompt();
 		console.log({ prompt, negativePrompt, seed });
 
-		const predictionResponse = await runPrediction(
-			userInfo.replicate_version_id,
-			getReplacedPrompt(prompt, userInfo.instance_class),
-			negativePrompt,
-			seed,
-			user
-		);
-		console.log('Predict response', predictionResponse);
-		const { error } = await supabaseClientAdmin.from('predictions').insert({
-			id: predictionResponse.id,
-			user_id: session.user.id,
-			status: predictionResponse.status
-		});
-		if (error) {
-			throw new Error('Error on insert prediction', { cause: error });
+		quantity = getLimitedQuantity(quantity, userInfo.counter);
+
+		const promises: Promise<PostgrestResponse<undefined>>[] = [];
+		for (let i = 0; i < quantity; i++) {
+			promises.push(
+				runPrediction(
+					userInfo.replicate_version_id,
+					getReplacedPrompt(prompt, userInfo.instance_class),
+					negativePrompt,
+					seed,
+					user
+				).then((predictionResponse) => {
+					console.log('Predict response', predictionResponse);
+					return supabaseClientAdmin.from('predictions').insert({
+						id: predictionResponse.id,
+						user_id: session.user.id,
+						status: predictionResponse.status
+					});
+				})
+			);
 		}
+
+		await Promise.all(promises)
+			.then((responses) => {
+				for (let i = 0; i < responses.length; i++) {
+					if (responses[i].error) {
+						throw new Error('Error on insert prediction', { cause: responses[i].error });
+					}
+				}
+			})
+			.catch((err) => {
+				throw new Error('Error on insert prediction', { cause: err });
+			});
 
 		return json({ done: true });
 	} catch (error) {
