@@ -6,8 +6,9 @@
 	export let name: string | undefined = undefined;
 	export let label: string | undefined = undefined;
 	export let input: HTMLInputElement | undefined = undefined;
-	export let value: string | undefined = undefined;
-	export let type: 'text' | 'password' | 'file' | 'textarea' = 'text';
+	export let value: string | number | undefined = undefined;
+	export let type: 'text' | 'password' | 'number' | 'file' | 'textarea' | 'select' = 'text';
+	export let options: [string, string][] = [];
 	export let inputClass = '';
 	export let containerClass = '';
 	export let labelButton: string | undefined = undefined;
@@ -20,7 +21,7 @@
 
 	$: {
 		if (input && value && type !== 'file') {
-			input.value = value;
+			input.value = value.toString();
 		}
 	}
 </script>
@@ -41,6 +42,19 @@
 				class={cn('textarea textarea-bordered w-full', { 'max-w-xs': !block }, inputClass)}
 				{...$$restProps}
 			/>
+		{:else if type == 'select'}
+			<select
+				bind:value
+				{id}
+				{name}
+				class={cn('select select-bordered capitalize w-full', { 'max-w-xs': !block }, inputClass)}
+				{...$$restProps}
+			>
+				<option disabled selected />
+				{#each options as [key, label]}
+					<option value={key} class="capitalize">{label}</option>
+				{/each}
+			</select>
 		{:else}
 			<input
 				bind:this={input}

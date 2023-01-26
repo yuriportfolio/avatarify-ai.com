@@ -23,6 +23,9 @@
 		if (typeof spoilerOpen == 'undefined') {
 			spoilerOpen = !userInfo.in_training && !userInfo.trained;
 		}
+		if (userInfo.instance_class) {
+			instanceClass = userInfo.instance_class;
+		}
 	}
 	updateUserInfo();
 
@@ -49,6 +52,7 @@
 	let theme = '';
 	let prompt = '';
 	let seed = '';
+	let quantity = 1;
 	let spoilerOpen: boolean | undefined = undefined;
 
 	async function onUploadSubmit() {
@@ -130,7 +134,7 @@
 			try {
 				generating = true;
 				const response = await fetch('/api/prediction', {
-					body: JSON.stringify({ theme, prompt, seed }),
+					body: JSON.stringify({ theme, prompt, seed, quantity }),
 					method: 'POST',
 					headers: {
 						'content-type': 'application/json'
@@ -588,32 +592,36 @@
 				{/if}
 			</div>
 			<!-- Move to component -->
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="theme">
-					<span class="label-text">Choose the style</span>
-				</label>
-				<select class="select select-bordered capitalize" id="theme" bind:value={theme}>
-					<option disabled selected />
-					{#each getThemes() as theme}
-						<option value={theme} class="capitalize">{theme}</option>
-					{/each}
-				</select>
-			</div>
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="prompt">
-					<span class="label-text">Prompt</span>
-				</label>
-				<Input
-					id="prompt"
-					bind:value={prompt}
-					type="textarea"
-					block
-					containerClass="w-full max-w-xs"
-					inputClass="text-xs leading-none"
-					placeholder="closeup portrait of @me as a (WHAT YOU WANT)"
-					rows="6"
-				/>
-			</div>
+			<Input
+				label="Quantity"
+				id="quantity"
+				type="number"
+				block
+				containerClass="w-full max-w-xs"
+				bind:value={quantity}
+				min={1}
+				max={20}
+			/>
+			<Input
+				label="Choose the style"
+				id="theme"
+				type="select"
+				block
+				containerClass="w-full max-w-xs"
+				bind:value={theme}
+				options={getThemes(instanceClass).map((option) => [option.name, option.name])}
+			/>
+			<Input
+				label="Prompt"
+				id="prompt"
+				bind:value={prompt}
+				type="textarea"
+				block
+				containerClass="w-full max-w-xs"
+				inputClass="text-xs leading-none"
+				placeholder="closeup portrait of @me as a (WHAT YOU WANT)"
+				rows="6"
+			/>
 
 			<Button
 				size="small"
