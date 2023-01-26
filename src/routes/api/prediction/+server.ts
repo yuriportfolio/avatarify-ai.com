@@ -133,7 +133,7 @@ export const POST: RequestHandler = async (event) => {
 			);
 		}
 
-		Promise.all(promises)
+		await Promise.all(promises)
 			.then((responses) => {
 				for (let i = 0; i < responses.length; i++) {
 					if (responses[i].error) {
