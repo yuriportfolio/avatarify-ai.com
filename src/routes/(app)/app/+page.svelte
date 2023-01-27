@@ -14,7 +14,6 @@
 	import { onMount } from 'svelte';
 	import watermark from 'watermarkjs';
 	import { i18n } from '$lib/i18n';
-	import { PUBLIC_STRIPE_PAYMENT_LINK } from '$env/static/public';
 
 	let userInfo: Database['public']['Tables']['user_info']['Row'] | null = null;
 
@@ -460,7 +459,7 @@
 				{:else if userInfo.paid}
 					<Button size="small" disabled>Paid</Button>
 				{:else}
-					<Button size="small" link={PUBLIC_STRIPE_PAYMENT_LINK} animated>Pay now</Button>
+					<Button size="small" link="/checkout" animated>Pay now</Button>
 				{/if}
 			</div>
 		</div>
