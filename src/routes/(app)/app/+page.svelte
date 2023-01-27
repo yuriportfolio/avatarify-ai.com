@@ -460,7 +460,7 @@
 				{:else if userInfo.paid}
 					<Button size="small" disabled>Paid</Button>
 				{:else}
-					<Button size="small" link={PUBLIC_STRIPE_PAYMENT_LINK} animated>Pay now</Button>
+					<Button size="small" link="/checkout" animated>Pay now</Button>
 				{/if}
 			</div>
 		</div>

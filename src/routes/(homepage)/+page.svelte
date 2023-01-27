@@ -114,7 +114,7 @@
 			</div>
 
 			<div>
-				<Button type="button" link={PUBLIC_STRIPE_PAYMENT_LINK} block animated>Buy now</Button>
+				<Button type="button" link="/checkout" block animated>Buy now</Button>
 				<div class="flex flex-row gap-1 h-5 mt-3 mx-auto">
 					<img src="mastercard-alt.svg" alt="Mastercard" />
 					<img src="visa.svg" alt="Visa" />
