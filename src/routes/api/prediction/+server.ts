@@ -13,7 +13,7 @@ interface GeneratePayload {
 	theme: string | undefined;
 	prompt: string | undefined;
 	seed: string | undefined;
-	quantity: number | undefined;
+	quantity: number | string | undefined;
 }
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -111,7 +111,21 @@ export const POST: RequestHandler = async (event) => {
 		const negativePrompt = getNegativePrompt();
 		console.log({ prompt, negativePrompt, seed });
 
-		quantity = getLimitedQuantity(quantity, userInfo.counter);
+		if (typeof quantity == 'string') {
+			quantity = parseInt(quantity);
+			if (isNaN(quantity)) {
+				throw new Error('Wrong quantity');
+			}
+		}
+		quantity = getLimitedQuantity(quantity);
+		const quantityLimit = 100;
+		if (quantity > quantityLimit - userInfo.counter) {
+			if (quantityLimit - userInfo.counter > 0) {
+				quantity = quantityLimit - userInfo.counter;
+			} else {
+				throw new Error('You have already generated 100 photos');
+			}
+		}
 
 		const promises: Promise<PostgrestResponse<undefined>>[] = [];
 		for (let i = 0; i < quantity; i++) {
@@ -144,6 +158,15 @@ export const POST: RequestHandler = async (event) => {
 			.catch((err) => {
 				throw new Error('Error on insert prediction', { cause: err });
 			});
+
+		handleError(
+			await supabaseClientAdmin
+				.from('user_info')
+				.update({
+					counter: userInfo.counter + quantity
+				})
+				.eq('id', session.user.id)
+		);
 
 		return json({ done: true });
 	} catch (error) {

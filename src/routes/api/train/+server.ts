@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { supabaseClientAdmin } from '$lib/db.server';
-import { getAdminUserInfo, updateAdminUserInfo } from '$lib/db';
+import { getAdminUserInfo, handleErrorAndGetData, updateAdminUserInfo } from '$lib/db';
 import { PUBLIC_ENV } from '$env/static/public';
 import { getTrainingStatus, runTrain } from '$lib/replicate.server';
 
@@ -68,8 +68,6 @@ export const POST: RequestHandler = async (event) => {
 		}
 		const user = session.user;
 
-		await updateAdminUserInfo(user.id, { instance_class: instanceClass }, supabaseClientAdmin);
-
 		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
 
 		if (!userInfo.paid) {
@@ -79,12 +77,23 @@ export const POST: RequestHandler = async (event) => {
 			throw new Error('Can not train multiple times');
 		}
 
+		const imagesCount = handleErrorAndGetData(
+			await supabaseClientAdmin.storage.from('photos-for-training').list(userInfo.id)
+		).length;
+
+		if (imagesCount < 5) {
+			throw new Error(
+				'You need to upload at least 5 photos for the AI to learn what you look like'
+			);
+		}
+
 		const trainResult = await runTrain(instanceClass, user);
 		console.log('Train result', trainResult);
 
 		await updateAdminUserInfo(
 			user.id,
 			{
+				instance_class: instanceClass,
 				in_training: true,
 				start_training: new Date().toISOString(),
 				replicate_model_id: trainResult.id

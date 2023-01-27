@@ -27,8 +27,6 @@
 			{/if}
 			<div class="text-sm"><slot /></div>
 		</div>
-	</div>
-	<div class="flex-none">
 		<button class="btn btn-ghost btn-xs gap-1" type="button" on:click={() => dispatch('close')}>
 			<span class="material-symbols-outlined text-sm"> close </span>
 		</button>

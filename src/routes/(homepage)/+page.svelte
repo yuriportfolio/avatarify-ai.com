@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { PUBLIC_STRIPE_PAYMENT_LINK } from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { showInfo } from '$lib/utilities';
 
 	const manAvatars = Array.from({ length: 10 }, (_, index) => `avatars/man (${index + 1}).jpeg`);
 	const womanAvatars = Array.from(
@@ -84,27 +86,30 @@
 	class="mt-12 m-auto -space-y-4 items-center justify-center md:flex md:space-y-0 md:-space-x-4 xl:w-10/12 px-8"
 >
 	<div class="relative z-10 -mx-4 group md:w-6/12 md:mx-0 lg:w-5/12">
-		<div
-			aria-hidden="true"
-			class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-xl transition duration-500 group-hover:scale-105 lg:group-hover:scale-110"
-		/>
+		<div aria-hidden="true" class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-xl" />
 		<div class="relative p-6 space-y-6 lg:p-8">
 			<h3 class="text-3xl text-gray-700 font-semibold text-center">100 avatars</h3>
 			<div>
-				<div class="relative flex justify-center gap-8">
-					<div class="flex items-end">
-						<span class="text-6xl text-gray-800 font-bold leading-0">40</span>
-						<div class="pb-1">
-							<span class="block text-lg text-gray-700 font-bold">%</span>
-							<span class="block text-sm text-blue-500 font-bold">Off</span>
-						</div>
-					</div>
+				<div class="relative flex justify-around items-center">
+					<span class="block text-sm text-gray-800 font-bold line-through">9.99 EUR</span>
 					<div class="relative flex justify-around mb-2">
-						<div class="flex flex-row items-end gap-1">
-							<span class="text-4xl text-gray-800 font-bold leading-0">9.99</span>
+						<div class="relative flex flex-row items-end gap-1">
+							<span class="text-4xl text-gray-800 font-bold leading-0">5.99</span>
 							<span class="block text-sm text-blue-500 font-bold">EUR</span>
 						</div>
 					</div>
+					<Tooltip message="Copy the promo code">
+						<Button
+							size="tiny"
+							startIcon="copy_all"
+							class="text-xs"
+							primary
+							on:click={() => {
+								navigator.clipboard.writeText('LESS40');
+								showInfo('Promo code copied');
+							}}>LESS40</Button
+						>
+					</Tooltip>
 				</div>
 			</div>
 
@@ -122,12 +127,9 @@
 	</div>
 
 	<div class="relative group md:w-6/12 lg:w-7/12">
+		<div aria-hidden="true" class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-lg" />
 		<div
-			aria-hidden="true"
-			class="absolute top-0 w-full h-full rounded-2xl bg-white shadow-lg transition duration-500 group-hover:scale-105"
-		/>
-		<div
-			class="relative p-6 pt-16 md:p-8 md:pl-12 md:rounded-r-2xl lg:pl-20 lg:p-16 prose px-2 lg:prose-xl text-center"
+			class="relative p-6 pt-10 md:p-8 md:pl-12 md:rounded-r-2xl lg:pl-20 lg:p-16 prose lg:prose-xl text-center"
 		>
 			<p class="max-w-2xl mx-auto">
 				Training an AI model to understand the physiognomy of a specific subject requires a lot of
