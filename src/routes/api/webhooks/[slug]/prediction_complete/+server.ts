@@ -18,12 +18,14 @@ export const POST: RequestHandler = async (event) => {
 
 		const [url] = payload.output || [];
 		if (url) {
+			console.log('Upload image: ', url);
 			const image = await fetch(url);
 			handleError(
 				await supabaseClientAdmin.storage
 					.from('photos-generated')
 					.upload(`${userID}/${payload.id}.jpg`, await image.arrayBuffer())
 			);
+			console.log('Upload completed');
 		} else {
 			throw new Error('Missing url', {
 				cause: payload
@@ -38,6 +40,7 @@ export const POST: RequestHandler = async (event) => {
 				completed_at: new Date().toISOString()
 			})
 		);
+		console.log('Prediction updated', payload);
 
 		return json({});
 	} catch (error) {
