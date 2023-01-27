@@ -111,7 +111,7 @@ export const POST: RequestHandler = async (event) => {
 		const negativePrompt = getNegativePrompt();
 		console.log({ prompt, negativePrompt, seed });
 
-		quantity = getLimitedQuantity(quantity, userInfo.counter);
+		quantity = getLimitedQuantity(quantity, 100 - userInfo.counter);
 
 		const promises: Promise<PostgrestResponse<undefined>>[] = [];
 		for (let i = 0; i < quantity; i++) {
