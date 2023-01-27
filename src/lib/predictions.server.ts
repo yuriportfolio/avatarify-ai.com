@@ -1,7 +1,4 @@
-export function getLimitedQuantity(quantity: number, counter: number) {
-	if (quantity > counter) {
-		quantity = counter;
-	}
+export function getLimitedQuantity(quantity: number) {
 	if (quantity > 20) {
 		quantity = 20;
 	}

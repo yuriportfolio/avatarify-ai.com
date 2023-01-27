@@ -111,7 +111,10 @@ export const POST: RequestHandler = async (event) => {
 		const negativePrompt = getNegativePrompt();
 		console.log({ prompt, negativePrompt, seed });
 
-		quantity = getLimitedQuantity(quantity, 100 - userInfo.counter);
+		quantity = getLimitedQuantity(quantity);
+		if (quantity > 100 - userInfo.counter) {
+			throw new Error('You have already generated 100 photos');
+		}
 
 		const promises: Promise<PostgrestResponse<undefined>>[] = [];
 		for (let i = 0; i < quantity; i++) {
@@ -144,6 +147,15 @@ export const POST: RequestHandler = async (event) => {
 			.catch((err) => {
 				throw new Error('Error on insert prediction', { cause: err });
 			});
+
+		handleError(
+			await supabaseClientAdmin
+				.from('user_info')
+				.update({
+					counter: userInfo.counter + 1
+				})
+				.eq('id', session.user.id)
+		);
 
 		return json({ done: true });
 	} catch (error) {
