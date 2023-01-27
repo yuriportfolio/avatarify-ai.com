@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_STRIPE_PAYMENT_LINK } from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { showInfo } from '$lib/utilities';
