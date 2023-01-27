@@ -143,6 +143,7 @@
 				if (!response.ok) {
 					throw (await response.json()).message;
 				}
+				updateUserInfo();
 			} catch (error) {
 				showError(error);
 			} finally {

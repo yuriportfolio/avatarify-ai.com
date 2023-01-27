@@ -13,7 +13,7 @@ interface GeneratePayload {
 	theme: string | undefined;
 	prompt: string | undefined;
 	seed: string | undefined;
-	quantity: number | undefined;
+	quantity: number | string | undefined;
 }
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -111,6 +111,12 @@ export const POST: RequestHandler = async (event) => {
 		const negativePrompt = getNegativePrompt();
 		console.log({ prompt, negativePrompt, seed });
 
+		if (typeof quantity == 'string') {
+			quantity = parseInt(quantity);
+			if (isNaN(quantity)) {
+				throw new Error('Wrong quantity');
+			}
+		}
 		quantity = getLimitedQuantity(quantity);
 		const quantityLimit = 100;
 		if (quantity > quantityLimit - userInfo.counter) {
