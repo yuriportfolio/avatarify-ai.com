@@ -112,8 +112,13 @@ export const POST: RequestHandler = async (event) => {
 		console.log({ prompt, negativePrompt, seed });
 
 		quantity = getLimitedQuantity(quantity);
-		if (quantity > 100 - userInfo.counter) {
-			throw new Error('You have already generated 100 photos');
+		const quantityLimit = 100;
+		if (quantity > quantityLimit - userInfo.counter) {
+			if (quantityLimit - userInfo.counter > 0) {
+				quantity = quantityLimit - userInfo.counter;
+			} else {
+				throw new Error('You have already generated 100 photos');
+			}
 		}
 
 		const promises: Promise<PostgrestResponse<undefined>>[] = [];
