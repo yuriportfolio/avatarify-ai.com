@@ -157,7 +157,7 @@ export const POST: RequestHandler = async (event) => {
 			await supabaseClientAdmin
 				.from('user_info')
 				.update({
-					counter: userInfo.counter + 1
+					counter: userInfo.counter + quantity
 				})
 				.eq('id', session.user.id)
 		);
