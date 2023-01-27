@@ -612,6 +612,7 @@
 				bind:value={theme}
 				options={getThemes(instanceClass).map((option) => [option.name, option.name])}
 			/>
+			<div class="divider -mb-2">or</div>
 			<Input
 				label="Prompt"
 				id="prompt"

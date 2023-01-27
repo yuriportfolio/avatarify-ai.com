@@ -75,7 +75,7 @@
 				<Google />
 				Sign in with Google
 			</Button>
-			<p class="text-center -mb-8">or</p>
+			<div class="divider -mb-2">or</div>
 			<Input bind:value={email} id="email" label="E-mail" name="email" block />
 			<Button outline endIcon="arrow_forward" block type="submit" disabled={loadingSubmit} animated
 				>Login with magic link</Button
