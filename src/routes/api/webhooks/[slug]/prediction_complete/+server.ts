@@ -24,6 +24,15 @@ export const POST: RequestHandler = async (event) => {
 					.from('photos-generated')
 					.upload(`${userID}/${payload.id}.jpg`, await image.arrayBuffer())
 			);
+
+			handleError(
+				await supabaseClientAdmin
+					.from('user_info')
+					.update({
+						counter: (await getAdminUserInfo(userID, supabaseClientAdmin)).counter + 1
+					})
+					.eq('id', userID)
+			);
 		} else {
 			throw new Error('Missing url', {
 				cause: payload
@@ -37,15 +46,6 @@ export const POST: RequestHandler = async (event) => {
 				status: payload.status,
 				completed_at: new Date().toISOString()
 			})
-		);
-
-		handleError(
-			await supabaseClientAdmin
-				.from('user_info')
-				.update({
-					counter: (await getAdminUserInfo(userID, supabaseClientAdmin)).counter + 1
-				})
-				.eq('id', userID)
 		);
 
 		return json({});
