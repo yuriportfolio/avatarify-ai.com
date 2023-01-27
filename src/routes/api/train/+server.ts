@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { error as svelteError, json } from '@sveltejs/kit';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { supabaseClientAdmin } from '$lib/db.server';
-import { getAdminUserInfo, updateAdminUserInfo } from '$lib/db';
+import { getAdminUserInfo, handleErrorAndGetData, updateAdminUserInfo } from '$lib/db';
 import { PUBLIC_ENV } from '$env/static/public';
 import { getTrainingStatus, runTrain } from '$lib/replicate.server';
 
@@ -77,6 +77,16 @@ export const POST: RequestHandler = async (event) => {
 		}
 		if (userInfo.in_training || userInfo.trained) {
 			throw new Error('Can not train multiple times');
+		}
+
+		const imagesCount = handleErrorAndGetData(
+			await supabaseClientAdmin.storage.from('photos-for-training').list(userInfo.id)
+		).length;
+
+		if (imagesCount < 5) {
+			throw new Error(
+				'You need to upload at least 5 photos for the AI to learn what you look like'
+			);
 		}
 
 		const trainResult = await runTrain(instanceClass, user);
