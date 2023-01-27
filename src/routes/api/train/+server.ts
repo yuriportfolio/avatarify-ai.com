@@ -68,8 +68,6 @@ export const POST: RequestHandler = async (event) => {
 		}
 		const user = session.user;
 
-		await updateAdminUserInfo(user.id, { instance_class: instanceClass }, supabaseClientAdmin);
-
 		const userInfo = await getAdminUserInfo(session.user.id, supabaseClientAdmin);
 
 		if (!userInfo.paid) {
@@ -95,6 +93,7 @@ export const POST: RequestHandler = async (event) => {
 		await updateAdminUserInfo(
 			user.id,
 			{
+				instance_class: instanceClass,
 				in_training: true,
 				start_training: new Date().toISOString(),
 				replicate_model_id: trainResult.id

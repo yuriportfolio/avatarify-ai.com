@@ -109,9 +109,8 @@
 	}
 
 	async function train() {
+		if (!userInfo) return;
 		try {
-			if (!userInfo) return;
-
 			userInfo.in_training = true;
 			const response = await fetch('/api/train', {
 				method: 'POST',
@@ -124,6 +123,7 @@
 				throw (await response.json()).message;
 			}
 		} catch (error) {
+			userInfo.in_training = false;
 			showError(error);
 		}
 	}
