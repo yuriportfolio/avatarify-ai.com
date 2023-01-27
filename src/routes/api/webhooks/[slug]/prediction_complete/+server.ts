@@ -40,7 +40,7 @@ export const POST: RequestHandler = async (event) => {
 				completed_at: new Date().toISOString()
 			})
 		);
-		console.log('Prediction updated', payload);
+		console.log('Prediction updated');
 
 		return json({});
 	} catch (error) {
