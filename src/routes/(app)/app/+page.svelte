@@ -401,6 +401,14 @@
 						class="w-full flex flex-col items-center gap-4"
 					>
 						<Input bind:input={inputFiles} accept="image/*" type="file" name="photos" multiple />
+						<p class="italic text-xs max-w-xs">
+							It is necessary to upload at least 5 photos (ideally at least a dozen) where your face
+							is clearly visible from multiple angles.
+						</p>
+						<p class="italic text-xs text-red-700 max-w-xs">
+							Do not upload the same photo multiple times, as the AI needs to have different photos
+							to learn from.
+						</p>
 						<Button
 							size="small"
 							type="submit"
@@ -441,7 +449,6 @@
 						</div>
 					</div>
 				{/if}
-				<p class="italic text-center">It is optimal to upload at least a dozen photos</p>
 			</div>
 		</div>
 
@@ -500,7 +507,7 @@
 					{/if}
 				</Button>
 				{#if userInfo.in_training}
-					<p class="italic mt-2">It can take up to 2 hours to complete the AI training</p>
+					<p class="italic text-xs mt-2">It can take up to 2 hours to complete the AI training</p>
 				{/if}
 			</Tooltip>
 		</div>
@@ -589,7 +596,7 @@
 						</div>
 					</div>
 				{:else}
-					<p class="italic">There are not yet any images present.</p>
+					<p class="italic text-xs">There are not yet any images present.</p>
 				{/if}
 			</div>
 			<!-- Move to component -->
@@ -624,7 +631,7 @@
 				placeholder="closeup portrait of @me as a (WHAT YOU WANT)"
 				rows="6"
 			>
-				<p slot="altLabel" class="italic">
+				<p slot="altLabel" class="italic text-xs">
 					Find suggestions on <a href="https://lexica.art/" class="underline" target="_blank"
 						>lexica.art</a
 					>
