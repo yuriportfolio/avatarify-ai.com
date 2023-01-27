@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { PUBLIC_WEBSITE_HOST } from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Google from '$lib/components/svg/Google.svelte';
@@ -42,7 +43,7 @@
 				await supabaseClient.auth.signInWithOAuth({
 					provider: 'google',
 					options: {
-						redirectTo: getBaseUrl() + '/app'
+						redirectTo: `${PUBLIC_WEBSITE_HOST}/app`
 					}
 				})
 			);

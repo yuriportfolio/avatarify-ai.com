@@ -1,5 +1,5 @@
-import { PRIVATE_STRIPE_API_KEY, PRIVATE_WEBHOOK_ROOT } from '$env/static/private';
-import { PUBLIC_STRIPE_PRICE_ID } from '$env/static/public';
+import { PRIVATE_STRIPE_API_KEY } from '$env/static/private';
+import { PUBLIC_STRIPE_PRICE_ID, PUBLIC_WEBSITE_HOST } from '$env/static/public';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { error as svelteError, redirect } from '@sveltejs/kit';
 
@@ -26,8 +26,8 @@ export const GET: RequestHandler = async (event) => {
 		console.log('stripe');
 
 		const stripeSession = await stripe.checkout.sessions.create({
-			success_url: `${PRIVATE_WEBHOOK_ROOT}/payment_success?session_id={CHECKOUT_SESSION_ID}`,
-			cancel_url: `${PRIVATE_WEBHOOK_ROOT}#cancel_payment`,
+			success_url: `${PUBLIC_WEBSITE_HOST}/payment_success?session_id={CHECKOUT_SESSION_ID}`,
+			cancel_url: `${PUBLIC_WEBSITE_HOST}#cancel_payment`,
 			line_items: [
 				{
 					price: PUBLIC_STRIPE_PRICE_ID,

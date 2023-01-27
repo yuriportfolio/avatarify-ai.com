@@ -4,6 +4,7 @@ import { PRIVATE_STRIPE_API_KEY, PRIVATE_STRIPE_ENDPOINT_SECRET } from '$env/sta
 import { supabaseClientAdmin } from '$lib/db.server';
 import { Stripe } from 'stripe';
 import type { User } from '@supabase/supabase-js';
+import { PUBLIC_WEBSITE_HOST } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -35,7 +36,9 @@ export const POST: RequestHandler = async ({ request }) => {
 						}
 						user = data.user;
 					} else if (email) {
-						const { data, error } = await supabaseClientAdmin.auth.admin.inviteUserByEmail(email);
+						const { data, error } = await supabaseClientAdmin.auth.admin.inviteUserByEmail(email, {
+							redirectTo: `${PUBLIC_WEBSITE_HOST}/app`
+						});
 						if (error) {
 							throw error;
 						}

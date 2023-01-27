@@ -2,9 +2,9 @@ import {
 	PRIVATE_REPLICATE_API_TOKEN,
 	PRIVATE_REPLICATE_INSTANCE_TOKEN,
 	PRIVATE_REPLICATE_MAX_TRAIN_STEPS,
-	PRIVATE_REPLICATE_USERNAME,
-	PRIVATE_WEBHOOK_ROOT
+	PRIVATE_REPLICATE_USERNAME
 } from '$env/static/private';
+import { PUBLIC_WEBSITE_HOST } from '$env/static/public';
 import type { User } from '@supabase/supabase-js';
 
 async function getClient<T extends object>({
@@ -82,13 +82,13 @@ export async function runTrain(instanceClass: string, user: User) {
 			input: {
 				instance_prompt: `a photo of a ${PRIVATE_REPLICATE_INSTANCE_TOKEN} ${instanceClass}`,
 				class_prompt: `a photo of a ${instanceClass}`,
-				instance_data: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/instance_data`,
+				instance_data: `${PUBLIC_WEBSITE_HOST}/api/webhooks/${user.id}/instance_data`,
 				max_train_steps: Number(PRIVATE_REPLICATE_MAX_TRAIN_STEPS) || 2000,
 				num_class_images: 200,
 				learning_rate: 1e-6
 			},
 			model: `${PRIVATE_REPLICATE_USERNAME}/${user.id}`,
-			webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/training_complete`
+			webhook_completed: `${PUBLIC_WEBSITE_HOST}/api/webhooks/${user.id}/training_complete`
 		},
 		method: 'POST',
 		experimental: true
@@ -137,7 +137,7 @@ export async function runPrediction(
 				...(seed && !isNaN(parseInt(seed)) ? { seed: parseInt(seed) } : {}),
 				disable_safety_check: true
 			},
-			webhook_completed: `${PRIVATE_WEBHOOK_ROOT}/api/webhooks/${user.id}/prediction_complete`,
+			webhook_completed: `${PUBLIC_WEBSITE_HOST}/api/webhooks/${user.id}/prediction_complete`,
 			version
 		},
 		method: 'POST'
