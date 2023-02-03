@@ -145,7 +145,7 @@
 <div class="prose px-2 lg:prose-xl text-center pt-16 min-w-full">
 	<h2>How it works</h2>
 </div>
-<ul class="steps steps-vertical mx-auto mt-8 pl-32">
+<ul class="steps steps-vertical mx-auto mt-8 pl-0 md:pl-48">
 	<li class="step">
 		<span class="flex flex-row items-center gap-2"><Icon name="how_to_reg" />Sign up</span>
 	</li>
