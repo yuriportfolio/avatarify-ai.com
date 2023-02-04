@@ -32,8 +32,7 @@
 					<Button type="button" link="/app" ghost>Launch</Button>
 				{/if}
 			{:else}
-				<Button type="button" link="/login" ghost class="mobile:hidden">Login</Button>
-				<Button type="button" link="/login">Try the demo</Button>
+				<Button type="button" link="/login" ghost>Start now</Button>
 			{/if}
 			<!-- <Button circle icon="search" ghost />
             <Button circle icon="notification_important" ghost /> -->
